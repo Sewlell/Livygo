@@ -4,9 +4,7 @@
 
 Ever since Duolingo closing their doors on their Incubator Program and Forum and so on, a lot of people have becoming really unsastified on what Duolingo have become, especially the recent "revolt" and endorsement of Lingonaut Project by r/Duolingo mods. For everyone's information, I have been a loyal ( still loyal ) Duolingo user for 3 years long with 1093 day streak ( as of February 17 2025 ) and I do agree some of the disadvantages of using Duolingo ( health system, lacks of grammar lessons ).
 
-But really, what will happen if you have two identical centralized language-teaching app? One being closed, and other being open. For the smarts, they will choose whatever they think it fit their needs; For less savvy people, they choose whatever it exposed to social media the most.
-
-Now I am in no relations or affiliation with both of them, Duolingo and Lingonaut, and I'm supposedly an ordinary Duolingo user who will take like 5 minutes on their lessons and move on on my life. However, seeing that much dissatification and the needs of *usable* completely-free language-teaching app. Using the power of AI tools and mine, I guess I will create one from scratch and see how the program will goes even though there is Lingonaut Project already. 
+Now I am in no relations or affiliation with both of them, Duolingo and Lingonaut, and I'm supposedly an ordinary Duolingo user who will take like 5 minutes on their lessons and move on on my life. However, seeing that much dissatification and the needs of *usable* completely-free language-teaching app. Using the power of AI tools and mine, I guess I will create one from scratch and see how the program will goes even though there is Lingonaut and other project already. 
 
 Oh, by the way here's Livy as the mascot of Livygo. Both mascot, UI design and codebase is very very very early phase.
 
