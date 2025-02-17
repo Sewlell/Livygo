@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livygo - Question</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .cutscene {
+            display: none;
+            text-align: center;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .cutscene.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .activity {
+            text-align: center;
+            display: none;
+        }
+
+        .activity.visible {
+            display: block;
+        }
+
+        .activity button {
+            margin: 10px;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .correct {
+            background-color: green;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="cutscene" id="cutscene"></div>
+    <div class="activity" id="activity"></div>
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        // Get current lesson code (e.g., "1001" for Section 1, Circle 1)
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCode = urlParams.get('code') || '1001'; // Default to 1001
+
+        // Cutscene content
+        const cutsceneContent = [
+            "LivyCutscene 1",
+            "- 12123",
+            "- OK lets go",
+            "- apple pineapple pen"
+        ];
+
+        // Lesson configuration
+        const questionsPerLesson = 5; // Adjustable: 5 or 10 questions per lesson
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+
+        // Load vocabulary and grammar data
+        let type1Data = [];
+        let type2Data = [];
+
+        // Fetch Type 1 vocabulary
+        fetch('type1_vocabulary.json')
+            .then(response => response.json())
+            .then(data => {
+                type1Data = data.filter(item => parseInt(item.code) <= parseInt(currentCode));
+                startCutscene(); // Start cutscene after data is loaded
+            });
+
+        // Fetch Type 2 grammar
+        fetch('type2_grammar.json')
+            .then(response => response.json())
+            .then(data => {
+                type2Data = data.filter(item => parseInt(item.code) <= parseInt(currentCode));
+            });
+
+        // Function to start the cutscene
+        function startCutscene() {
+            const cutscene = document.getElementById('cutscene');
+            cutscene.classList.add('visible');
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < cutsceneContent.length) {
+                    cutscene.innerHTML += `<div>${cutsceneContent[index]}</div>`;
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        cutscene.classList.remove('visible');
+                        startLesson();
+                    }, 3000); // Wait 3 seconds before starting the lesson
+                }
+            }, 1000); // Typing animation delay (1 second per line)
+        }
+
+        // Function to start the lesson
+        function startLesson() {
+            const activity = document.getElementById('activity');
+            activity.classList.add('visible');
+            generateNextQuestion();
+        }
+
+        // Function to generate the next question
+        function generateNextQuestion() {
+            if (currentQuestion < questionsPerLesson) {
+                if (Math.random() < 0.5) {
+                    generateType1Activity();
+                } else {
+                    generateType2Activity();
+                }
+                currentQuestion++;
+            } else {
+                // Lesson completed
+                setTimeout(() => {
+                    window.location.href = 'mainnightly.html'; // Redirect back to Main Page
+                }, 4000); // Wait 4 seconds before redirecting
+            }
+        }
+
+        // Function to generate Type 1 activity (word-choosing)
+        function generateType1Activity() {
+            const allowedWords = type1Data.filter(item => parseInt(item.code) <= parseInt(currentCode));
+            const questionWord = allowedWords[Math.floor(Math.random() * allowedWords.length)];
+            const options = [questionWord];
+            while (options.length < 4) {
+                const randomWord = type1Data[Math.floor(Math.random() * type1Data.length)];
+                if (!options.includes(randomWord)) {
+                    options.push(randomWord);
+                }
+            }
+            options.sort(() => Math.random() - 0.5); // Shuffle options
+
+            activity.innerHTML = `
+                <p>Which word carries the meaning of "${questionWord.translation}"?</p>
+                ${options.map(word => `<button onclick="selectAnswer('${word.word}', '${questionWord.word}')">${word.word}</button>`).join('')}
+                <button onclick="checkAnswer()">Finish</button>
+            `;
+        }
+
+        // Function to generate Type 2 activity (grammar-vocabulary)
+        function generateType2Activity() {
+            const allowedSentences = type2Data.filter(item => parseInt(item.code) <= parseInt(currentCode));
+            const question = allowedSentences[Math.floor(Math.random() * allowedSentences.length)];
+            activity.innerHTML = `
+                <p>${question.sentence}</p>
+                <p>${question.translation}</p>
+                <input type="text" id="grammar-answer" placeholder="Fill in the blank">
+                <button onclick="checkGrammarAnswer('${question.blank}')">Finish</button>
+            `;
+        }
+
+        // Function to select an answer in Type 1 activity
+        function selectAnswer(selected, correct) {
+            selectedAnswer = { selected, correct };
+        }
+
+        // Function to check the answer in Type 1 activity
+        function checkAnswer() {
+            const feedback = document.getElementById('feedback');
+            if (selectedAnswer && selectedAnswer.selected === selectedAnswer.correct) {
+                feedback.textContent = "Correct!";
+                feedback.className = "feedback correct";
+            } else {
+                feedback.textContent = "Incorrect!";
+                feedback.className = "feedback incorrect";
+            }
+            feedback.style.display = 'block';
+            setTimeout(() => {
+                feedback.style.display = 'none';
+                generateNextQuestion();
+            }, 2000); // Wait 2 seconds before showing the next question
+        }
+
+        // Function to check the answer in Type 2 activity
+        function checkGrammarAnswer(correctAnswer) {
+            const userAnswer = document.getElementById('grammar-answer').value;
+            const feedback = document.getElementById('feedback');
+            if (userAnswer === correctAnswer) {
+                feedback.textContent = "Correct!";
+                feedback.className = "feedback correct";
+            } else {
+                feedback.textContent = "Incorrect!";
+                feedback.className = "feedback incorrect";
+            }
+            feedback.style.display = 'block';
+            setTimeout(() => {
+                feedback.style.display = 'none';
+                generateNextQuestion();
+            }, 2000); // Wait 2 seconds before showing the next question
+        }
+    </script>
+</body>
+</html>

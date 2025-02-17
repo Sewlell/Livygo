@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Go - Main Browser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-section, .center-section, .right-section {
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .left-section {
+            width: 20%;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .center-section {
+            width: 60%;
+            background-color: #e4e4e4;
+            text-align: center;
+        }
+
+        .right-section {
+            width: 20%;
+            background-color: #f4f4f4;
+            position: relative;
+        }
+
+        .pathway-circle {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .lesson {
+            width: 50px;
+            height: 50px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lesson-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .lesson-dropdown.visible {
+            display: block;
+        }
+
+        .mascot {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            margin: 20px auto;
+        }
+
+        .daily-quests {
+            margin-top: 20px;
+        }
+
+        .daily-quest {
+            background-color: #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .flag-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+        }
+
+        .flag-mask {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .flag {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .courses-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .courses-dropdown.visible {
+            display: block;
+        }
+
+        .add-course {
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .sub-options {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .sub-options button {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .dev-mode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-section">
+        <button>Shop</button>
+        <button>Profile</button>
+        <button id="pathway-btn">Pathway</button>
+        <div class="sub-options" id="pathway-options">
+            <button>General</button>
+            <button>Vocabulary</button>
+            <button>Grammar</button>
+        </div>
+        <button id="practice-btn">Practice</button>
+        <div class="sub-options" id="practice-options">
+            <button>General</button>
+            <button>Vocabulary</button>
+            <button>Grammar</button>
+        </div>
+        <div class="dev-mode">
+            <button id="debug-test">Debug Test (Reset Progress)</button>
+        </div>
+    </div>
+
+    <div class="center-section">
+        <h2>Pathway</h2>
+        <div class="pathway-circle" id="pathway-circle">
+            <!-- Pathway circles will be dynamically generated here -->
+        </div>
+    </div>
+
+    <div class="right-section">
+        <div class="flag-container" id="flag-container">
+            <div class="flag-mask">
+                <div class="flag" id="flag">🇪🇸</div>
+                <div class="courses-dropdown" id="courses-dropdown">
+                    <div data-lang="es">Spanish</div>
+                    <div data-lang="jp">Japanese</div>
+                    <div class="add-course">+ Add a New Course</div>
+                </div>
+            </div>
+        </div>
+        <div class="mascot"></div>
+        <div class="daily-quests">
+            <div class="daily-quest">Daily Quest 1</div>
+            <div class="daily-quest">Daily Quest 2</div>
+            <div class="daily-quest">Daily Quest 3</div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sub-options for Pathway and Practice
+        document.getElementById('pathway-btn').addEventListener('click', function() {
+            var options = document.getElementById('pathway-options');
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.getElementById('practice-btn').addEventListener('click', function() {
+            var options = document.getElementById('practice-options');
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Handle flag dropdown visibility and language selection
+        const flagContainer = document.getElementById('flag-container');
+        const dropdown = document.getElementById('courses-dropdown');
+        const pathwayCircle = document.getElementById('pathway-circle');
+
+        // Default pathway for Spanish (3 circles)
+        const pathways = {
+            es: 3, // Spanish
+            jp: 5  // Japanese
+        };
+
+        let currentLesson = 1;
+
+        // Function to update the pathway circles
+        function updatePathway(lang) {
+            pathwayCircle.innerHTML = ''; // Clear existing circles
+            const numCircles = pathways[lang];
+            for (let i = 1; i <= numCircles; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'lesson';
+                circle.textContent = i;
+                if (i === 1 || i === 2) { // Example for Circle 1 and Circle 2
+                    circle.addEventListener('click', () => {
+                        window.location.href = `question.html?code=100${i}`; // Redirect to question page with code
+                    });
+                }
+                pathwayCircle.appendChild(circle);
+            }
+        }
+
+        // Set default pathway (Spanish)
+        updatePathway('es');
+
+        // Debug Test button to reset progress
+        document.getElementById('debug-test').addEventListener('click', () => {
+            currentLesson = 1;
+            updatePathway('es');
+        });
+
+        // Show/hide dropdown on hover
+        flagContainer.addEventListener('mouseenter', () => {
+            dropdown.classList.add('visible');
+        });
+
+        flagContainer.addEventListener('mouseleave', (event) => {
+            if (!event.relatedTarget || !dropdown.contains(event.relatedTarget)) {
+                dropdown.classList.remove('visible');
+            }
+        });
+
+        dropdown.addEventListener('mouseleave', (event) => {
+            if (!event.relatedTarget || !flagContainer.contains(event.relatedTarget)) {
+                dropdown.classList.remove('visible');
+            }
+        });
+    </script>
+</body>
+</html>

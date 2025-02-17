@@ -1,0 +1,27 @@
+[
+  {
+    "code": "1001",
+    "word": "casa",
+    "translation": "house"
+  },
+  {
+    "code": "1001",
+    "word": "perro",
+    "translation": "dog"
+  },
+  {
+    "code": "1002",
+    "word": "gato",
+    "translation": "cat"
+  },
+  {
+    "code": "1002",
+    "word": "libro",
+    "translation": "book"
+  },
+  {
+    "code": "1002",
+    "word": "manzana",
+    "translation": "apple"
+  }
+]
