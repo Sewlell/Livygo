@@ -2,11 +2,15 @@
 
 # Livygo Project started!
 
-Ever since Duolingo closing their doors on their Incubator Program and Forum and so on, a lot of people have becoming really unsastified on what Duolingo have become, especially the recent "revolt" and endorsement of Lingonaut Project by r/Duolingo mods. For everyone's information, I have been a loyal ( still loyal ) Duolingo user for 3 years long with 1093 day streak ( as of February 17 2025 ) and I do agree some of the disadvantages of using Duolingo ( health system, lacks of grammar lessons ).
+Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its open arms to those who want to volunteer at multiple areas. ( Course Creation, Voice Recording, etc ). This is nothing much really when you devote yourself in using [Anki](https://apps.ankiweb.net/).
 
-Now I am in no relations or affiliation with both of them, Duolingo and Lingonaut, and I'm supposedly an ordinary Duolingo user who will take like 5 minutes on their lessons and move on on my life. However, seeing that much dissatification and the needs of *usable* completely-free language-teaching app. Using the power of AI tools and mine, I guess I will create one from scratch and see how the program will goes even though there is Lingonaut and other project already. 
+# Development Log : February 21 2025
 
-Oh, by the way here's Livy as the mascot of Livygo. Both mascot, UI design and codebase is very very very early phase.
+1. Adding on Question Page's Cutscenes customizability to allow user to create their own cutscene for their own Course. It's pretty broken, tried to fix it up couple days later included the situation where Questions don't appear at all.
+2. Change the font to Poppins using Google Font API.
+3. Flag Button is freaking broken.
+4. Fix the disappearance of Circle's Dropdown.
+5. Where's the space for Livy? Although I still haven't learn After Effects to animate Livy *yet*.
 
 ## Todo Lists and Features (Planned)
 
@@ -25,13 +29,16 @@ Oh, by the way here's Livy as the mascot of Livygo. Both mascot, UI design and c
 - [ ] Write a more completed Guidebooks
 - [ ] Hookup AI TTS Voices on Courses
 - [ ] Adaptability of Community Courses
+- [ ] Polish the Logo
 - [ ] Possible Flashcard Mode and Anki Import (Erm, I guess?)
 - [ ] Livy on Main Page
-- [ ] Alpha Launch (not so soon)
+- [ ] Alpha Web Launch (not so soon)
+- [ ] Android/IOS Version
 
 ## Current AI Tools Used
 
-- [Deepseek V3 and R1](https://www.deepseek.com/) by Deepseek 
+- [DeepSeek R1](https://www.deepseek.com/) by DeepSeek
+- [GPT o3-mini and 4o](https://chatgpt.com/) by OpenAI (Served as Alternative for DeepSeek)
 - [GPT SoVITS](https://github.com/RVC-Boss/GPT-SoVITS) by RVC-Boss
 
 ## Disclaimer 
