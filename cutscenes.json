@@ -1,0 +1,15 @@
+[
+  {
+      "code": "1001",
+      "lines": [
+          "LivyCutscene 1///- This is Lesson 1",
+          "Welcome to the first lesson!///Let's begin our journey"
+      ]
+  },
+  {
+      "code": "1001-2",
+      "lines": [
+          "Advanced concepts///Second part of the lesson"
+      ]
+  }
+]

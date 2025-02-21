@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Living Go - Main Browser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
             display: flex;
             height: 100vh;
         }
@@ -56,105 +61,40 @@
             position: relative;
         }
 
-        .lesson-dropdown {
-            display: none;
+        .circle-dropdown {
             position: absolute;
-            top: 60px;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            z-index: 100;
+        }
+
+        .circle-dropdown.top {
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 200px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
 
-        .lesson-dropdown.visible {
-            display: block;
-        }
-
-        .mascot {
-            width: 100px;
-            height: 100px;
-            background-color: #ccc;
-            margin: 20px auto;
-        }
-
-        .daily-quests {
-            margin-top: 20px;
-        }
-
-        .daily-quest {
-            background-color: #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-
-        .flag-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-        }
-
-        .flag-mask {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        .flag {
-            width: 30px;
-            height: 30px;
-            background-color: red;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            position: absolute;
-            top: 50%;
+        .circle-dropdown.bottom {
+            top: 100%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
         }
 
-        .courses-dropdown {
-            display: none;
-            position: absolute;
-            top: 50px;
-            right: 0;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 150px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .progress-container {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin: 0.5rem 0;
         }
 
-        .courses-dropdown.visible {
-            display: block;
-        }
-
-        .add-course {
-            margin-top: 10px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .sub-options {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .sub-options button {
-            display: block;
-            margin: 5px 0;
-        }
-
-        .dev-mode {
-            margin-top: 20px;
+        .progress-bar {
+            height: 100%;
+            background: #8B0000;
+            border-radius: 4px;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -181,9 +121,7 @@
 
     <div class="center-section">
         <h2>Pathway</h2>
-        <div class="pathway-circle" id="pathway-circle">
-            <!-- Pathway circles will be dynamically generated here -->
-        </div>
+        <div class="pathway-circle" id="pathway-circle"></div>
     </div>
 
     <div class="right-section">
@@ -206,72 +144,75 @@
     </div>
 
     <script>
-        // Toggle sub-options for Pathway and Practice
-        document.getElementById('pathway-btn').addEventListener('click', function() {
-            var options = document.getElementById('pathway-options');
-            options.style.display = options.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.getElementById('practice-btn').addEventListener('click', function() {
-            var options = document.getElementById('practice-options');
-            options.style.display = options.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // Handle flag dropdown visibility and language selection
-        const flagContainer = document.getElementById('flag-container');
-        const dropdown = document.getElementById('courses-dropdown');
-        const pathwayCircle = document.getElementById('pathway-circle');
-
-        // Default pathway for Spanish (3 circles)
-        const pathways = {
-            es: 3, // Spanish
-            jp: 5  // Japanese
-        };
-
-        let currentLesson = 1;
-
-        // Function to update the pathway circles
+        // Circle creation and dropdown handling
         function updatePathway(lang) {
-            pathwayCircle.innerHTML = ''; // Clear existing circles
-            const numCircles = pathways[lang];
+            const pathwayCircle = document.getElementById('pathway-circle');
+            pathwayCircle.innerHTML = '';
+            const numCircles = 3; // Example for 3 circles
+
             for (let i = 1; i <= numCircles; i++) {
                 const circle = document.createElement('div');
                 circle.className = 'lesson';
                 circle.textContent = i;
-                if (i === 1 || i === 2) { // Example for Circle 1 and Circle 2
-                    circle.addEventListener('click', () => {
-                        window.location.href = `question.html?code=100${i}`; // Redirect to question page with code
-                    });
-                }
+                circle.dataset.code = `100${i}`;
+
+                // Hover events
+                circle.addEventListener('mouseenter', () => {
+                    createCircleDropdown(circle);
+                });
+
+                circle.addEventListener('mouseleave', () => {
+                    const dropdown = circle.querySelector('.circle-dropdown');
+                    if (dropdown) dropdown.remove();
+                });
+
+                // Click handler
+                circle.addEventListener('click', () => {
+                    window.location.href = `question.html?code=100${i}`;
+                });
+
                 pathwayCircle.appendChild(circle);
             }
         }
 
-        // Set default pathway (Spanish)
+        // Fetch lesson progress and create dropdown
+        async function createCircleDropdown(circleElement) {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'circle-dropdown';
+
+            // Position dropdown based on available space
+            const rect = circleElement.getBoundingClientRect();
+            if (rect.top > window.innerHeight / 2) {
+                dropdown.classList.add('top');
+            } else {
+                dropdown.classList.add('bottom');
+            }
+
+            try {
+                const response = await fetch('lesson_progress.json');
+                const data = await response.json();
+                const progress = data.find(item => item.code === circleElement.dataset.code) || {
+                    current: 1,
+                    total: 5,
+                    title: 'New Journey'
+                };
+
+                dropdown.innerHTML = `
+                    <div class="dropdown-header">${progress.title}</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${(progress.current / progress.total) * 100}%"></div>
+                    </div>
+                    <div class="lesson-count">Lesson ${progress.current}/${progress.total}</div>
+                `;
+            } catch (error) {
+                console.error('Error fetching progress:', error);
+            }
+
+            circleElement.appendChild(dropdown);
+        }
+
+        // Initialize pathway
         updatePathway('es');
-
-        // Debug Test button to reset progress
-        document.getElementById('debug-test').addEventListener('click', () => {
-            currentLesson = 1;
-            updatePathway('es');
-        });
-
-        // Show/hide dropdown on hover
-        flagContainer.addEventListener('mouseenter', () => {
-            dropdown.classList.add('visible');
-        });
-
-        flagContainer.addEventListener('mouseleave', (event) => {
-            if (!event.relatedTarget || !dropdown.contains(event.relatedTarget)) {
-                dropdown.classList.remove('visible');
-            }
-        });
-
-        dropdown.addEventListener('mouseleave', (event) => {
-            if (!event.relatedTarget || !flagContainer.contains(event.relatedTarget)) {
-                dropdown.classList.remove('visible');
-            }
-        });
     </script>
 </body>
 </html>
