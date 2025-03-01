@@ -7,7 +7,7 @@
     "possibleAnswers": ["bebo", "bebes", "bebe"]
   },
   {
-    "code":"1001",
+    "code": "1001",
     "sentence": "Llevo un ____.",
     "translation": "I carry a book.",
     "blank": "libro",

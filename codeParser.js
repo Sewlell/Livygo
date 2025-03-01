@@ -1,27 +1,39 @@
 class CodeParser {
     static parse(code) {
-        const [base, lesson] = code.split('-');
-        return {
-            section: parseInt(base.slice(0, 2)),
-            circle: parseInt(base.slice(2)),
-            lesson: lesson ? parseInt(lesson) : 0
-        };
+        try {
+            const [base, lesson] = code.split('-');
+            return {
+                section: parseInt(base?.slice(0, 2)) || 0,
+                circle: parseInt(base?.slice(2)) || 0,
+                lesson: lesson ? parseInt(lesson) : 0,
+                numeric: parseInt(`${base?.padEnd(4, '0')}${lesson?.padStart(3, '0') || '000'}`)
+            };
+        } catch (e) {
+            console.error('Parse error:', e);
+            return { section: 0, circle: 0, lesson: 0, numeric: 0 };
+        }
     }
 
     static compare(code, condition) {
-        const target = this.parse(code);
-        return condition.split(',').every(cond => {
-            const [operator, value] = cond.split(/(>=|<=|=|>|<)/).filter(Boolean);
-            const parsedValue = this.parse(value);
-            
-            return this.applyOperator(target, operator, parsedValue);
-        });
+        if (!condition?.trim()) return true;
+        try {
+            const target = this.parse(code);
+            return condition.split(',').every(cond => {
+                const match = cond.match(/(>=|<=|>|<|=)?([\d-]+)/);
+                if (!match) return false;
+                const operator = match[1] || '=';
+                const parsedValue = this.parse(match[2]);
+                return this.applyOperator(target, operator, parsedValue);
+            });
+        } catch (e) {
+            console.error('Compare error:', e);
+            return true;
+        }
     }
 
     static applyOperator(target, operator, condition) {
-        const targetNum = target.section * 1000000 + target.circle * 1000 + target.lesson;
-        const conditionNum = condition.section * 1000000 + condition.circle * 1000 + condition.lesson;
-        
+        const targetNum = target.numeric;
+        const conditionNum = condition.numeric;
         switch(operator) {
             case '>=': return targetNum >= conditionNum;
             case '<=': return targetNum <= conditionNum;

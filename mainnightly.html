@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Living Go - Main Browser</title>
+    <title>Livygo - Main Browser</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
         * {
@@ -96,6 +96,24 @@
             border-radius: 4px;
             transition: width 0.3s ease;
         }
+
+        .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .fade-out {
+        animation: fadeOut 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+    }
     </style>
 </head>
 <body>
@@ -175,39 +193,44 @@
             }
         }
 
-        // Fetch lesson progress and create dropdown
+        // Fetch lesson progress and create dropdown:
         async function createCircleDropdown(circleElement) {
             const dropdown = document.createElement('div');
             dropdown.className = 'circle-dropdown';
-
-            // Position dropdown based on available space
-            const rect = circleElement.getBoundingClientRect();
-            if (rect.top > window.innerHeight / 2) {
-                dropdown.classList.add('top');
-            } else {
-                dropdown.classList.add('bottom');
-            }
-
+            
             try {
-                const response = await fetch('lesson_progress.json');
-                const data = await response.json();
-                const progress = data.find(item => item.code === circleElement.dataset.code) || {
+                // Fetch progress data
+                const progressResponse = await fetch('lesson_progress.json');
+                const progressData = await progressResponse.json();
+                
+                // Get stored progress
+                const storedProgress = JSON.parse(localStorage.getItem('lessonProgress')) || [];
+                
+                const code = circleElement.dataset.code;
+                const defaultProgress = progressData.find(p => p.code === 'default') || {
                     current: 1,
                     total: 5,
-                    title: 'New Journey'
+                    title: 'Default Title'
                 };
+                
+                const progress = storedProgress.find(p => p.code === code) || 
+                                progressData.find(p => p.code === code) || 
+                                defaultProgress;
 
                 dropdown.innerHTML = `
                     <div class="dropdown-header">${progress.title}</div>
                     <div class="progress-container">
-                        <div class="progress-bar" style="width: ${(progress.current / progress.total) * 100}%"></div>
+                        <div class="progress-bar" 
+                            style="width: ${(progress.current / progress.total) * 100}%">
+                        </div>
                     </div>
                     <div class="lesson-count">Lesson ${progress.current}/${progress.total}</div>
                 `;
             } catch (error) {
-                console.error('Error fetching progress:', error);
+                console.error('Progress load error:', error);
+                dropdown.innerHTML = `<div class="error">Progress unavailable</div>`;
             }
-
+            
             circleElement.appendChild(dropdown);
         }
 
