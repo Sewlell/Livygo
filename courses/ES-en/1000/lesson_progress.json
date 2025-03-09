@@ -1,0 +1,40 @@
+[
+    {
+        "code": "default",
+        "title": "Default Title",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": false,
+        "relearnpool": true
+    },
+    {
+        "code": "1001",
+        "title": "Basic Foundations",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": false,
+        "relearnpool": true,
+        "pracrepetition": 3,
+        "praclimit": ""
+    },
+    {
+        "code": "1002",
+        "title": "Family Vocabulary",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": false,
+        "relearnpool": true
+    },
+    {
+        "code": "1003",
+        "title": "Practice Circle",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": true,
+        "relearnpool": true
+    }
+]

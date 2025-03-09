@@ -1,0 +1,37 @@
+[
+    {
+        "code": "1001",
+        "audio": "sentence/good_morning.wav",
+        "sentence": "おはようございます",
+        "blocks": ["おはよう", "ございます"],
+        "translation": "Good morning",
+        "possibleAnswers": [
+            "おはようございます",
+            "おはよう　ございます",
+            "おはよう ございます"
+        ]
+    },
+    {
+        "code": "1001",
+        "audio": "sentence/my_name_is_taro.wav",
+        "sentence": "私の名前は太郎です",
+        "blocks": ["私の", "名前は", "太郎", "です"],
+        "translation": "My name is Taro",
+        "possibleAnswers": [
+            "私の名前は太郎です",
+            "私の　名前は　太郎　です",
+            "わたしのなまえはたろうです"
+        ]
+    },
+    {
+        "code": "1001",
+        "audio": "sentence/where_are_you_from.wav",
+        "sentence": "あなたはどこから来ましたか",
+        "blocks": ["あなたは", "どこから", "来ましたか"],
+        "translation": "Where are you from?",
+        "possibleAnswers": [
+            "あなたはどこから来ましたか",
+            "あなたはどこからきましたか"
+        ]
+    }
+]

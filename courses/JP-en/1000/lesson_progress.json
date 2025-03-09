@@ -1,0 +1,41 @@
+[
+    {
+        "code": "default",
+        "title": "Default Title",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": false,
+        "relearnpool": true
+    },
+    {
+        "code": "1001",
+        "title": "Basic Focused Circle",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": false,
+        "relearnpool": true,
+        "pracrepetition": 3,
+        "praclimit": ""
+    },
+    {
+        "code": "1002",
+        "title": "Basic Focused Another",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": false,
+        "relearnpool": true,
+        "questionRatio": [40, 20, 20, 20]
+    },
+    {
+        "code": "1003",
+        "title": "Practice Practice",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 10,
+        "practicecirc": true,
+        "relearnpool": true
+    }
+]

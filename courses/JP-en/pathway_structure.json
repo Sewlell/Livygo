@@ -1,0 +1,37 @@
+[
+    {
+      "code": "1000",
+      "title": "Foundations 基礎",
+      "numCircles": 54,
+      "defaultAddress": "/courses/JP-en/1000/",
+      "addressMap": [
+        {
+          "rangeStart": 1001,
+          "rangeEnd": 1049,
+          "path": "/courses/JP-en/1000/"
+        },
+        {
+          "rangeStart": 1050,
+          "rangeEnd": 1054,
+          "path": "/courses/JP-en/1050/"
+        }
+      ],
+      "settings": {
+        "newQuestionRatio": 0.8,
+        "enabledQuestionTypes": ["type1", "type2", "type3", "type4"]
+      }
+    },
+    {
+      "code": "2000",
+      "title": "Test Bench テストベンチ",
+      "numCircles": 10,
+      "defaultAddress": "/courses/JP-en/2000/",
+      "addressMap": [
+        {
+          "rangeStart": 2001,
+          "rangeEnd": 2010,
+          "path": "/courses/JP-en/2000/"
+        }
+      ]
+    }
+  ]

@@ -1,0 +1,42 @@
+[
+    {
+        "code": "1001",
+        "audio": "words/ohayou.wav",
+        "answers": {
+            "selection": ["おはよう", "こんにちは", "こんばんは"],
+            "text": ["おはよう", "おはようございます"]
+        }
+    },
+    {
+        "code": "1001",
+        "audio": "words/konnichiwa.wav",
+        "answers": {
+            "selection": ["おはよう", "こんにちは", "こんばんは"],
+            "text": ["こんにちは"]
+        }
+    },
+    {
+        "code": "1001",
+        "audio": "words/namae.wav",
+        "answers": {
+            "selection": ["名前", "友達", "家族"],
+            "text": ["名前", "なまえ"]
+        }
+    },
+    {
+        "code": "1001",
+        "audio": "words/tomodachi.wav",
+        "answers": {
+            "selection": ["友達", "家族", "先生"],
+            "text": ["友達", "ともだち"]
+        }
+    },
+    {
+        "code": "1001",
+        "audio": "words/taberu.wav",
+        "answers": {
+            "selection": ["食べる", "飲む", "書く"],
+            "text": ["食べる", "たべる"]
+        }
+    }
+]

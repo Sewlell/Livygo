@@ -1,0 +1,42 @@
+[
+  {
+    "code": "1001",
+    "sentence": "彼は大きなこえで____しました",
+    "translation": "He spoke in a loud voice.",
+    "blank": ["話し", "はなし"],
+    "possibleAnswers": ["話"]
+  },
+  {
+    "code": "1001",
+    "sentence": "もし、時間があったら、映画をみに____ましょう",
+    "translation": "If we have time, let’s go watch a movie.",
+    "blank": ["行き", "いき"],
+    "possibleAnswers": []
+  },
+  {
+    "code": "1001",
+    "sentence": "人生は一度きりだから、やりたいことをする____た",
+    "translation": "Life only happens once, so you should do what you want to do.",
+    "blank": "べき",
+    "possibleAnswers": []
+  },
+
+
+
+
+
+  {
+    "code": "1002",
+    "sentence": "自然のうつくしさに感動して、しばらく_____なかった",
+    "translation": "I was so moved by the beauty of nature that I couldn't move for a while.",
+    "blank": ["動け", "うごけ"],
+    "possibleAnswers": []
+  },
+  {
+    "code": "1002",
+    "sentence": "Nosotros ____ español.",
+    "translation": "We speak Spanish.",
+    "blank": "hablamos",
+    "possibleAnswers": ["hablamos", "habláis", "hablan"]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "code": "1001", 
+    "word": "お祭り　おまつり",
+    "translation": "festival"
+  },
+  {
+    "code": "1001",
+    "word": "運動会　うんどうかい",
+    "translation": "sports day"
+  },
+  {
+    "code": "1001",
+    "word": "大学院生　だいがくいんせい",
+    "translation": "graduate student"
+  },
+  {
+    "code": "1001",
+    "word": "探る　さぐる",
+    "translation": [ 
+    "to feel around for, to fumble for,",
+    "to investigate, to spy on,",
+    "to explore (parts unknown), to enjoy (natural beauty)"
+    ]
+  },
+  {
+    "code": "1001",
+    "word": "貴族　きぞく",
+    "translation": "noble"
+  },
+  {
+    "code": "1001",
+    "word": "保護　ほご",
+    "translation": "care, protection, shelter"
+  },
+
+
+
+
+
+
+
+  {
+    "code": "1002",
+    "word": "gato",
+    "translation": "cat"
+  },
+  {
+    "code": "1002",
+    "word": "libro",
+    "translation": "book"
+  },
+  {
+    "code": "1002",
+    "word": "manzana",
+    "translation": "apple"
+  }
+]

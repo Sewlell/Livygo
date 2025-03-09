@@ -42,4 +42,21 @@ class CodeParser {
             default: return targetNum === conditionNum;
         }
     }
+
+    static getResourcePath(code, lang) {
+        const numericCode = parseInt(code);
+        const pathwayStructure = JSON.parse(localStorage.getItem('pathwayStructure'));
+        
+        const section = pathwayStructure.find(s => 
+          parseInt(s.code) === Math.floor(numericCode/1000)*1000
+        );
+        
+        if(!section) return '/courses/';
+        
+        const range = section.addressMap.find(r => 
+          numericCode >= r.rangeStart && numericCode <= r.rangeEnd
+        );
+        
+        return range?.path || section.defaultAddress;
+      }
 }

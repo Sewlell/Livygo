@@ -216,6 +216,94 @@
             border: 2px solid #FFA000;
             color: #000;
         }
+
+        .word-block {
+            display: inline-block;
+            min-width: auto;
+            padding: 6px 10px;
+            font-size: 1rem;
+            background: #8B0000;
+            color: white;
+            border-radius: 4px;
+            margin: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .blocks-tray {
+            background: #f8f8f8;
+            min-height: 60px;
+            border-radius: 8px;
+        }
+
+        .sentence-builder {
+            background: #fff;
+            min-height: 80px;
+            margin-top: 1rem;
+            border-radius: 8px;
+            border: 2px dashed #ccc;
+        }
+
+        .answer-area {
+            min-height: 60px;
+            border: 2px dashed #ccc;
+            margin: 1rem 0;
+        }
+
+        .input-mode {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f8f8;
+            border-radius: 8px;
+            min-height: 80px;
+        }
+
+        .audio-player-container {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        #type3InputContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        #type3TextInput {
+            width: 300px;
+            padding: 12px;
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+
+        #type3Submit {
+            padding: 12px 24px;
+            width: fit-content;
+            margin: 0.5rem 0;
+        }
+
+        .type3-question-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .type3-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        #textContainer input {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -230,11 +318,15 @@
 
     <div class="activity" id="activity"></div>
 
+    <script src="https://unpkg.com/wanakana@5.3.1/wanakana.min.js"></script>
     <script>
         // Configuration
         const urlParams = new URLSearchParams(window.location.search);
         const currentCode = urlParams.get('code') || '1001';
-        let questionsPerLesson = 5; // Default, will be updated from lesson_progress.json
+        const basePath = urlParams.get('basePath') || '/courses/JP-en/default/';
+        const lang = localStorage.getItem('selectedLang') || 'JP-en';
+        
+        let questionsPerLesson = 5;
         let questionsCompleted = 0;
         let currentCutsceneIndex = 0;
         let cutscenes = [];
@@ -244,39 +336,72 @@
         // Data storage
         let type1Data = [];
         let type2Data = [];
-        let relearnType1 = []; // Relearn Pool for Type 1
-        let relearnType2 = []; // Relearn Pool for Type 2
+        let type3Data = [];
+        let type4Data = [];
+        let enabledQuestionTypes = ['type1', 'type2', 'type3', 'type4'];
+        let relearnType1 = JSON.parse(localStorage.getItem(`relearnType1_${lang}`)) || [];
+        let relearnType2 = JSON.parse(localStorage.getItem(`relearnType2_${lang}`)) || [];
         let lessonProgress = {};
         let currentLesson = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize progress
-            const storedProgress = JSON.parse(localStorage.getItem('lessonProgress')) || [];
+            const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${lang}`)) || [];
             lessonProgress = storedProgress;
-            
-            Promise.all([
-                fetch('lesson_progress.json').then(res => res.json()),
-                fetch('cutscenes.json').then(res => res.json()),
-                fetch('type1_vocabulary.json').then(res => res.json()),
-                fetch('type2_grammar.json').then(res => res.json())
-            ]).then(([progressData, cutsceneData, vocab, grammar]) => {
+
+            // Load pathway structure first
+            fetch(`/courses/${lang}/pathway_structure.json`)
+            .then(response => response.json())
+            .then(pathwayStructure => {
+                // Find the current section
+                const numericCode = parseInt(currentCode);
+                const section = pathwayStructure.find(s => 
+                    s.addressMap.some(range => 
+                        numericCode >= range.rangeStart && 
+                        numericCode <= range.rangeEnd
+                    )
+                );
+                
+                // Set enabled question types
+                if(section?.settings?.enabledQuestionTypes) {
+                    enabledQuestionTypes = section.settings.enabledQuestionTypes;
+                }
+
+                // Load other resources
+                return Promise.all([
+                    fetch(`${basePath}lesson_progress.json`).then(res => res.json()),
+                    fetch(`${basePath}cutscenes.json`).then(res => res.json()),
+                    enabledQuestionTypes.includes('type1') ? 
+                        fetch(`${basePath}type1_vocabulary.json`).then(res => res.json()) : 
+                        Promise.resolve([]),
+                    enabledQuestionTypes.includes('type2') ? 
+                        fetch(`${basePath}type2_grammar.json`).then(res => res.json()) : 
+                        Promise.resolve([]),
+                    enabledQuestionTypes.includes('type3') ? 
+                        fetch(`${basePath}type3_listening.json`).then(res => res.json()) : 
+                        Promise.resolve([]),
+                    enabledQuestionTypes.includes('type4') ? 
+                        fetch(`${basePath}type4_sentence.json`).then(res => res.json()) : 
+                        Promise.resolve([])
+                ]);
+            })
+            .then(([progressData, cutsceneData, vocab, grammar, listening, sentence]) => {
                 // Ensure progressData is array
                 if (!Array.isArray(progressData)) {
                     progressData = [];
                 }
 
                 // Find or create current lesson
-                let currentLesson = storedProgress.find(lp => lp.code === currentCode) || 
-                                  progressData.find(p => p.code === currentCode) || 
-                                  progressData.find(p => p.code === 'default') || {
-                                    code: currentCode,
-                                    title: 'Default Title',
-                                    total: 5,
-                                    current: 1,
-                                    questionsPerLesson: 10,
-                                    practicecirc: false,
-                                    relearnpool: true
-                                  };
+                currentLesson = storedProgress.find(lp => lp.code === currentCode) || 
+                            progressData.find(p => p.code === currentCode) || 
+                            progressData.find(p => p.code === 'default') || {
+                                code: currentCode,
+                                title: 'Default Title',
+                                total: 5,
+                                current: 1,
+                                questionsPerLesson: 10,
+                                practicecirc: false,
+                                relearnpool: true
+                            };
 
                 // Update questionsPerLesson
                 questionsPerLesson = currentLesson.questionsPerLesson || 10;
@@ -284,24 +409,36 @@
                 // Store updated progress
                 if (!storedProgress.some(lp => lp.code === currentCode)) {
                     storedProgress.push(currentLesson);
-                    localStorage.setItem('lessonProgress', JSON.stringify(storedProgress));
+                    localStorage.setItem(`lessonProgress_${lang}`, JSON.stringify(storedProgress));
                 }
 
                 // Filter questions
                 const baseCode = currentCode.split('-')[0];
-                type1Data = vocab.filter(item => 
-                    item.code.startsWith(baseCode) && 
-                    CodeParser.compare(item.code, currentLesson.praclimit || '')
-                );
+                type1Data = enabledQuestionTypes.includes('type1') ? 
+                    vocab.filter(item => 
+                        item.code.startsWith(baseCode) && 
+                        CodeParser.compare(item.code, currentLesson.praclimit || '')
+                    ) : [];
                 
-                type2Data = grammar.filter(item => 
-                    item.code.startsWith(baseCode) && 
-                    CodeParser.compare(item.code, currentLesson.praclimit || '')
-                );
+                type2Data = enabledQuestionTypes.includes('type2') ? 
+                    grammar.filter(item => 
+                        item.code.startsWith(baseCode) && 
+                        CodeParser.compare(item.code, currentLesson.praclimit || '')
+                    ) : [];
 
-                // Load Relearn Pools
-                relearnType1 = JSON.parse(localStorage.getItem('relearnType1')) || [];
-                relearnType2 = JSON.parse(localStorage.getItem('relearnType2')) || [];
+                type3Data = enabledQuestionTypes.includes('type3') ? 
+                    listening.filter(item =>
+                        item.code.startsWith(baseCode) &&
+                        CodeParser.compare(item.code, currentLesson.praclimit || '',
+                        q => q.answers?.text && Array.isArray(q.answers.text))
+                    ) : [];
+
+                type4Data = enabledQuestionTypes.includes('type4') ? 
+                    sentence.filter(item =>
+                        item.code.startsWith(baseCode) &&
+                        CodeParser.compare(item.code, currentLesson.praclimit || '',
+                        q => q.blocks && Array.isArray(q.blocks))
+                    ) : [];
 
                 // Handle cutscenes
                 const currentCutscene = cutsceneData.find(c => c.code === currentCode);
@@ -319,7 +456,8 @@
                     document.getElementById('cutsceneContainer').remove();
                     startLesson();
                 }
-            }).catch(error => {
+            })
+            .catch(error => {
                 console.error("Loading error:", error);
                 showError("Data load failed. Redirecting...");
                 setTimeout(() => window.location.href = 'mainnightly.html', 2000);
@@ -327,10 +465,11 @@
         });
 
             // Debug logging
-            console.log('Initialized with:', {
+            console.log('Initializing with:', {
                 currentCode,
-                lessonProgress,
-                questionsPerLesson
+                basePath,
+                lang,
+                enabledQuestionTypes
             });
 
         function filterQuestionsByCode(pool, currentCode) {
@@ -357,9 +496,10 @@
         // Typewriter effect with click-to-skip
         function typeWriter(container, lines, lineIndex, charIndex = 0) {
             if (lineIndex >= lines.length) {
-                // Auto-advance after 1 second
-                currentCutsceneIndex++;
-                setTimeout(() => showCutscene(currentCutsceneIndex), 1000);
+                container.parentElement.addEventListener('click', () => {
+                    currentCutsceneIndex++;
+                    showCutscene(currentCutsceneIndex);
+                }, { once: true });
                 return;
             }
 
@@ -413,6 +553,7 @@
 
         // Modified generateNextQuestion
         function generateNextQuestion() {
+            window.isAnswered = false;
             disableButtons(true);
             
             try {
@@ -421,32 +562,34 @@
                     return;
                 }
 
-                const currentLesson = lessonProgress.find(lp => lp.code === currentCode);
-                if (!currentLesson) throw new Error('Lesson config not found');
-
                 // Validate pools
                 const validatePool = (pool) => {
                     if (!Array.isArray(pool)) throw new Error('Invalid pool');
-                    return pool.filter(q => q && (q.word || q.blank));
+                    return pool.filter(q => q && (q.word || q.blank || q.audio));
                 };
 
                 let questionPool = [];
-                if (currentLesson.practicecirc) {
-                    questionPool = [
-                        ...validatePool(relearnType1),
-                        ...validatePool(relearnType2)
-                    ];
-                } else if (currentLesson.relearnpool) {
-                    const useRelearn = Math.random() < 0.2;
-                    questionPool = useRelearn ? 
-                        [...validatePool(relearnType1), ...validatePool(relearnType2)] : 
-                        [...validatePool(type1Data), ...validatePool(type2Data)];
-                } else {
-                    questionPool = [
-                        ...validatePool(type1Data),
-                        ...validatePool(type2Data)
-                    ];
-                }
+                    if(currentLesson.practicecirc) {
+                        questionPool = [
+                            ...validatePool(relearnType1),
+                            ...validatePool(relearnType2)
+                        ];
+                    } else {
+                        questionPool = [
+                            ...(enabledQuestionTypes.includes('type1') ? validatePool(type1Data) : []),
+                            ...(enabledQuestionTypes.includes('type2') ? validatePool(type2Data) : []),
+                            ...(enabledQuestionTypes.includes('type3') ? validatePool(type3Data) : []),
+                            ...(enabledQuestionTypes.includes('type4') ? validatePool(type4Data) : [])
+                        ];
+                        
+                        if(currentLesson.relearnpool) {
+                            const relearnPool = [
+                                ...validatePool(relearnType1),
+                                ...validatePool(relearnType2)
+                            ];
+                            questionPool = getQuestionMix(relearnPool, questionPool, 0.2);
+                        }
+                    }
 
                 currentQuestion = getRandomQuestion(questionPool);
                 if (!currentQuestion) throw new Error('No valid questions found');
@@ -460,6 +603,18 @@
                 showError("Question loading failed. Redirecting...");
                 setTimeout(() => window.location.href = 'mainnightly.html', 2000);
             }
+        }
+
+        // New question mixing function
+        function getQuestionMix(relearnPool, mainPool, ratio) {
+            const mixedPool = [];
+            const splitIndex = Math.floor(mainPool.length * (1 - ratio));
+            
+            mainPool.slice(0, splitIndex).forEach(q => mixedPool.push(q));
+            relearnPool.forEach(q => mixedPool.push(q));
+            mainPool.slice(splitIndex).forEach(q => mixedPool.push(q));
+            
+            return mixedPool.sort(() => Math.random() - 0.5);
         }
 
         function updateRelearnPoolWithNewQuestions() {
@@ -476,8 +631,8 @@
                 }
             });
             
-            localStorage.setItem('relearnType1', JSON.stringify(relearnType1));
-            localStorage.setItem('relearnType2', JSON.stringify(relearnType2));
+            localStorage.setItem(`relearnType1_${lang}`, JSON.stringify(relearnType1));
+            localStorage.setItem(`relearnType2_${lang}`, JSON.stringify(relearnType2));
         }
 
         // Get a random question from a pool
@@ -488,30 +643,94 @@
 
         // Display question logic
         function displayQuestion(question) {
-            if (!question) {
-                throw new Error('Invalid question object');
-            }
-            
             const activity = document.getElementById('activity');
-            if (question.word) {
+            activity.innerHTML = ''; // Clear previous content
+
+            try {
+
+            // For questions with audio, add an audio player container
+            if (question.audio) {
+                // Append audio player container if it doesn't exist
+                if (!document.getElementById('audioPlayer')) {
+                    const audioContainer = document.createElement('div');
+                    audioContainer.id = 'audioPlayer';
+                    activity.appendChild(audioContainer);
+                }
+                // Then set up the question content
+                if (question.blocks) {
+                    activity.innerHTML += generateType4Question(question);
+                } else if (question.answers?.text) {
+                    activity.innerHTML += generateType3Question(question);
+                    // Delay dataset update until after DOM render
+                    setTimeout(() => {
+                        const optionsContainer = document.getElementById('type3Options');
+                        if (optionsContainer) {
+                            optionsContainer.dataset.answers = JSON.stringify(question.answers.text);
+                        }
+                    }, 0);
+                }
+                // Initialize audio using the updated base path (see next section)
+                initAudioPlayer(question.audio);
+            } else if (question.word) {
                 activity.innerHTML = generateType1Question(question);
             } else if (question.blank) {
                 activity.innerHTML = generateType2Question(question);
             } else {
                 throw new Error('Invalid question type');
             }
+            }catch (error) {
+                    console.error('Question display error:', error);
+                    if(error.message.includes('Invalid question type')) {
+                        showError("Invalid question type for this course");
+                        setTimeout(() => generateNextQuestion(), 1500);
+                    } else {
+                        throw error;
+                    }
+                }
+        }
+
+        // Audio Player Initialization
+        function initAudioPlayer(audioPath) {
+            const player = document.getElementById('audioPlayer');
+            player.innerHTML = ''; // Clear previous audio player
+            const container = document.createElement('div');
+            container.className = 'audio-player-container';
+            container.innerHTML = `
+                <button onclick="playAudio('${audioPath}')">▶ Play Audio</button>
+                <audio id="questionAudio" src="${basePath}audiofiles/${audioPath}"></audio>
+            `;
+            player.appendChild(container);
+        }
+
+        function playAudio(path) {
+            const audio = new Audio(`${basePath}audiofiles/${path}`);
+            audio.play();
         }
 
         // Generate Type 1 question
         function generateType1Question(question) {
-            const options = [question];
-            // Get 3 random wrong answers from same code pool
-            const wrongAnswers = type1Data
-                .filter(q => q.code === currentCode && q.word !== question.word)
-                .sort(() => Math.random())
-                .slice(0, 3);
+            // Gather candidates from both pools (excluding the correct answer)
+            let candidates = [
+                ...type1Data.filter(q => q.word !== question.word),
+                ...relearnType1.filter(q => q.word !== question.word)
+            ];
             
-            options.push(...wrongAnswers);
+            // Remove duplicates based on the word property
+            let uniqueCandidates = candidates.filter((q, idx, self) =>
+                idx === self.findIndex(t => t.word === q.word)
+            );
+
+            // Randomly decide total number of options (2, 3, or 4)
+            let totalOptions = [2, 3, 4][Math.floor(Math.random() * 3)];
+            // We need at least one wrong option (correct answer will be added later)
+            let numWrong = totalOptions - 1;
+
+            // Shuffle and slice wrong options; if not enough, take as many as available
+            uniqueCandidates.sort(() => Math.random() - 0.5);
+            let wrongOptions = uniqueCandidates.slice(0, numWrong);
+
+            // Combine the correct answer with wrong options and shuffle them
+            let options = [question, ...wrongOptions];
             options.sort(() => Math.random() - 0.5);
 
             return `
@@ -536,22 +755,265 @@
             `;
         }
 
+        // Type 3 Question Generation
+        function generateType3Question(question) {
+            // Determine the correct answer (we assume the first element in the text array is correct)
+            const correctAnswer = question.answers.text[0];
+            
+            // Build a candidate pool for wrong answers from all Type 3 questions with the same code
+            // (Using each question's 'answers.selection' array)
+            let candidatePool = type3Data
+                .filter(q => q.code === question.code && q !== question)
+                .flatMap(q => q.answers.selection);
+            
+            // Remove duplicates and filter out the correct answer
+            candidatePool = candidatePool.filter((a, index, self) =>
+                self.indexOf(a) === index && a !== correctAnswer
+            );
+            
+            // Randomly decide total number of options (2, 3, or 4)
+            const totalOptions = [2, 3, 4][Math.floor(Math.random() * 3)];
+            const numWrong = totalOptions - 1;
+            
+            // Shuffle candidate pool and pick wrong options (if not enough, take as many as available)
+            candidatePool.sort(() => Math.random() - 0.5);
+            const wrongOptions = candidatePool.slice(0, numWrong);
+            
+            // Combine correct answer with wrong options and shuffle final options
+            let options = [correctAnswer, ...wrongOptions];
+            options.sort(() => Math.random() - 0.5);
+            
+            // Build and return the Type 3 question HTML
+            return `
+                <div class="type3-question-container">
+                    <div class="question">Which word did you hear?</div>
+                    <div class="type3-options" id="type3Options">
+                        ${options.map(opt => `
+                            <button onclick="handleType3Answer('${opt.replace(/'/g, "\\'")}', ['${correctAnswer.replace(/'/g, "\\'")}'])">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="type3TextContainer" style="display: none; text-align: center; margin-top: 10px;">
+                        <input type="text" id="type3TextInput" placeholder="Type your answer here" style="width: 300px; padding: 12px; font-size: 1.1rem; text-align: center;">
+                        <button id="type3Submit" onclick="handleType3TextSubmit()" style="padding: 12px 24px;">Submit</button>
+                    </div>
+                    <div class="input-mode" id="type3InputContainer" style="text-align: center; margin-top: 10px;">
+                        <select id="type3InputMode" onchange="updateType3InputMode()">
+                            <option value="selection">Multiple Choice</option>
+                            <option value="text">Type Answer</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Type 4 Question Generation
+        function generateType4Question(question) {
+            // Shuffle blocks before rendering
+            const shuffledBlocks = shuffleArray([...question.blocks]);
+            
+            return `
+                <div class="question">Build the sentence you heard:</div>
+                <div class="input-mode-selector">
+                    <select id="inputMode" onchange="toggleType4InputMode()">
+                        <option value="blocks">Word Blocks</option>
+                        <option value="text">Type Answer</option>
+                    </select>
+                </div>
+                <!-- Blocks Mode -->
+                <div id="blocksMode">
+                    <div class="blocks-tray" id="initialTray">
+                        ${shuffledBlocks.map(block => `
+                            <div class="word-block" onclick="moveBlock(this)">${block}</div>
+                        `).join('')}
+                    </div>
+                    <div class="sentence-builder" id="answerTray"></div>
+                </div>
+                <!-- Text Mode -->
+                <div id="textMode" style="display: none;">
+                    <input type="text" id="type4TextInput" placeholder="Type your answer here">
+                </div>
+                <button onclick="checkType4Answer()">Submit</button>
+            `;
+        }
+
+        function handleType3Answer(selected, validAnswers) {
+            if (window.isAnswered) return;
+            window.isAnswered = true;
+            
+            // Normalize the selected answer and valid answers using wanakana
+            const normalizedSelected = normalizeJapanese(selected);
+            const normalizedAnswers = validAnswers.map(normalizeJapanese);
+            const isCorrect = normalizedAnswers.includes(normalizedSelected);
+            
+            showFeedback(isCorrect ? "Correct!" : "Incorrect!", isCorrect ? "correct" : "incorrect");
+            
+            // Optionally, clear or hide the audio player so it doesn't persist:
+            const audioPlayerContainer = document.getElementById('audioPlayer');
+            if (audioPlayerContainer) {
+                audioPlayerContainer.innerHTML = '';
+            }
+            
+            setTimeout(() => generateNextQuestion(), 1500);
+        }
+
+        function updateType3InputMode() {
+            const mode = document.getElementById('type3InputMode').value;
+            const optionsContainer = document.getElementById('type3Options');
+            const textContainer = document.getElementById('type3TextContainer');
+            
+            if (mode === 'selection') {
+                optionsContainer.style.display = 'flex';
+                textContainer.style.display = 'none';
+            } else {
+                optionsContainer.style.display = 'none';
+                textContainer.style.display = 'block';
+            }
+        }
+
+        function handleType3Answer(selected, validAnswers) {
+            if (window.isAnswered) return;
+            const normalizedSelected = normalizeJapanese(selected);
+            const normalizedAnswers = validAnswers.map(normalizeJapanese);
+            const isCorrect = normalizedAnswers.includes(normalizedSelected);
+            
+            showFeedback(isCorrect ? "Correct!" : "Incorrect!", isCorrect ? "correct" : "incorrect");
+            setTimeout(() => generateNextQuestion(), 1500);
+        }
+
+        function handleType3TextSubmit() {
+            const userAnswer = normalizeJapanese(document.getElementById('type3TextInput').value);
+            const validAnswers = JSON.parse(document.getElementById('type3Options').dataset.answers);
+            const isCorrect = validAnswers.some(a => normalizeJapanese(a) === userAnswer);
+            
+            showFeedback(isCorrect ? "Correct!" : "Incorrect!", isCorrect ? "correct" : "incorrect");
+            setTimeout(() => generateNextQuestion(), 1500);
+        }
+
+        // Japanese Normalization
+        function normalizeJapanese(text) {
+            return wanakana.toHiragana(
+                text.normalize('NFKC')
+                    .replace(/[！？。、・]/g, '')
+                    .toLowerCase()
+            );
+        }
+
+
+
+
+        function toggleType4InputMode() {
+            const mode = document.getElementById('inputMode').value;
+            document.getElementById('blocksMode').style.display = mode === 'blocks' ? 'block' : 'none';
+            document.getElementById('textMode').style.display = mode === 'text' ? 'block' : 'none';
+            
+            if (mode === 'blocks') {
+                resetBlockInterface();
+            }
+        }
+
+        // Shuffle blocks initially
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Click-based block movement
+        function moveBlock(block) {
+            const isInAnswerTray = block.parentElement.id === 'answerTray';
+            const targetTray = isInAnswerTray ? 
+                document.getElementById('initialTray') : 
+                document.getElementById('answerTray');
+
+            // Clone block to preserve original in initial tray
+            if (!isInAnswerTray) {
+                const clone = block.cloneNode(true);
+                clone.onclick = () => moveBlock(clone);
+                targetTray.appendChild(clone);
+            } else {
+                block.remove();
+            }
+        }
+
+        // Initialize blocks with random order
+        function resetBlockInterface() {
+            const initialTray = document.getElementById('initialTray');
+            const blocks = Array.from(initialTray.children);
+            shuffleArray(blocks).forEach(block => initialTray.appendChild(block));
+        }
+
+        // Drag-and-drop handlers (optional fallback)
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.textContent);
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const block = document.createElement('div');
+            block.className = 'word-block';
+            block.textContent = e.dataTransfer.getData('text/plain');
+            block.onclick = () => moveBlock(block);
+            e.target.appendChild(block);
+        }
+
+        // Initialize drag events
+        function initDragAndDrop() {
+        document.querySelectorAll('.word-block').forEach(block => {
+            block.addEventListener('dragstart', handleDragStart);
+        });
+        
+        document.querySelector('.sentence-builder').addEventListener('dragover', handleDragOver);
+        document.querySelector('.sentence-builder').addEventListener('drop', handleDrop);
+        }
+
         // Answer handling
         function selectAnswer(selected, correct) {
+            if (window.isAnswered) return; // Prevent double-submission
+            window.isAnswered = true;
+            
             const isCorrect = selected === correct;
             showFeedback(isCorrect ? "Correct!" : "Incorrect!", isCorrect ? "correct" : "incorrect");
 
-            // Use the currentQuestion directly rather than searching in type1Data
-            const question = currentQuestion;
-            if (question && question.word) {  // Ensure it's a type1 question
+            // Use currentQuestion directly
+            if (currentQuestion && currentQuestion.word) {
                 const targetPool = relearnType1;
-                if (!targetPool.some(q => q.word === question.word)) {
-                    targetPool.push(question);
-                    localStorage.setItem('relearnType1', JSON.stringify(targetPool));
+                if (!targetPool.some(q => q.word === currentQuestion.word)) {
+                    targetPool.push(currentQuestion);
+                    localStorage.setItem(`relearnType1_${lang}`, JSON.stringify(targetPool));
                 }
             }
 
             setTimeout(() => generateNextQuestion(), 1500);
+        }
+
+        function checkType4Answer() {
+            if (window.isAnswered) return;
+            window.isAnswered = true;
+
+            const mode = document.getElementById('inputMode').value;
+            let userAnswer;
+
+            if (mode === 'blocks') {
+                userAnswer = Array.from(document.querySelectorAll('#answerTray .word-block'))
+                                .map(block => block.textContent.trim())
+                                .join(' ');
+            } else {
+                userAnswer = document.getElementById('type4TextInput').value.trim();
+            }
+
+            const normalizedUser = normalizeJapanese(userAnswer);
+            
+            // Ensure correct comparison by removing spaces and normalizing
+            const isValid = currentQuestion.possibleAnswers.some(answer => 
+                normalizeJapanese(answer.replace(/\s+/g, '')) === normalizedUser.replace(/\s+/g, '')
+            );
+
+            showFeedback(isValid ? "Correct!" : "Incorrect!", isValid ? "correct" : "incorrect");
+            setTimeout(generateNextQuestion, 1500);
         }
 
         // Add this Relearn Item structure
@@ -563,27 +1025,26 @@
         };
 
         function checkGrammarAnswer() {
-            const userAnswer = document.getElementById('grammarAnswer').value.trim().toLowerCase();
-            const correct = currentQuestion.blank.toLowerCase();
-            const possible = currentQuestion.possibleAnswers.map(a => a.toLowerCase());
-
-            let feedbackType = "incorrect";
-            let message = `Incorrect! The answer is "${currentQuestion.blank}".`;
-
-            if (userAnswer === correct) {
-                feedbackType = "correct";
-                message = "Correct!";
-                handleCorrectAnswer(currentQuestion);
-            } else if (possible.includes(userAnswer)) {
-                feedbackType = "warning";
-                message = `Close! The correct answer is "${currentQuestion.blank}".`;
-            }
-
-            showFeedback(message, feedbackType);
+            if (window.isAnswered) return;
+            window.isAnswered = true;
             
-            if (feedbackType !== "warning") {
-                setTimeout(() => generateNextQuestion(), 1500);
-            }
+            const userInput = document.getElementById('grammarAnswer').value.trim();
+            const normalizedUser = normalizeJapanese(userInput);
+            
+            // Handle array or string blank values
+            const correctAnswers = Array.isArray(currentQuestion.blank) ? 
+                currentQuestion.blank.map(normalizeJapanese) : 
+                [normalizeJapanese(currentQuestion.blank)];
+            
+            const possibleAnswers = [
+                ...correctAnswers,
+                ...currentQuestion.possibleAnswers.map(normalizeJapanese)
+            ];
+
+            const isCorrect = possibleAnswers.some(a => a === normalizedUser);
+            showFeedback(isCorrect ? "Correct!" : "Incorrect!", isCorrect ? "correct" : "incorrect");
+
+            setTimeout(() => generateNextQuestion(), 1500);
         }
 
         // New answer handling logic
@@ -622,6 +1083,24 @@
             setTimeout(() => feedback.remove(), 1500);
         }
 
+        // Add input mode toggle
+        function createInputModeSelector() {
+            const container = document.createElement('div');
+            container.className = 'input-mode';
+            
+            container.innerHTML = `
+                <label>
+                    Input Mode:
+                </label>
+                <select id="inputMode">
+                    <option value="type">Type Answer</option>
+                    <option value="blocks">Word Blocks</option>
+                </select>
+            `;
+
+            return container;
+        }
+
         // Update progress bar
         function updateProgress() {
             const currentLesson = lessonProgress.find(lp => lp.code === currentCode);
@@ -638,21 +1117,17 @@
 
         // Complete lesson and update progress
         function completeLesson() {
-            const currentLesson = lessonProgress.find(lp => lp.code === currentCode);
-            if (currentLesson) {
-                // Check if we should reset BEFORE incrementing
-                if (currentLesson.current >= currentLesson.total) {
-                    currentLesson.current = 1;
-                } else {
-                    currentLesson.current++;
-                }
+            // Retrieve lesson progress from localStorage
+            const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${lang}`)) || [];
+            const currentLesson = storedProgress.find(lp => lp.code === currentCode);
 
-                // Alternative approach using modulo:
-                // currentLesson.current = (currentLesson.current % currentLesson.total) + 1;
-                
-                localStorage.setItem('lessonProgress', JSON.stringify(lessonProgress));
+            if (currentLesson) {
+                // Increase lesson count and save progress
+                currentLesson.current = Math.min(currentLesson.current + 1, currentLesson.total);
+                localStorage.setItem(`lessonProgress_${lang}`, JSON.stringify(storedProgress));
             }
 
+            // Fade out and redirect back to main page
             document.body.classList.add('fade-out');
             setTimeout(() => window.location.href = 'mainnightly.html', 500);
         }

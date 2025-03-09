@@ -28,12 +28,14 @@
             background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
 
         .center-section {
             width: 60%;
+            height: 100vh;
+            overflow-y: auto;
             background-color: #e4e4e4;
-            text-align: center;
         }
 
         .right-section {
@@ -42,10 +44,30 @@
             position: relative;
         }
 
-        .pathway-circle {
+        .pathway-header {
             display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-container {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            background-color: #8B0000;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .circle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 15px;
+            padding: 10px;
         }
 
         .lesson {
@@ -56,9 +78,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 10px;
             cursor: pointer;
             position: relative;
+            transition: transform 0.2s;
+        }
+
+        .lesson:hover {
+            transform: scale(1.1);
+        }
+
+        .global-dropdown-container {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+
+        .circle-dropdown {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            pointer-events: auto;
+            transition: opacity 0.2s, transform 0.2s;
         }
 
         .circle-dropdown {
@@ -68,19 +112,23 @@
             padding: 1rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             min-width: 200px;
+            pointer-events: auto;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .dropdown-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+
+        .lesson:hover {
             z-index: 100;
-        }
-
-        .circle-dropdown.top {
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .circle-dropdown.bottom {
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         .progress-container {
@@ -97,23 +145,47 @@
             transition: width 0.3s ease;
         }
 
-        .fade-in {
-        animation: fadeIn 0.5s ease-in-out;
-    }
+        .course-selector {
+            position: relative;
+            cursor: pointer;
+        }
 
-    .fade-out {
-        animation: fadeOut 0.5s ease-in-out;
-    }
+        .current-course {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: background-color 0.2s;
+        }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+        .current-course:hover {
+            background-color: #f0f0f0;
+        }
 
-    @keyframes fadeOut {
-        from { opacity: 1; transform: translateY(0); }
-        to { opacity: 0; transform: translateY(-20px); }
-    }
+        .courses-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 180px;
+            z-index: 100;
+            display: none;
+        }
+
+        .courses-dropdown div {
+            padding: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .courses-dropdown div:hover {
+            background-color: #f8f8f8;
+        }
+
+        .add-course {
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -138,21 +210,21 @@
     </div>
 
     <div class="center-section">
-        <h2>Pathway</h2>
-        <div class="pathway-circle" id="pathway-circle"></div>
-    </div>
-
-    <div class="right-section">
-        <div class="flag-container" id="flag-container">
-            <div class="flag-mask">
-                <div class="flag" id="flag">🇪🇸</div>
-                <div class="courses-dropdown" id="courses-dropdown">
-                    <div data-lang="es">Spanish</div>
-                    <div data-lang="jp">Japanese</div>
-                    <div class="add-course">+ Add a New Course</div>
+        <div class="pathway-header">
+            <h2>Pathway</h2>
+            <div class="course-selector">
+                <div class="current-course" id="currentCourse">Spanish</div>
+                <div class="courses-dropdown" id="coursesDropdown">
+                    <div data-lang="ES-en">🇪🇸 Spanish</div>
+                    <div data-lang="JP-en">🇯🇵 Japanese</div>
+                    <div class="add-course">+ Add New Course</div>
                 </div>
             </div>
         </div>
+        <div id="pathway-circle"></div>
+    </div>
+
+    <div class="right-section">
         <div class="mascot"></div>
         <div class="daily-quests">
             <div class="daily-quest">Daily Quest 1</div>
@@ -161,81 +233,173 @@
         </div>
     </div>
 
+    <div id="global-dropdown-container" class="global-dropdown-container"></div>
+
     <script>
-        // Circle creation and dropdown handling
-        function updatePathway(lang) {
+        let currentLang = localStorage.getItem('selectedLang') || 'ES-en';
+        let currentDropdown = null;
+        let hoverTimeout = null;
+    
+        // Course selector functionality
+        document.getElementById('currentCourse').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('coursesDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+    
+        document.querySelectorAll('#coursesDropdown div').forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.classList.contains('add-course')) {
+                    // Handle add course logic
+                    return;
+                }
+                
+                currentLang = this.dataset.lang;
+                localStorage.setItem('selectedLang', currentLang);
+                document.getElementById('currentCourse').textContent = this.textContent;
+                document.getElementById('coursesDropdown').style.display = 'none';
+                updatePathway(currentLang);
+            });
+        });
+    
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.course-selector')) {
+                document.getElementById('coursesDropdown').style.display = 'none';
+            }
+        });
+    
+        async function updatePathway(lang) {
+            const pathwayStructure = await fetch(`courses/${lang}/pathway_structure.json`)
+                .then(r => r.json())
+                .catch(() => []);
+            
             const pathwayCircle = document.getElementById('pathway-circle');
             pathwayCircle.innerHTML = '';
-            const numCircles = 3; // Example for 3 circles
-
-            for (let i = 1; i <= numCircles; i++) {
-                const circle = document.createElement('div');
-                circle.className = 'lesson';
-                circle.textContent = i;
-                circle.dataset.code = `100${i}`;
-
-                // Hover events
-                circle.addEventListener('mouseenter', () => {
-                    createCircleDropdown(circle);
+    
+            pathwayStructure.forEach(section => {
+                const sectionContainer = document.createElement('div');
+                sectionContainer.className = 'section-container';
+                
+                // Section Header
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                header.innerHTML = `
+                    <div>${section.title}</div>
+                    <small>Circles ${section.addressMap[0].rangeStart} - ${section.addressMap.slice(-1)[0].rangeEnd}</small>
+                `;
+                
+                // Circle Grid
+                const grid = document.createElement('div');
+                grid.className = 'circle-grid';
+                
+                section.addressMap.forEach(range => {
+                    for (let code = range.rangeStart; code <= range.rangeEnd; code++) {
+                        const circle = document.createElement('div');
+                        circle.className = 'lesson';
+                        circle.textContent = code.toString().slice(-2);
+                        circle.dataset.code = code;
+                        circle.dataset.basePath = range.path;
+    
+                        // Add event listeners
+                        addCircleEventListeners(circle);
+    
+                        circle.addEventListener('click', () => {
+                            window.location.href = `question.html?code=${code}&basePath=${encodeURIComponent(range.path)}`;
+                        });
+    
+                        grid.appendChild(circle);
+                    }
                 });
-
-                circle.addEventListener('mouseleave', () => {
-                    const dropdown = circle.querySelector('.circle-dropdown');
-                    if (dropdown) dropdown.remove();
-                });
-
-                // Click handler
-                circle.addEventListener('click', () => {
-                    window.location.href = `question.html?code=100${i}`;
-                });
-
-                pathwayCircle.appendChild(circle);
-            }
+    
+                sectionContainer.appendChild(header);
+                sectionContainer.appendChild(grid);
+                pathwayCircle.appendChild(sectionContainer);
+            });
         }
-
-        // Fetch lesson progress and create dropdown:
-        async function createCircleDropdown(circleElement) {
-            const dropdown = document.createElement('div');
-            dropdown.className = 'circle-dropdown';
+    
+        function addCircleEventListeners(circle) {
+            let hoverTimer;
+    
+            circle.addEventListener('mouseenter', () => {
+                hoverTimer = setTimeout(() => handleCircleHover(circle), 300);
+            });
+    
+            circle.addEventListener('mouseleave', () => {
+                clearTimeout(hoverTimer);
+                hideDropdown();
+            });
+    
+            circle.addEventListener('click', (e) => {
+                clearTimeout(hoverTimer);
+                if (currentDropdown) {
+                    currentDropdown.remove();
+                    currentDropdown = null;
+                }
+            });
+        }
+    
+        async function handleCircleHover(circleElement) {
+            // Get language-specific progress from localStorage
+            const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${currentLang}`)) || [];
             
+            if (currentDropdown) {
+                currentDropdown.classList.remove('dropdown-visible');
+                currentDropdown.classList.add('dropdown-hidden');
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'circle-dropdown dropdown-hidden';
+
+            const rect = circleElement.getBoundingClientRect();
+            dropdown.style.left = `${rect.left + rect.width / 2}px`;
+            dropdown.style.top = `${rect.bottom + 10}px`;
+            dropdown.style.transform = `translateX(-50%)`;
+
+            const container = document.getElementById('global-dropdown-container');
+            container.appendChild(dropdown);
+
             try {
-                // Fetch progress data
-                const progressResponse = await fetch('lesson_progress.json');
-                const progressData = await progressResponse.json();
+                const basePath = circleElement.dataset.basePath;
+                // Access lesson_progress.json from the course-specific directory
+                const progressData = await fetch(`${basePath}lesson_progress.json`).then(r => r.json());
                 
-                // Get stored progress
-                const storedProgress = JSON.parse(localStorage.getItem('lessonProgress')) || [];
-                
-                const code = circleElement.dataset.code;
-                const defaultProgress = progressData.find(p => p.code === 'default') || {
-                    current: 1,
-                    total: 5,
-                    title: 'Default Title'
-                };
-                
-                const progress = storedProgress.find(p => p.code === code) || 
-                                progressData.find(p => p.code === code) || 
-                                defaultProgress;
+                // Combine stored progress with course default data
+                const lessonData = storedProgress.find(p => p.code === circleElement.dataset.code) || 
+                                progressData.find(p => p.code === circleElement.dataset.code) || 
+                                { current: 1, total: 5, title: "Default Title" };
 
                 dropdown.innerHTML = `
-                    <div class="dropdown-header">${progress.title}</div>
+                    <div class="dropdown-header">${lessonData.title}</div>
                     <div class="progress-container">
-                        <div class="progress-bar" 
-                            style="width: ${(progress.current / progress.total) * 100}%">
-                        </div>
+                        <div class="progress-bar" style="width: ${(lessonData.current / lessonData.total) * 100}%"></div>
                     </div>
-                    <div class="lesson-count">Lesson ${progress.current}/${progress.total}</div>
+                    <div class="lesson-count">Lesson ${lessonData.current}/${lessonData.total}</div>
                 `;
-            } catch (error) {
-                console.error('Progress load error:', error);
-                dropdown.innerHTML = `<div class="error">Progress unavailable</div>`;
-            }
-            
-            circleElement.appendChild(dropdown);
-        }
 
+                dropdown.classList.remove('dropdown-hidden');
+                dropdown.classList.add('dropdown-visible');
+                currentDropdown = dropdown;
+
+                dropdown.addEventListener('mouseenter', () => clearTimeout(hoverTimeout));
+                dropdown.addEventListener('mouseleave', () => hideDropdown());
+            } catch (error) {
+                console.error('Dropdown error:', error);
+            }
+        }
+    
+        function hideDropdown() {
+            hoverTimeout = setTimeout(() => {
+                if (currentDropdown) {
+                    currentDropdown.classList.remove('dropdown-visible');
+                    currentDropdown.classList.add('dropdown-hidden');
+                    currentDropdown = null;
+                }
+            }, 200);
+        }
+    
         // Initialize pathway
-        updatePathway('es');
+        updatePathway(currentLang);
     </script>
 </body>
 </html>
