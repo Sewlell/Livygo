@@ -4,6 +4,15 @@
 
 Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its open arms to those who want to volunteer at multiple areas. ( Course Creation, Voice Recording, etc ). This is nothing much really when you devote yourself in using [Anki](https://apps.ankiweb.net/).
 
+# Development Log : March 1 2025
+
+1. Add a Typo/Spelling Yellow Feedback on Question Page when user mistype or misspell something.
+2. Ungodly amount of time fixing how Practice Circle and Focursed Circle interacts with the concept of Relearn Pool and New Words Pool. Thank God it's finally able to enter back to Question Page like before and Relearn Pool actually do something.
+3. Fixed different information fetch and gap between `mainnightly.html` and `question.html`.
+4. Fix Progress Bar on Circle's Dropdown and Question Page.
+5. Toggleables `praclimit` `pracrepetition` added, it's pretty quirky at the moment as I suspected the issue came from the interaction between `codePaser.js` and `question.html`.
+6. Redirection back to Main Page if there is no longer any questions to show, this is because of currently lacks of (toggleable) Dynamic `questionsPerLesson` and available questions.
+
 # Development Log : February 21 2025
 
 1. Adding on Question Page's Cutscenes customizability to allow user to create their own cutscene for their own Course. It's pretty broken, tried to fix it up couple days later included the situation where Questions don't appear at all.
