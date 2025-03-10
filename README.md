@@ -2,24 +2,39 @@
 
 # Livygo Project started!
 
-Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its open arms to those who want to volunteer at multiple areas. ( Course Creation, Voice Recording, etc ). This is nothing much really when you devote yourself in using [Anki](https://apps.ankiweb.net/).
+Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its gate wide open to those who want to create their own courses ( Community Courses ) or improve the codebase. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/).
 
-# Development Log : March 1 2025
+# Development Log : March 10 2025
 
-1. Add a Typo/Spelling Yellow Feedback on Question Page when user mistype or misspell something.
-2. Ungodly amount of time fixing how Practice Circle and Focursed Circle interacts with the concept of Relearn Pool and New Words Pool. Thank God it's finally able to enter back to Question Page like before and Relearn Pool actually do something.
-3. Fixed different information fetch and gap between `mainnightly.html` and `question.html`.
-4. Fix Progress Bar on Circle's Dropdown and Question Page.
-5. Toggleables `praclimit` `pracrepetition` added, it's pretty quirky at the moment as I suspected the issue came from the interaction between `codePaser.js` and `question.html`.
-6. Redirection back to Main Page if there is no longer any questions to show, this is because of currently lacks of (toggleable) Dynamic `questionsPerLesson` and available questions.
+This is a very huge update this time. As I able to make a breakthrough in addition of features. Due to how big this update is, I will only cover major feature update here.
 
-# Development Log : February 21 2025
+1. Add Type 3 and Type 4 questions, Type 3 is listening words questions and Type 4 is listening sentence questions. Both types can be answer either by Selection/Word Blocks or Type Answers input.
+2. Add JP-en course. Of course it's just a small course for now.
+3. Optimize how Relearn Pools works in Focused Circle or Practice Circle.
+4. Add the file `pathway_structure.json`. This file allows user to split Circles into sections and putting all those Question Type files in respective sections. This will allow easier management on creating files compared to former bracket.
+5. Due to updates above, the folder hierachy is also changed with the addition of `courses` folder. All Question Type and `lesson_progress.json` are moved to the `courses/[lang]/...` folder.
+6. Types now can be *optional* with the `enabledQuestionTypes` at `pathway_structure.json`. That mean for future courses like ASL and Chemistry Principles, Type 3 and Type 4 can be opt out completely while using other types.
 
-1. Adding on Question Page's Cutscenes customizability to allow user to create their own cutscene for their own Course. It's pretty broken, tried to fix it up couple days later included the situation where Questions don't appear at all.
-2. Change the font to Poppins using Google Font API.
-3. Flag Button is freaking broken.
-4. Fix the disappearance of Circle's Dropdown.
-5. Where's the space for Livy? Although I still haven't learn After Effects to animate Livy *yet*.
+There are still flaws within this update. For example in Type 3 Questions, you can click numerous answer and jump several questions. I also forgot to set the textbox at Type 3 and Type 4 `autocomplete="off"` before pushing, which caused the textbox to have answer you typed before. I want to make a reversed version of Type 1 ( with a Toggleables or somewhat ) where you got hinted with a foreign words and choose correct translation. Well in overall, I kinda happy with how it have turned out.
+
+Here's the demo video to demonstrate this update.
+
+
+https://github.com/user-attachments/assets/84fabad4-d8a5-4c9e-a515-3420df7950bf
+
+
+
+Former changelog have been archived in Pastebin. [Take a look](https://pastebin.com/XfFGw8cw) if you are interested in development progress.
+
+## Running Locally
+
+`git clone` this repository, and make sure you have Python 3 in order to run this web. In Command Prompt, type the following command.
+
+```
+python -m http.server 7500
+```
+
+After that, go to your web browser and enter `http://localhost:7500/mainnightly.html`.
 
 ## Todo Lists and Features (Planned)
 
@@ -33,6 +48,8 @@ Livygo is an application to let you customize... literally everything while keep
     - [ ] GRAMMAR 
   - [ ]  English (CN)
   - [ ]  Malay (CN)
+  - [ ]  American Sign Language
+  - [ ]  Chemistry Principles (NON-LANGUAGE)
 
 - [ ] Finish UI Decorations
 - [ ] Write a more completed Guidebooks
@@ -49,12 +66,13 @@ Livygo is an application to let you customize... literally everything while keep
 - [DeepSeek R1](https://www.deepseek.com/) by DeepSeek
 - [GPT o3-mini and 4o](https://chatgpt.com/) by OpenAI (Served as Alternative for DeepSeek)
 - [GPT SoVITS](https://github.com/RVC-Boss/GPT-SoVITS) by RVC-Boss
+- [RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) by RVC Project Team
 
 ## Disclaimer 
 
-Yes I know. Some people hate AI tools with a passion especially when they are using a language-teaching application. The concerns like mispronunciation and low quality teaching content are legitimate and I am NOT going to deny that. Despite massive usage of AI in this project, I open my doors to those who want to help this project voluntarily or pull requests. And also, I did not ask for your opinions on using AI instead of real programmer and your argument of "AI replacing human's jobs". Sure I should have code myself or another person to do code, and sure it could probably replace some jobs. But this only limited to repetitive jobs and even then it still need human supervision.
+Yes I know. Some people hate AI tools with a passion especially when they are using a language-teaching application. The concerns like mispronunciation and low quality teaching content are legitimate and I am NOT going to deny that. Despite massive usage of AI in this project, I open my doors to those who want to help this project voluntarily or pull requests. And also, I did not ask for your opinions on using AI instead of real programmer and your argument of "AI replacing human's jobs".
 
-This topic have been discussed for who-knows-how-many times, and if you just don't like how grey is Deepseek or AI in general, just don't use this and move on to better alternative like Lingodeer or Anki.
+This topic have been discussed for who-knows-how-many times, and if you just don't like how grey is Deepseek or AI in general, just don't use this and move on to better alternatives.
 
 ## License
 
