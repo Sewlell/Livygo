@@ -4,6 +4,26 @@
 
 Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its gate wide open to those who want to create their own courses ( Community Courses ) or improve the codebase. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/).
 
+# Development Log : March 12 2025
+
+Kinda rush update for this one. Anyway here's the list of feature updates.
+
+1. Changing Circle and Lesson `code` from 4-number (1001,2345,1203-3) to 3-3 combination (0001001,002345,001203-3). This will allows you guy to expand even more Sections for lessons.
+2. Introducing Guidebooks system where you can write your own guide on specific Circle or around the range of Circles using `guide_structure.json`
+   - To differentiate each individual Guidebooks or Guidebooks Categories, I introduce `guidcode` that work similar to normal `code` except no naming limitations, just syntax.
+   - Guidebooks text content use Markdown textfile with most basic syntax supported (Headings, Blockquotes, Code).
+3. Subcourses are now working properly. Basically in this update you will see Spanish (ES-en) split into two parts, General and Vocabulary.
+   - I mean, technically it is just a many-in-one solution for those who like to categorise stuff.
+   - As for current it is limited to 3 Subcourses, General, Vocabulary and Grammar. The title and UI are still fixed, I will add a function where it could dynamically reacts to user's title and number of Subcourses.
+5. Main Page UI Touchup. I got :skull: when I'm working with transition animation on that slide-in slide-out Guidebooks Page and Back Navigation.
+6. Useless functions removed for `mainnightly.html`. Still, there are 1000 lines worth of code in 1 file compared to March 10 thank to that Guidebooks system.
+
+Demonstration Video
+
+
+https://github.com/user-attachments/assets/95e2d2ab-074d-4bc5-8bfa-874a84cb56eb
+
+
 # Development Log : March 10 2025
 
 This is a very huge update this time. As I able to make a breakthrough in addition of features. Due to how big this update is, I will only cover major feature update here.
