@@ -1,6 +1,6 @@
 [
     {
-        "code": "1001",
+        "code": "001001",
         "audio": "sentence/good_morning.wav",
         "sentence": "おはようございます",
         "blocks": ["おはよう", "ございます"],
@@ -12,7 +12,7 @@
         ]
     },
     {
-        "code": "1001",
+        "code": "001001",
         "audio": "sentence/my_name_is_taro.wav",
         "sentence": "私の名前は太郎です",
         "blocks": ["私の", "名前は", "太郎", "です"],
@@ -24,7 +24,7 @@
         ]
     },
     {
-        "code": "1001",
+        "code": "001001",
         "audio": "sentence/where_are_you_from.wav",
         "sentence": "あなたはどこから来ましたか",
         "blocks": ["あなたは", "どこから", "来ましたか"],

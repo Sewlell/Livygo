@@ -244,6 +244,15 @@
             border: 2px dashed #ccc;
         }
 
+        .blocks-tray, .sentence-builder {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 1rem;
+        }
+
         .answer-area {
             min-height: 60px;
             border: 2px dashed #ccc;
@@ -322,9 +331,14 @@
     <script>
         // Configuration
         const urlParams = new URLSearchParams(window.location.search);
-        const currentCode = urlParams.get('code') || '1001';
-        const basePath = urlParams.get('basePath') || '/courses/JP-en/default/';
-        const lang = localStorage.getItem('selectedLang') || 'JP-en';
+        const currentCode = urlParams.get('code') || '001001';
+        const basePath = urlParams.get('basePath') || '/courses/ES-en/General/001/';
+        const lang = urlParams.get('lang') || 'ES-en';
+        const subcourse = urlParams.get('subcourse') || 'General';
+
+        // New path construction
+        const sectionCode = currentCode.substring(0, 3);
+        const dynamicBasePath = `/courses/${lang}/${subcourse}/${sectionCode}/`;
         
         let questionsPerLesson = 5;
         let questionsCompleted = 0;
@@ -349,7 +363,7 @@
             lessonProgress = storedProgress;
 
             // Load pathway structure first
-            fetch(`/courses/${lang}/pathway_structure.json`)
+            fetch(`/courses/${lang}/${subcourse}/pathway_structure.json`)
             .then(response => response.json())
             .then(pathwayStructure => {
                 // Find the current section
@@ -368,19 +382,19 @@
 
                 // Load other resources
                 return Promise.all([
-                    fetch(`${basePath}lesson_progress.json`).then(res => res.json()),
-                    fetch(`${basePath}cutscenes.json`).then(res => res.json()),
+                    fetch(`${dynamicBasePath}lesson_progress.json`).then(res => res.json()),
+                    fetch(`${dynamicBasePath}cutscenes.json`).then(res => res.json()),
                     enabledQuestionTypes.includes('type1') ? 
-                        fetch(`${basePath}type1_vocabulary.json`).then(res => res.json()) : 
+                        fetch(`${dynamicBasePath}type1_vocabulary.json`).then(res => res.json()) : 
                         Promise.resolve([]),
                     enabledQuestionTypes.includes('type2') ? 
-                        fetch(`${basePath}type2_grammar.json`).then(res => res.json()) : 
+                        fetch(`${dynamicBasePath}type2_grammar.json`).then(res => res.json()) : 
                         Promise.resolve([]),
                     enabledQuestionTypes.includes('type3') ? 
-                        fetch(`${basePath}type3_listening.json`).then(res => res.json()) : 
+                        fetch(`${dynamicBasePath}type3_listening.json`).then(res => res.json()) : 
                         Promise.resolve([]),
                     enabledQuestionTypes.includes('type4') ? 
-                        fetch(`${basePath}type4_sentence.json`).then(res => res.json()) : 
+                        fetch(`${dynamicBasePath}type4_sentence.json`).then(res => res.json()) : 
                         Promise.resolve([])
                 ]);
             })
@@ -469,7 +483,7 @@
                 currentCode,
                 basePath,
                 lang,
-                enabledQuestionTypes
+                enabledQuestionTypes,
             });
 
         function filterQuestionsByCode(pool, currentCode) {
@@ -691,19 +705,17 @@
 
         // Audio Player Initialization
         function initAudioPlayer(audioPath) {
-            const player = document.getElementById('audioPlayer');
-            player.innerHTML = ''; // Clear previous audio player
             const container = document.createElement('div');
             container.className = 'audio-player-container';
             container.innerHTML = `
                 <button onclick="playAudio('${audioPath}')">▶ Play Audio</button>
-                <audio id="questionAudio" src="${basePath}audiofiles/${audioPath}"></audio>
+                <audio src="${dynamicBasePath}audiofiles/${audioPath}"></audio>
             `;
-            player.appendChild(container);
+            document.getElementById('activity').appendChild(container);
         }
 
         function playAudio(path) {
-            const audio = new Audio(`${basePath}audiofiles/${path}`);
+            const audio = new Audio(`${dynamicBasePath}audiofiles/${path}`);
             audio.play();
         }
 
@@ -795,7 +807,7 @@
                         `).join('')}
                     </div>
                     <div id="type3TextContainer" style="display: none; text-align: center; margin-top: 10px;">
-                        <input type="text" id="type3TextInput" placeholder="Type your answer here" style="width: 300px; padding: 12px; font-size: 1.1rem; text-align: center;">
+                        <input type="text" id="type3TextInput" placeholder="Type your answer here" style="width: 300px; padding: 12px; font-size: 1.1rem; text-align: center;" autocomplete="off">
                         <button id="type3Submit" onclick="handleType3TextSubmit()" style="padding: 12px 24px;">Submit</button>
                     </div>
                     <div class="input-mode" id="type3InputContainer" style="text-align: center; margin-top: 10px;">
@@ -832,7 +844,7 @@
                 </div>
                 <!-- Text Mode -->
                 <div id="textMode" style="display: none;">
-                    <input type="text" id="type4TextInput" placeholder="Type your answer here">
+                    <input type="text" id="type4TextInput" placeholder="Type your answer here" autocomplete="off">
                 </div>
                 <button onclick="checkType4Answer()">Submit</button>
             `;
@@ -841,6 +853,7 @@
         function handleType3Answer(selected, validAnswers) {
             if (window.isAnswered) return;
             window.isAnswered = true;
+            disableButtons(true);
             
             // Normalize the selected answer and valid answers using wanakana
             const normalizedSelected = normalizeJapanese(selected);
@@ -874,6 +887,9 @@
 
         function handleType3Answer(selected, validAnswers) {
             if (window.isAnswered) return;
+            window.isAnswered = true;
+            disableButtons(true);
+            
             const normalizedSelected = normalizeJapanese(selected);
             const normalizedAnswers = validAnswers.map(normalizeJapanese);
             const isCorrect = normalizedAnswers.includes(normalizedSelected);
@@ -883,6 +899,9 @@
         }
 
         function handleType3TextSubmit() {
+            if (window.isAnswered) return;
+            window.isAnswered = true;
+            disableButtons(true);
             const userAnswer = normalizeJapanese(document.getElementById('type3TextInput').value);
             const validAnswers = JSON.parse(document.getElementById('type3Options').dataset.answers);
             const isCorrect = validAnswers.some(a => normalizeJapanese(a) === userAnswer);

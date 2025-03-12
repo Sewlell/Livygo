@@ -1,0 +1,9 @@
+{
+    "sub_courses": [
+        {
+            "id": "general",
+            "title": "General",
+            "icon": "🌐"
+        }
+    ]
+}

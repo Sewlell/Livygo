@@ -9,7 +9,7 @@
         "relearnpool": true
     },
     {
-        "code": "1001",
+        "code": "001001",
         "title": "Basic Focused Circle",
         "total": 5,
         "current": 1,
@@ -20,7 +20,7 @@
         "praclimit": ""
     },
     {
-        "code": "1002",
+        "code": "001002",
         "title": "Basic Focused Another",
         "total": 5,
         "current": 1,
@@ -30,7 +30,7 @@
         "questionRatio": [40, 20, 20, 20]
     },
     {
-        "code": "1003",
+        "code": "001003",
         "title": "Practice Practice",
         "total": 5,
         "current": 1,

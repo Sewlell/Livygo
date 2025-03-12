@@ -1,0 +1,39 @@
+[
+    {
+      "code": "001",
+        "title": "Foundations Fundamentos",
+        "numCircles": 54,
+        "defaultAddress": "/courses/ES-en/General/001/",
+        "addressMap": [
+            {
+                "rangeStart": "001001",
+                "rangeEnd": "001049",
+                "path": "/courses/ES-en/General/001/"
+            },
+            {
+                "rangeStart": "001050",
+                "rangeEnd": "001054",
+                "path": "/courses/ES-en/General/001/001050/"
+            }
+      ],
+      "settings": {
+        "practicecirc": false,
+        "relearnpool": true,
+        "newQuestionRatio": 0.8,
+        "enabledQuestionTypes": ["type1", "type2"]
+      }
+    },
+    {
+      "code": "002",
+      "title": "Intermediate",
+      "numCircles": 120,
+      "defaultAddress": "/courses/ES-en/General/002000/",
+      "addressMap": [
+        {
+          "rangeStart": "002001",
+          "rangeEnd": "002100",
+          "path": "/courses/ES-en/General/002000/"
+        }
+      ]
+    }
+  ]

@@ -1,0 +1,19 @@
+{
+    "sub_courses": [
+        {
+            "id": "general",
+            "title": "General",
+            "icon": "🌐"
+        },
+        {
+            "id": "vocabulary",
+            "title": "Vocabulary",
+            "icon": "📖"
+        },
+        {
+            "id": "grammar",
+            "title": "Grammar",
+            "icon": "🔠"
+        }
+    ]
+}

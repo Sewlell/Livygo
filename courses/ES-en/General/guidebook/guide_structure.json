@@ -1,0 +1,35 @@
+{
+    "categories": [
+        {
+            "guidcode": "CAT-GRAMMAR-001",
+            "title": "Grammar Fundamentals",
+            "chapters": ["GB-001001", "GB-001002"],
+            "relatedCircles": ["001001", "001002"],
+            "icon": "📚"
+        },
+        {
+            "guidcode": "CAT-VOCAB-001",
+            "title": "Basic Vocabulary",
+            "chapters": ["GB-001003"],
+            "relatedCircles": ["001003"],
+            "icon": "📖"
+        }
+    ],
+    "guidebooks": [
+        {
+            "guidcode": "GB-001001",
+            "title": "Sentence Structure",
+            "parentCategory": "CAT-GRAMMAR-001"
+        },
+        {
+            "guidcode": "GB-001002",
+            "title": "Verb Conjugation",
+            "parentCategory": "CAT-GRAMMAR-001"
+        },
+        {
+            "guidcode": "GB-001003",
+            "title": "Daily Phrases",
+            "parentCategory": "CAT-VOCAB-001"
+        }
+    ]
+}

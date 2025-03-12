@@ -1,27 +1,27 @@
 [
   {
-    "code": "1001",
+    "code": "001001",
     "sentence": "Yo ____ café.",
     "translation": "I drink coffee.",
     "blank": "bebo",
     "possibleAnswers": ["bebo", "bebes", "bebe"]
   },
   {
-    "code": "1001",
+    "code": "001001",
     "sentence": "Llevo un ____.",
     "translation": "I carry a book.",
     "blank": "libro",
     "possibleAnswers": ["libo"]
   },
   {
-    "code": "1002",
+    "code": "001002",
     "sentence": "Él ____ un libro.",
     "translation": "He reads a book.",
     "blank": "lee",
     "possibleAnswers": ["lee", "lees", "leemos"]
   },
   {
-    "code": "1002",
+    "code": "001002",
     "sentence": "Nosotros ____ español.",
     "translation": "We speak Spanish.",
     "blank": "hablamos",

@@ -1,21 +1,21 @@
 [
   {
-    "code": "1001", 
+    "code": "001001", 
     "word": "お祭り　おまつり",
     "translation": "festival"
   },
   {
-    "code": "1001",
+    "code": "001001",
     "word": "運動会　うんどうかい",
     "translation": "sports day"
   },
   {
-    "code": "1001",
+    "code": "001001",
     "word": "大学院生　だいがくいんせい",
     "translation": "graduate student"
   },
   {
-    "code": "1001",
+    "code": "001001",
     "word": "探る　さぐる",
     "translation": [ 
     "to feel around for, to fumble for,",
@@ -24,12 +24,12 @@
     ]
   },
   {
-    "code": "1001",
+    "code": "001001",
     "word": "貴族　きぞく",
     "translation": "noble"
   },
   {
-    "code": "1001",
+    "code": "001001",
     "word": "保護　ほご",
     "translation": "care, protection, shelter"
   },

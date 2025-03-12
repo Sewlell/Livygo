@@ -1,0 +1,24 @@
+{
+    "categories": [
+        {
+            "guidcode": "GRAMMAR-001",
+            "title": "Grammar Guides",
+            "chapters": ["GB-001001", "GB-001002"],
+            "icon": "grammar.svg"
+        }
+    ],
+    "guidebooks": [
+        {
+            "guidcode": "GB-001001",
+            "title": "Basic Sentence Structure",
+            "relatedCircles": ["001001", "001002"],
+            "difficulty": "Beginner"
+        },
+        { 
+            "guidcode": "GB-001002",
+            "title": "Advanced Grammar", 
+            "relatedCircles": ["001003"],
+            "difficulty": "Intermediate"
+        }
+    ]
+}

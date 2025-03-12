@@ -1,0 +1,13 @@
+{
+    "formatVersion": 2,
+    "sections": [
+        {
+            "type": "text",
+            "content": "introduction.md"
+        },
+        {
+            "type": "media",
+            "content": "sentence-structure.jpg"
+        }
+    ]
+}
