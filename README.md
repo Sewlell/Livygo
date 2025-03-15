@@ -1,8 +1,34 @@
 ![LivygoLogo2](https://github.com/user-attachments/assets/41ab90ca-ad91-43f6-968c-accd3fef7047)
 
-# Livygo Project started!
+# Livygo Project
 
 Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its gate wide open to those who want to create their own courses ( Community Courses ) or improve the codebase. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/).
+
+# Development Log : March 15 2025
+
+##  The repository license have now changed from `CC-BY-NC-SA 4.0` to `GPL v3.0` to better approaching open source community. This also means now you can use this code for commercial purpose prior credited.
+
+This is a much smaller update as I have difficulty figuring up new Question Type. In spite of that, it have arrive and working OK now.
+
+1. License Change as mentioned above.
+2. Introducing Question Type 6, Type 6c to be precise for Japanese Kanji ( it will rename to 6a once I merge it with Hanzi and Hanja ). This is a character-stroke recognition question that only appear in Handwrite Circle (`handwritecirc` in `lesson_progress.json`). Basically what you do is write on a canvas and the code will check whether it is in correct order or not.
+   - The process of develop this have throw me out. I originally want to utilize [KanjiVG](https://github.com/KanjiVG/kanjivg) to do some kind of SVG-stroke check, however it ended up a catastrophe with the entire expected stroke inverted, and that the code have no clue how to deal with `startPoint` and `endPoint`.
+   - Even when I change the way the codebase to recognize stroke using 6-points circle measure. It works surprisingly OK, but it might have issue expanding to much more specific stroke. (`CURVE` is stated in the code but I have no idea what is the stroke for the code to recognize `CURVE`)
+   - OCR Validation doesn't worked at the moment.
+3. Remove clutter in `question.html`. Also met the same fate as last update's `mainnightly.html`.
+
+Yup, that's it. Just three. The next step would be Type 5 ( many-subquestion phrase/grammar/vocabulary question ) and Type 1a 1b ( Split `translation` and `word` for either answer or question ).
+
+Go to the 4th Circle in JP-en General course if you want to try Type 6 questions.
+
+Demonstration Video
+
+
+
+https://github.com/user-attachments/assets/3e419fbb-7b9d-463b-be33-f36dffa3eb5c
+
+
+
 
 # Development Log : March 12 2025
 
@@ -88,6 +114,10 @@ After that, go to your web browser and enter `http://localhost:7500/mainnightly.
 - [GPT SoVITS](https://github.com/RVC-Boss/GPT-SoVITS) by RVC-Boss
 - [RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) by RVC Project Team
 
+## Code Credits
+
+- [WanaKana](https://github.com/WaniKani/WanaKana) by WaniKani
+
 ## Disclaimer 
 
 Yes I know. Some people hate AI tools with a passion especially when they are using a language-teaching application. The concerns like mispronunciation and low quality teaching content are legitimate and I am NOT going to deny that. Despite massive usage of AI in this project, I open my doors to those who want to help this project voluntarily or pull requests. And also, I did not ask for your opinions on using AI instead of real programmer and your argument of "AI replacing human's jobs".
@@ -96,4 +126,4 @@ This topic have been discussed for who-knows-how-many times, and if you just don
 
 ## License
 
-This project use `CC-BY-NC-SA 4.0` license. Which mean you are allowed to use this for NON-COMMERCIAL purposes and code included this project using the SAME license as this project. Under this license, you are allowed to share and adapt, whether you modify or alter given you have credited to this project.
+This Project use `GNU GPL v3` as its license. This license allows you to distribute freely and use for COMMERCIAL PURPOSES given you as the user have credit this repository. Modifications of this repository should have the SAME LICENSE as this repository.
