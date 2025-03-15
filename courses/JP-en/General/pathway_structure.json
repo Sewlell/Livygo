@@ -18,7 +18,12 @@
       ],
       "settings": {
         "newQuestionRatio": 0.8,
-        "enabledQuestionTypes": ["type1", "type2", "type3", "type4"]
+        "enabledQuestionTypes": ["type1", "type2", "type3", "type4", "type6"],
+        "handwritecirc": {
+          "subtypes": ["6c"],
+          "ocrEnabled": false,
+          "strokeValidation": true
+        }
       }
     },
     {

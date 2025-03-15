@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LivyGo</title>
+    <title>Livygo - Main Browser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
             display: flex;
             height: 100vh;
         }
@@ -23,12 +28,14 @@
             background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
 
         .center-section {
             width: 60%;
+            height: 100vh;
+            overflow-y: auto;
             background-color: #e4e4e4;
-            text-align: center;
         }
 
         .right-section {
@@ -37,10 +44,30 @@
             position: relative;
         }
 
-        .pathway-circle {
+        .pathway-header {
             display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-container {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            background-color: #8B0000;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .circle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 15px;
+            padding: 10px;
         }
 
         .lesson {
@@ -51,79 +78,340 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 10px;
-        }
-
-        .mascot {
-            width: 100px;
-            height: 100px;
-            background-color: #ccc;
-            margin: 20px auto;
-        }
-
-        .daily-quests {
-            margin-top: 20px;
-        }
-
-        .daily-quest {
-            background-color: #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-
-        .flag {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            background-color: red;
             cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .lesson:hover {
+            transform: scale(1.1);
+        }
+
+        .global-dropdown-container {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+
+        .circle-dropdown {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            pointer-events: auto;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .circle-dropdown {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            pointer-events: auto;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .dropdown-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+
+        .lesson:hover {
+            z-index: 100;
+        }
+
+        .progress-container {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #8B0000;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .course-selector {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .current-course {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: background-color 0.2s;
+        }
+
+        .current-course:hover {
+            background-color: #f0f0f0;
         }
 
         .courses-dropdown {
-            display: none;
             position: absolute;
-            top: 30px;
+            top: 100%;
             right: 0;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            width: 150px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 180px;
+            z-index: 100;
+            display: none;
         }
 
-        .flag:hover .courses-dropdown {
-            display: block;
+        .courses-dropdown div {
+            padding: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .courses-dropdown div:hover {
+            background-color: #f8f8f8;
         }
 
         .add-course {
-            margin-top: 10px;
-            font-weight: bold;
+            color: #666;
+            font-style: italic;
+        }
+
+        .guidebook-container {
+            position: fixed;
+            top: 0;
+            left: 20%;
+            width: 60%;
+            height: 100vh;
+            background: white;
+            z-index: 2000;
+            padding: 2rem;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            transform: translateX(140%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .guidebook-container.active {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .guidebook-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
             cursor: pointer;
         }
 
-        .sub-options {
-            margin-left: 20px;
-            margin-top: 10px;
+        .guidebook-container.slide-out {
+            transform: translateX(-140%);
         }
 
-        .sub-options button {
+        .chapter-header {
+            padding: 15px;
+            background: #f8f8f8;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .guidebook-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            padding: 10px 15px;
+            background: #8B0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .flag-button {
+            padding: 10px 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Active state (matches course selector) */
+        .active-flag {
+            background-color: #8B0000;
+            color: white;
+            border-color: #8B0000;
+        }
+
+        /* Sub-options styling */
+        .flag-option {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: #f8f8f8;
+            border: 1px solid #eee;
+        }
+
+        /* Hover effects */
+        .flag-button:hover:not(.active-flag) {
+            background-color: #f0f0f0;
+        }
+
+        .flag-option:hover {
+            background-color: #e0e0e0;
+        }
+
+        .lesson-count {
+            margin-bottom: 1rem;
             display: block;
-            margin: 5px 0;
+        }
+
+        .chapter-list {
+            padding: 20px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .chapter-item {
+            padding: 1.2rem;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid rgba(139,0,0,0.1);
+        }
+
+        .chapter-item:hover {
+            transform: translateY(-2px);
+            background: #f8f8f8;
+        }
+
+        /* Chapter Page Header */
+        .guidebook-header h3 {
+            color: #8B0000;
+            border-bottom: 2px solid #8B0000;
+            padding-bottom: 0.5rem;
+        }
+
+        .guidebook-content {
+            transition: opacity 0.3s ease;
+            padding: 1.5rem;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        .error-content {
+            text-align: center;
+            padding: 2rem;
+            color: #721c24;
+            background-color: #f8d7da;
+            border-radius: 8px;
+            margin: 2rem;
+        }
+
+        .guide-media {
+            margin: 1.5rem 0;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .text-section {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .text-section h1, .text-section h2, .text-section h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .text-section p {
+            margin-bottom: 1rem;
+        }
+
+        /* Add styling for checklist items */
+        .task-item {
+        list-style: none;
+        margin: 0.5rem 0;
+        }
+
+        .task-item input[type="checkbox"] {
+        margin-right: 0.8rem;
+        }
+
+        .text-section code {
+            background: #f3f3f3;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .text-section pre {
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+        }
+
+        .text-section pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.9em;
+        }
+
+        .text-section blockquote {
+            border-left: 4px solid #8B0000;
+            margin: 1rem 0;
+            padding: 1rem;
+            color: #666;
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            min-height: 60px;
         }
     </style>
 </head>
 <body>
     <div class="left-section">
-        <button>Shop</button>
-        <button>Profile</button>
-        <button id="pathway-btn">Pathway</button>
+        <button class="flag-button">🏪 Shop</button>
+        <button class="flag-button">👤 Profile</button>
+        <button id="pathway-btn" class="flag-button active-flag">
+            📚 Pathway
+        </button>
         <div class="sub-options" id="pathway-options">
-            <button>General</button>
-            <button>Vocabulary</button>
-            <button>Grammar</button>
+            <button name="practice-general" class="flag-option" data-subcourse="General">General</button>
+            <button name="practice-vocabulary" class="flag-option" data-subcourse="Vocabulary">Vocabulary</button>
+            <button name="practice-grammar" class="flag-option" data-subcourse="Grammar">Grammar</button>
         </div>
         <button id="practice-btn">Practice</button>
         <div class="sub-options" id="practice-options">
@@ -131,27 +419,27 @@
             <button>Vocabulary</button>
             <button>Grammar</button>
         </div>
+        <div class="dev-mode">
+            <button id="debug-test">Debug Test (Reset Progress)</button>
+        </div>
     </div>
 
     <div class="center-section">
-        <h2>Pathway</h2>
-        <div class="pathway-circle">
-            <div class="lesson">1</div>
-            <div class="lesson">2</div>
-            <div class="lesson">3</div>
-            <div class="lesson">4</div>
+        <div class="pathway-header">
+            <h2>Pathway</h2>
+            <div class="course-selector">
+                <div class="current-course" id="currentCourse">Spanish</div>
+                <div class="courses-dropdown" id="coursesDropdown">
+                    <div data-lang="ES-en">🇪🇸 Spanish</div>
+                    <div data-lang="JP-en">🇯🇵 Japanese</div>
+                    <div class="add-course">+ Add New Course</div>
+                </div>
+            </div>
         </div>
+        <div id="pathway-circle"></div>
     </div>
 
     <div class="right-section">
-        <div class="flag">
-            🏴
-            <div class="courses-dropdown">
-                <div>Spanish</div>
-                <div>Japanese</div>
-                <div class="add-course">+ Add a New Course</div>
-            </div>
-        </div>
         <div class="mascot"></div>
         <div class="daily-quests">
             <div class="daily-quest">Daily Quest 1</div>
@@ -160,16 +448,631 @@
         </div>
     </div>
 
+    <div id="global-dropdown-container" class="global-dropdown-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <script>
-        document.getElementById('pathway-btn').addEventListener('click', function() {
-            var options = document.getElementById('pathway-options');
-            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        let currentLang = localStorage.getItem('selectedLang') || 'ES-en';
+        let currentDropdown = null;
+        let hoverTimeout = null;
+        let currentSubCourse = localStorage.getItem('selectedSubCourse') || 'General';
+        let navigationStack = [];
+        let currentGuidebookContainer = null;
+        let guidebookContainer = null;
+        let isAnimating = false;
+        let guidebookHistory = [];
+        let activeGuidebook = null;
+        let previousGuidebooks = [];
+        
+
+        // Initialize with both parameters
+        function init() {
+            updatePathway();
+        }
+        init();
+    
+        // Course selector functionality
+        document.getElementById('currentCourse').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('coursesDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+    
+        document.querySelectorAll('#coursesDropdown div').forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.classList.contains('add-course')) return;
+                
+                currentLang = this.dataset.lang;
+                currentSubCourse = 'General';
+                // Extract text after flag emoji
+                const langName = this.textContent.split(' ').slice(1).join(' ');
+                document.getElementById('currentCourse').textContent = langName;
+                document.getElementById('coursesDropdown').style.display = 'none';
+                localStorage.setItem('selectedLang', currentLang);
+                localStorage.setItem('selectedSubCourse', currentSubCourse);
+                updatePathway();
+            });
         });
 
-        document.getElementById('practice-btn').addEventListener('click', function() {
-            var options = document.getElementById('practice-options');
-            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        // Generating a lesson URL
+        function getLessonUrl(code) {
+            const [circleCode, lessonNumber] = code.split('-');
+            return `lesson.html?section=${circleCode.slice(0,3)}&circle=${circleCode.slice(3,6)}&lesson=${lessonNumber}`;
+        }
+    
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.course-selector')) {
+                document.getElementById('coursesDropdown').style.display = 'none';
+            }
         });
+    
+        async function updatePathway() {
+            try {
+                // Fetch pathway structure
+                const pathwayStructure = await fetch(`courses/${currentLang}/${currentSubCourse}/pathway_structure.json`)
+                    .then(r => r.json());
+
+                const pathwayCircle = document.getElementById('pathway-circle');
+                pathwayCircle.innerHTML = ''; // Clear previous content
+
+                pathwayStructure.forEach(section => {
+                    const sectionContainer = document.createElement('div');
+                    sectionContainer.className = 'section-container';
+
+                    // Section Header
+                    const header = document.createElement('div');
+                    header.className = 'section-header';
+                    header.innerHTML = `
+                        <div>${section.title}</div>
+                        <small>Circles ${section.addressMap[0].rangeStart} - ${section.addressMap.slice(-1)[0].rangeEnd}</small>
+                    `;
+
+                    // Circle Grid
+                    const grid = document.createElement('div');
+                    grid.className = 'circle-grid';
+
+                    section.addressMap.forEach(range => {
+                        // Convert to numbers and ensure 6-digit format
+                        const start = parseInt(range.rangeStart);
+                        const end = parseInt(range.rangeEnd);
+
+                        for (let codeNum = start; codeNum <= end; codeNum++) {
+                            // Convert to 6-digit string
+                            const paddedCode = codeNum.toString().padStart(6, '0');
+                            const sectionCode = paddedCode.substring(0, 3);
+                            
+                            const circle = document.createElement('div');
+                            circle.className = 'lesson';
+                            
+                            // Display last 2 digits of 6-digit code
+                            circle.textContent = paddedCode.slice(-2);
+                            
+                            // Store full code in dataset
+                            circle.dataset.code = paddedCode;
+                            
+                            // Build dynamic base path
+                            circle.dataset.basePath = `/courses/${currentLang}/${currentSubCourse}/${sectionCode}/`;
+
+                            // Add hover/click handlers
+                            addCircleEventListeners(circle);
+
+                            // Click handler with all parameters
+                            circle.addEventListener('click', () => {
+                                const sectionCode = paddedCode.substring(0, 3);
+                                window.location.href = `question.html?lang=${currentLang}&subcourse=${currentSubCourse}&code=${paddedCode}&basePath=${encodeURIComponent(`/courses/${currentLang}/${currentSubCourse}/${sectionCode}/`)}`;
+                            });
+
+                            grid.appendChild(circle);
+                        }
+                    });
+
+                    sectionContainer.appendChild(header);
+                    sectionContainer.appendChild(grid);
+                    pathwayCircle.appendChild(sectionContainer);
+                });
+
+            } catch (error) {
+                console.error('Failed to load pathway:', error);
+                document.getElementById('pathway-circle').innerHTML = 
+                    '<div class="error">Failed to load pathway data</div>';
+            }
+        }
+
+        function addCircleEventListeners(circle) {
+            let hoverTimer;
+
+            circle.addEventListener('mouseenter', () => {
+                hoverTimer = setTimeout(() => handleCircleHover(circle), 300);
+            });
+
+            circle.addEventListener('mouseleave', () => {
+                clearTimeout(hoverTimer);
+                hideDropdown();
+            });
+
+            circle.addEventListener('click', (e) => {
+                clearTimeout(hoverTimer);
+                if (currentDropdown) {
+                    currentDropdown.remove();
+                    currentDropdown = null;
+                }
+            });
+        }
+    
+        async function handleCircleHover(circleElement) {
+            const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${currentLang}`)) || [];
+            
+            if (currentDropdown) {
+                currentDropdown.classList.remove('dropdown-visible');
+                currentDropdown.classList.add('dropdown-hidden');
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'circle-dropdown dropdown-hidden';
+            const rect = circleElement.getBoundingClientRect();
+            dropdown.style.left = `${rect.left + rect.width / 2}px`;
+            dropdown.style.top = `${rect.bottom + 10}px`;
+            dropdown.style.transform = `translateX(-50%)`;
+
+            const container = document.getElementById('global-dropdown-container');
+            container.appendChild(dropdown);
+
+            try {
+                const basePath = circleElement.dataset.basePath;
+                const progressData = await fetch(`${basePath}lesson_progress.json`).then(r => r.json());
+                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                    .then(r => r.json())
+                    .catch(() => ({ categories: [], guidebooks: [] }));
+
+                const circleCode = circleElement.dataset.code;
+                
+                // Update filtering: if relatedCircles is missing or empty, treat as applicable to all circles.
+                const relatedCategories = (guideStructure.categories || []).filter(c => {
+                    if (!c.relatedCircles || c.relatedCircles.length === 0) return true;
+                    return c.relatedCircles.includes(circleCode);
+                });
+                
+                const validCategories = relatedCategories.filter(c => 
+                    c?.guidcode && c?.title && c?.chapters?.length > 0
+                );
+
+                const lessonData = storedProgress.find(p => p.code === circleElement.dataset.code) || 
+                                progressData.find(p => p.code === circleElement.dataset.code) || 
+                                { current: 1, total: 5, title: "Default Title" };
+
+                dropdown.innerHTML = `
+                    <div class="dropdown-header">${lessonData.title}</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${(lessonData.current / lessonData.total) * 100}%"></div>
+                    </div>
+                    <div class="lesson-count">Lesson ${lessonData.current}/${lessonData.total}</div>
+                    ${validCategories.map(category => `
+                        <button class="flag-option" 
+                            onclick="showGuidebook('${category.guidcode}')"
+                            data-guidcode="${category.guidcode}">
+                            📖 ${category.title}
+                        </button>
+                    `).join('')}
+                `;
+
+                dropdown.classList.remove('dropdown-hidden');
+                dropdown.classList.add('dropdown-visible');
+                currentDropdown = dropdown;
+
+                dropdown.addEventListener('mouseenter', () => clearTimeout(hoverTimeout));
+                dropdown.addEventListener('mouseleave', () => hideDropdown());
+            } catch (error) {
+                console.error('Dropdown error:', error);
+                dropdown.innerHTML = `<div class="error">Error loading guides</div>`;
+            }
+        }
+    
+        function hideDropdown() {
+            hoverTimeout = setTimeout(() => {
+                if (currentDropdown) {
+                    currentDropdown.classList.remove('dropdown-visible');
+                    currentDropdown.classList.add('dropdown-hidden');
+                    currentDropdown = null;
+                }
+            }, 200);
+        }
+
+        async function loadSubCourses(lang) {
+            const subCourses = await fetch(`/courses/${lang}/sub_courses.json`)
+                .then(r => r.json())
+                .catch(() => []);
+
+            const pathwayOptions = document.getElementById('pathway-options');
+            pathwayOptions.innerHTML = subCourses.map(sc => `
+                <button class="flag-option" 
+                    data-subcourse="${sc.id}"
+                    onclick="selectSubCourse('${sc.id}')">
+                    ${sc.icon} ${sc.title}
+                </button>
+            `).join('');
+        }
+
+        document.querySelectorAll('#pathway-options button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentSubCourse = this.dataset.subcourse;
+                localStorage.setItem('selectedSubCourse', currentSubCourse);
+                updatePathway();
+            });
+        });
+
+        function createGuidebookContainer() {
+            if (!guidebookContainer) {
+                guidebookContainer = document.createElement('div');
+                guidebookContainer.className = 'guidebook-container';
+                document.body.appendChild(guidebookContainer);
+            }
+            return guidebookContainer;
+        }
+
+        // Modify the checklist rendering in your Markdown parser configuration
+        marked.use({
+        renderer: {
+            listitem(text, task, checked) {
+            if (task) {
+                return `<li class="task-item">
+                <label>
+                    <input type="checkbox" name="guidebook-task" ${checked ? 'checked' : ''}>
+                    ${text.replace(/^\s*\[[x\s]\]\s*/, '')}
+                </label>
+                </li>`;
+            }
+            return `<li>${text}</li>`;
+            }
+        }
+        });
+
+        async function fetchGuidebookContent(guidcode) {
+            try {
+                const isCategory = guidcode.startsWith('CAT-');
+                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                    .then(res => res.json());
+                if (isCategory) {
+                    const category = guideStructure.categories.find(c => c.guidcode === guidcode);
+                    if (!category) throw new Error('Category not found');
+                    return `
+                        <div class="guidebook-header">
+                            <button class="back-btn" onclick="handleBackNavigation()">← Back to Pathway</button>
+                            <h2>${category.title}</h2>
+                            <button class="guidebook-close" onclick="hideGuidebook()">×</button>
+                        </div>
+                        <div class="chapter-list">
+                            ${category.chapters.map(chapterId => {
+                                const chapter = guideStructure.guidebooks.find(g => g.guidcode === chapterId);
+                                return `<div class="chapter-item" onclick="showGuidebook('${chapterId}')">
+                                    ${chapter ? chapter.title : 'Unknown Chapter'}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    `;
+                } else {
+                    const guideMeta = guideStructure.guidebooks.find(g => g.guidcode === guidcode);
+                    if (!guideMeta) throw new Error('Guidebook chapter not found');
+                    const metaResponse = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
+                    if (!metaResponse.ok) throw new Error('Meta.json not found');
+                    const meta = await metaResponse.json();
+                    const sectionsHtml = await Promise.all(meta.sections.map(async section => {
+                        if (section.type === 'text') {
+                            const text = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
+                                .then(r => r.text());
+                            return `<div class="text-section">${marked.parse(text)}</div>`;
+                        }
+                        if (section.type === 'media') {
+                            const mediaPath = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                            return `<img src="${mediaPath}" class="guide-media" alt="Learning visual">`;
+                        }
+                        return '';
+                    }));
+                    const parentCategory = guideStructure.categories.find(c => c.chapters.includes(guidcode));
+                    return `
+                        <div class="guidebook-header">
+                            <button class="back-btn" onclick="handleBackNavigation()">← Back</button>
+                            <h3>${guideMeta.title}</h3>
+                            <button class="guidebook-close" onclick="hideGuidebook()">×</button>
+                        </div>
+                        <div class="guidebook-content">
+                            ${sectionsHtml.join('')}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading guidebook content:', error);
+                return `
+                    <div class="error-content">
+                        <h4>Content Not Available</h4>
+                        <p>The requested learning material could not be loaded.</p>
+                        <button onclick="hideGuidebook()" class="back-btn">
+                            ← Return to Main Page
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function fetchCategory(categoryId) {
+            const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                .then(res => res.json());
+            return guideStructure.categories.find(c => c.guidcode === categoryId);
+        }
+
+        async function fetchChapterContent(guidcode) {
+            try {
+                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`).then(res => res.json());
+                const guideMeta = guideStructure.guidebooks.find(g => g.guidcode === guidcode);
+                
+                // New: Validate meta.json exists
+                const metaResponse = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
+                if (!metaResponse.ok) throw new Error('Meta.json not found');
+                
+                const meta = await metaResponse.json();
+                
+                // New: Process content files
+                const processedSections = await Promise.all(meta.sections.map(async section => {
+                    if (section.type === 'text') {
+                        const content = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`).then(r => r.text());
+                        return { ...section, content };
+                    }
+                    return section;
+                }));
+
+                return {
+                    ...guideMeta,
+                    sections: processedSections
+                };
+            } catch (error) {
+                console.error('Failed to load chapter content:', error);
+                return {
+                    title: "Content Unavailable",
+                    sections: [{
+                        type: 'error',
+                        content: `
+                            <div class="error-content">
+                                <h4>Guidebook Missing</h4>
+                                <p>This learning resource is not available yet.</p>
+                                <button onclick="hideGuidebook()" class="back-btn">
+                                    ← Return to Main Page
+                                </button>
+                            </div>
+                        `
+                    }]
+                };
+            }
+        }
+
+        function renderContentSections(sections, guidcode) {
+            return sections.map(section => {
+                if (section.type === 'text') {
+                    const processedContent = section.content
+                        .replace(/- \[ \]/g, '- [ ]')
+                        .replace(/- \[x\]/g, '- [x]');
+                    return `<div class="text-section">${marked.parse(section.content)}</div>`;
+                }
+                if (section.type === 'media') {
+                    const mediaPath = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                    return `<img src="${mediaPath}" class="guide-media" alt="Learning visual">`;
+                }
+                if (section.type === 'error') {
+                    return section.content;
+                }
+                return '';
+            }).join('');
+        }
+
+        async function showGuidebook(guidcode) {
+            // If we're navigating forward and the guidcode is not already current, push it
+            if (!navigationStack.length || navigationStack[navigationStack.length - 1] !== guidcode) {
+                navigationStack.push(guidcode);
+            }
+            
+            // Use (or create) a single global container for guidebook content
+            const container = createGuidebookContainer();
+            
+            // Indicate that we are loading new content (disable further animations if needed)
+            isAnimating = true;
+            
+            try {
+                // Fetch the content based on the guidcode
+                const content = await fetchGuidebookContent(guidcode);
+                // Update the container's innerHTML with the new content
+                container.innerHTML = content;
+                // Trigger slide-in animation (assumes CSS transitions based on the 'active' class)
+                // Remove any previous slide-out classes first
+                container.classList.remove('slide-out');
+                // Delay slightly to ensure DOM update before animation class is added
+                setTimeout(() => {
+                    container.classList.add('active');
+                }, 10);
+                } catch (error) {
+                console.error('Error loading guidebook content:', error);
+            }
+            
+            isAnimating = false;
+        
+
+            function createNewContainer() {
+                fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                .then(res => res.json())
+                .then(guideStructure => {
+                    // Check if it's a category first
+                    const category = guideStructure.categories.find(c => c.guidcode === guidcode);
+                    if (category) {
+                        renderCategoryPage(category, guideStructure);
+                        return;
+                    }
+                    // Otherwise, assume it's a chapter
+                    const guideMeta = guideStructure.guidebooks.find(g => g.guidcode === guidcode);
+                    if (guideMeta) {
+                        const parentCategory = guideStructure.categories.find(c =>
+                            c.chapters.includes(guidcode)
+                        );
+                        renderChapterPage(guideMeta, parentCategory, guideStructure);
+                    }
+                    })
+                    .catch(error => {
+                    console.error('Failed to load guide structure:', error);
+                    });
+            }
+        }
+
+        function hideGuidebook() {
+            if (!guidebookContainer || isAnimating) return;
+            isAnimating = true;
+            // Remove the 'active' class so the container slides out (per your CSS transform)
+            guidebookContainer.classList.remove('active');
+            // When the transition ends, clear the container and reset the navigation stack
+            guidebookContainer.addEventListener('transitionend', () => {
+                guidebookContainer.innerHTML = '';
+                navigationStack = [];
+                guidebookContainer.remove();
+                guidebookContainer = null;
+                isAnimating = false;
+            }, { once: true });
+        }
+
+        function renderCategoryPage(category, guideStructure) {
+            const container = document.createElement('div');
+            container.className = 'guidebook-container';
+            currentGuidebookContainer = container;
+
+            // Removed inline transform styles
+            container.innerHTML = `
+                <div class="guidebook-header">
+                    <button class="back-btn" onclick="handleBackNavigation()">
+                        ← ${navigationStack.length > 1 ? 'Back' : 'Close'}
+                    </button>
+                    <h2>${category.title}</h2>
+                    <button class="guidebook-close" onclick="hideGuidebook()">×</button>
+                </div>
+                <div class="chapter-list">
+                    ${category.chapters.map(chapterId => {
+                        const chapter = guideStructure.guidebooks.find(g => g.guidcode === chapterId);
+                        return `<div class="chapter-item" onclick="showGuidebook('${chapterId}')">
+                            ${chapter?.title || 'Unknown Chapter'}
+                        </div>`;
+                    }).join('')}
+                </div>
+            `;
+            document.body.appendChild(container);
+            // Trigger animation by adding the 'active' class
+            setTimeout(() => {
+                container.classList.add('active');
+            }, 10);
+        }
+
+        function renderChapterPage(guideMeta, parentCategory, guideStructure) {
+            const container = document.createElement('div');
+            container.className = 'guidebook-container';
+            currentGuidebookContainer = container;
+
+            // Removed inline transform styles
+            container.innerHTML = `
+                <div class="guidebook-header">
+                    <button class="back-btn" onclick="handleBackNavigation()">
+                        ← Back
+                    </button>
+                    <h3>${guideMeta.title}</h3>
+                    <button class="guidebook-close" onclick="hideGuidebook()">×</button>
+                </div>
+                <div class="guidebook-content"></div>
+            `;
+            
+            fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guideMeta.guidcode}/meta.json`)
+                .then(res => res.json())
+                .then(contentMeta => {
+                    renderGuideContent(container.querySelector('.guidebook-content'), 
+                                    guideMeta.guidcode, contentMeta);
+                });
+
+            document.body.appendChild(container);
+            // Trigger animation by adding the 'active' class
+            setTimeout(() => {
+                container.classList.add('active');
+            }, 10);
+        }
+
+        function closeGuidebook() {
+            navigationStack = [];
+            if (!currentGuidebookContainer) return;
+            
+            currentGuidebookContainer.style.transform = 'translateX(100%)';
+            
+            currentGuidebookContainer.addEventListener('transitionend', () => {
+                currentGuidebookContainer.remove();
+                currentGuidebookContainer = null;
+            }, { once: true });
+        }
+
+        function renderGuideContent(container, guidcode, contentMeta) {
+            // Clear previous content
+            container.innerHTML = '';
+
+            // Load main content sections
+            contentMeta.sections.forEach(section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'guide-section';
+                
+                switch(section.type) {
+                    case 'text':
+                        fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
+                            .then(res => res.text())
+                            .then(text => {
+                                sectionDiv.innerHTML = marked.parse(text);
+                            });
+                        break;
+                        
+                    case 'media':
+                        const img = document.createElement('img');
+                        img.src = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                        img.style.maxWidth = '100%';
+                        sectionDiv.appendChild(img);
+                        break;
+                }
+                
+                container.appendChild(sectionDiv);
+            });
+        }
+
+        function handleBackNavigation() {
+            if (navigationStack.length > 1) {
+
+                // Pop the current page and show the previous one
+                navigationStack.pop();
+                const previousGuid = navigationStack[navigationStack.length - 1];
+                showGuidebook(previousGuid);
+
+                // Only proceed if we have an active guidebook
+                if (activeGuidebook) {
+                    // Animate current guidebook out
+                    activeGuidebook.classList.remove('active');
+                    activeGuidebook.classList.add('slide-out');
+                    
+                    // Remove after animation
+                    activeGuidebook.addEventListener('transitionend', () => {
+                        activeGuidebook.remove();
+                    }, { once: true });
+
+                    // Retrieve previous guidebook from history
+                    const prevContainer = previousGuidebooks.pop();
+                    if (prevContainer) {
+                        // Activate previous guidebook
+                        prevContainer.classList.add('active');
+                        activeGuidebook = prevContainer;
+                        document.body.appendChild(prevContainer);
+                    }
+                }
+            } else {
+                hideGuidebook();
+            }
+        }
+    
+        // Initialize pathway
+        updatePathway(currentLang);
     </script>
 </body>
 </html>

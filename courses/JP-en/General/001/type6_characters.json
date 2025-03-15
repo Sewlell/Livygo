@@ -1,0 +1,55 @@
+[
+    {
+        "guidcode": "KAN-001004",
+        "kanji": "日",
+        "strokes": 4,
+        "strokeTypes": ["VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"],
+        "variants": ["⽇"]
+    },
+    {
+        "guidcode": "KAN-001004",
+        "kanji": "月",
+        "strokes": 4,
+        "strokeTypes": ["LEFT_FALLING", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"],
+        "commonErrors": ["⽉"]
+    },
+    {
+        "guidcode": "KAN-001004",
+        "kanji": "心",
+        "strokes": 4,
+        "strokeTypes": [
+            "LEFT_FALLING",
+            "DOT",       
+            "RIGHT_FALLING",
+            "RIGHT_FALLING"
+        ],
+        "commonErrors": ["⺗"]
+    },
+    {
+        "guidcode": "KAN-001004",
+        "kanji": "間",
+        "strokes": 12,
+        "strokeTypes": [
+            "VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL",
+            "VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL",
+            "VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"
+        ]
+    },
+    {
+        "guidcode": "KAN-001004",
+        "kanji": "朝",
+        "strokes": 12,
+        "strokeTypes": [
+            "HORIZONTAL", "VERTICAL", "VERTICAL", "RIGHT_FALLING",
+            "HORIZONTALL", "HORIZONTAL", "HORIZONTAL", "VERTICAL",
+            "LEFT_FALLING", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"
+        ],
+        "alternativeStrokeTypes": [
+        [
+            "VERTICAL", "HORIZONTAL", "VERTICAL", "RIGHT_FALLING",
+            "HORIZONTAL", "HORIZONTAL", "VERTICAL", "HORIZONTAL",
+            "LEFT_FALLING", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"
+        ]
+        ]
+    }
+]

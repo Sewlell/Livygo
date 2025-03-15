@@ -26,7 +26,7 @@
         "current": 1,
         "questionsPerLesson": 10,
         "practicecirc": false,
-        "relearnpool": true,
+        "relearnpool": false,
         "questionRatio": [40, 20, 20, 20]
     },
     {
@@ -37,5 +37,21 @@
         "questionsPerLesson": 10,
         "practicecirc": true,
         "relearnpool": true
+    },
+    {
+        "code": "001004",
+        "title": "Kanji Writing Circle",
+        "total": 5,
+        "current": 1,
+        "questionsPerLesson": 5,
+        "handwritecirc": true,
+        "settings": {
+            "enableOCR": false,
+            "requiredStrokeAccuracy": 75,
+            "allowedVariants": ["jōyō", "jinmeiyō"]
+        },
+        "relearnpool": false,
+        "practicecirc": false
     }
+    
 ]

@@ -313,6 +313,58 @@
             padding: 12px;
             font-size: 1.1rem;
         }
+
+        .kanji-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .writing-area {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 1rem auto;
+            border: 2px solid #8B0000;
+            border-radius: 8px;
+        }
+
+        #kanjiCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(to right, #acacac 1px, transparent 1px),
+                            linear-gradient(to bottom, #acacac 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 1;
+        }
+
+        .kanji-controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .ocr-settings {
+            margin: 1rem 0;
+            color: #666;
+        }
+
+        .kanji-controls button:disabled {
+            background-color: #cccccc !important;
+            transform: none !important;
+            pointer-events: none !important;
+        }
     </style>
 </head>
 <body>
@@ -352,15 +404,26 @@
         let type2Data = [];
         let type3Data = [];
         let type4Data = [];
+        let type6Data = [];
+        let enableOCR = true;
         let enabledQuestionTypes = ['type1', 'type2', 'type3', 'type4'];
         let relearnType1 = JSON.parse(localStorage.getItem(`relearnType1_${lang}`)) || [];
         let relearnType2 = JSON.parse(localStorage.getItem(`relearnType2_${lang}`)) || [];
         let lessonProgress = {};
         let currentLesson = null;
 
+        // Type 6 stuff
+        let strokes = [];
+        let isDrawing = false;
+        let canvas, ctx;
+        let isHandwriteLocked = false;
+        let currentTimeout = null;
+        let requiredStrokeAccuracy = 75;
+
         document.addEventListener('DOMContentLoaded', () => {
             const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${lang}`)) || [];
             lessonProgress = storedProgress;
+            requiredStrokeAccuracy = currentLesson?.settings?.requiredStrokeAccuracy || 75;
 
             // Load pathway structure first
             fetch(`/courses/${lang}/${subcourse}/pathway_structure.json`)
@@ -374,6 +437,15 @@
                         numericCode <= range.rangeEnd
                     )
                 );
+
+                const currentCircle = pathwayStructure.find(s => 
+                    s.addressMap.some(range => 
+                        numericCode >= range.rangeStart && 
+                        numericCode <= range.rangeEnd
+                    )
+                );
+
+
                 
                 // Set enabled question types
                 if(section?.settings?.enabledQuestionTypes) {
@@ -395,10 +467,23 @@
                         Promise.resolve([]),
                     enabledQuestionTypes.includes('type4') ? 
                         fetch(`${dynamicBasePath}type4_sentence.json`).then(res => res.json()) : 
+                        Promise.resolve([]),
+                    enabledQuestionTypes.includes('type6') ? 
+                        fetch(`${dynamicBasePath}type6_characters.json`)
+                            .then(res => res.json())
+                            .then(data => {
+                            // Extract circle code from currentCode (e.g. "001004" from "KAN-001004")
+                            const circleCode = currentCode.split('-')[0];
+                            return data.filter(q => 
+                                q.guidcode.startsWith('KAN-') && 
+                                q.guidcode.split('-')[1] === circleCode
+                            );
+                            }) : 
                         Promise.resolve([])
                 ]);
             })
-            .then(([progressData, cutsceneData, vocab, grammar, listening, sentence]) => {
+            .then(([progressData, cutsceneData, vocab, grammar, listening, sentence, type6]) => {
+                type6Data = type6 || [];
                 // Ensure progressData is array
                 if (!Array.isArray(progressData)) {
                     progressData = [];
@@ -559,6 +644,14 @@
             }, 500); // Match transition duration
         }
 
+
+
+
+
+
+
+
+
         // Lesson handling
         function startLesson() {
             document.getElementById('activity').classList.add('active');
@@ -579,7 +672,7 @@
                 // Validate pools
                 const validatePool = (pool) => {
                     if (!Array.isArray(pool)) throw new Error('Invalid pool');
-                    return pool.filter(q => q && (q.word || q.blank || q.audio));
+                    return pool.filter(q => q && (q.word || q.blank || q.audio || q.kanji));
                 };
 
                 let questionPool = [];
@@ -593,7 +686,8 @@
                             ...(enabledQuestionTypes.includes('type1') ? validatePool(type1Data) : []),
                             ...(enabledQuestionTypes.includes('type2') ? validatePool(type2Data) : []),
                             ...(enabledQuestionTypes.includes('type3') ? validatePool(type3Data) : []),
-                            ...(enabledQuestionTypes.includes('type4') ? validatePool(type4Data) : [])
+                            ...(enabledQuestionTypes.includes('type4') ? validatePool(type4Data) : []),
+                            ...(enabledQuestionTypes.includes('type6') ? validatePool(type6Data) : [])
                         ];
                         
                         if(currentLesson.relearnpool) {
@@ -661,46 +755,44 @@
             activity.innerHTML = ''; // Clear previous content
 
             try {
-
-            // For questions with audio, add an audio player container
-            if (question.audio) {
-                // Append audio player container if it doesn't exist
-                if (!document.getElementById('audioPlayer')) {
-                    const audioContainer = document.createElement('div');
-                    audioContainer.id = 'audioPlayer';
-                    activity.appendChild(audioContainer);
-                }
-                // Then set up the question content
-                if (question.blocks) {
-                    activity.innerHTML += generateType4Question(question);
-                } else if (question.answers?.text) {
-                    activity.innerHTML += generateType3Question(question);
-                    // Delay dataset update until after DOM render
-                    setTimeout(() => {
-                        const optionsContainer = document.getElementById('type3Options');
-                        if (optionsContainer) {
-                            optionsContainer.dataset.answers = JSON.stringify(question.answers.text);
-                        }
-                    }, 0);
-                }
-                // Initialize audio using the updated base path (see next section)
-                initAudioPlayer(question.audio);
-            } else if (question.word) {
-                activity.innerHTML = generateType1Question(question);
-            } else if (question.blank) {
-                activity.innerHTML = generateType2Question(question);
-            } else {
-                throw new Error('Invalid question type');
-            }
-            }catch (error) {
-                    console.error('Question display error:', error);
-                    if(error.message.includes('Invalid question type')) {
-                        showError("Invalid question type for this course");
-                        setTimeout(() => generateNextQuestion(), 1500);
-                    } else {
-                        throw error;
+                if (question.kanji) {
+                    activity.innerHTML = generateType6Question(question);
+                    setTimeout(initCanvas, 50);
+                } else if (question.audio) {
+                    // Append audio player container if it doesn't exist
+                    if (!document.getElementById('audioPlayer')) {
+                        const audioContainer = document.createElement('div');
+                        audioContainer.id = 'audioPlayer';
+                        activity.appendChild(audioContainer);
                     }
+                    if (question.blocks) {
+                        activity.innerHTML += generateType4Question(question);
+                    } else if (question.answers?.text) {
+                        activity.innerHTML += generateType3Question(question);
+                        setTimeout(() => {
+                            const optionsContainer = document.getElementById('type3Options');
+                            if (optionsContainer) {
+                                optionsContainer.dataset.answers = JSON.stringify(question.answers.text);
+                            }
+                        }, 0);
+                    }
+                    initAudioPlayer(question.audio);
+                } else if (question.word) {
+                    activity.innerHTML = generateType1Question(question);
+                } else if (question.blank) {
+                    activity.innerHTML = generateType2Question(question);
+                } else {
+                    throw new Error('Invalid question type');
                 }
+            } catch (error) {
+                console.error('Question display error:', error);
+                if (error.message.includes('Invalid question type')) {
+                    showError("Invalid question type for this course");
+                    setTimeout(() => generateNextQuestion(), 1500);
+                } else {
+                    throw error;
+                }
+            }
         }
 
         // Audio Player Initialization
@@ -850,6 +942,32 @@
             `;
         }
 
+        // Type 5 in the future....
+
+
+        // Type 6 Question Generation
+        function generateType6Question(question) {
+            return `
+                <div class="kanji-container">
+                    <div class="kanji-prompt">Write this character in the box: ${question.kanji}</div>
+                    <div class="writing-area">
+                        <canvas id="kanjiCanvas"></canvas>
+                        <div class="grid-overlay"></div>
+                    </div>
+                    <div class="ocr-settings">
+                        <label>
+                            <input type="checkbox" id="ocrToggle" ${enableOCR ? 'checked' : ''}>
+                            Enable OCR Validation
+                        </label>
+                    </div>
+                    <div class="kanji-controls">
+                        <button onclick="resetCanvas()">↻ Reset</button>
+                        <button onclick="validateKanji('${question.kanji}')">✓ Submit</button>
+                    </div>
+                </div>
+            `;
+        }
+
         function handleType3Answer(selected, validAnswers) {
             if (window.isAnswered) return;
             window.isAnswered = true;
@@ -963,30 +1081,6 @@
             const initialTray = document.getElementById('initialTray');
             const blocks = Array.from(initialTray.children);
             shuffleArray(blocks).forEach(block => initialTray.appendChild(block));
-        }
-
-        // Drag-and-drop handlers (optional fallback)
-        function handleDragStart(e) {
-            e.dataTransfer.setData('text/plain', e.target.textContent);
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            const block = document.createElement('div');
-            block.className = 'word-block';
-            block.textContent = e.dataTransfer.getData('text/plain');
-            block.onclick = () => moveBlock(block);
-            e.target.appendChild(block);
-        }
-
-        // Initialize drag events
-        function initDragAndDrop() {
-        document.querySelectorAll('.word-block').forEach(block => {
-            block.addEventListener('dragstart', handleDragStart);
-        });
-        
-        document.querySelector('.sentence-builder').addEventListener('dragover', handleDragOver);
-        document.querySelector('.sentence-builder').addEventListener('drop', handleDrop);
         }
 
         // Answer handling
@@ -1118,6 +1212,588 @@
             `;
 
             return container;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        // getHandwritingConfig used to be for KanjiVG initialization. I think it will be useful once OCR adaped.
+
+        //function getHandwritingConfig() {
+        //    const baseConfig = {
+        //        "6a": { // Simplified Chinese
+        //        model: "zh_sim",
+        //        strokeTolerance: 0.2,
+        //       radicalValidation: true
+        //        },
+        //        "6b": { // Traditional Chinese
+        //        model: "zh_tra",
+        //        strokeTolerance: 0.25,
+        //        allowVariants: true
+        //        },
+        //        "6c": { // Japanese Kanji
+        //        model: "ja_kanji",
+        //        strokeTolerance: 0.3,
+        //        jōyōOnly: true
+        //        }
+        //    };
+        //    
+        //    return currentCircle.settings?.handwritecirc?.subtypes?.reduce((acc, subtype) => {
+        //        return {...acc, ...baseConfig[subtype]};
+        //    }, {});
+        //}
+
+        function initCanvas() {
+            strokes = [];
+            canvas = document.getElementById('kanjiCanvas');
+            ctx = canvas.getContext('2d');
+            
+            canvas.width = 300;
+            canvas.height = 300;
+            
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#8B0000';
+
+            // Event listeners for mouse
+            canvas.addEventListener('mousedown', startStroke);
+            canvas.addEventListener('mousemove', drawStroke);
+            canvas.addEventListener('mouseup', endStroke);
+            canvas.addEventListener('mouseleave', endStroke); // Stop drawing when leaving the canvas
+
+            // Event listeners for touch
+            canvas.addEventListener('touchstart', startStroke);
+            canvas.addEventListener('touchmove', drawStroke);
+            canvas.addEventListener('touchend', endStroke);
+        }
+
+        function startStroke(e) {
+            isDrawing = true;
+            strokes.push([]);
+            const pos = getCanvasPosition(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function drawStroke(e) {
+            if (!isDrawing) return;
+            const pos = getCanvasPosition(e);
+            if (!pos) return; // In case position cannot be determined
+
+            const currentStroke = strokes[strokes.length - 1];
+            // Safeguard: if currentStroke is not defined, stop drawing
+            if (!currentStroke) return;
+
+            currentStroke.push({
+                x: pos.x,
+                y: pos.y,
+                t: Date.now()
+            });
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function endStroke() {
+            isDrawing = false;
+            ctx.closePath();
+        }
+
+        function getCanvasPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX || e.touches[0].clientX) - rect.left,
+                y: (e.clientY || e.touches[0].clientY) - rect.top
+            };
+        }
+
+        async function validateKanji(expected) {
+            if (window.isAnswered || isHandwriteLocked) return;
+
+            try {
+                window.isAnswered = true;
+                disableHandwriteControls(true);
+
+                const kanjiData = type6Data.find(k => k.kanji === expected);
+                if (!kanjiData) throw new Error('Kanji not found');
+
+                // Validate stroke count first
+                if (strokes.length !== kanjiData.strokes) {
+                    showFeedback("Stroke count mismatch!", "warning");
+                    resetValidationState();
+                    return;
+                }
+
+                // Calculate accuracy
+                const accuracy = await validateStrokeOrder(strokes, kanjiData);
+
+                // Use required accuracy from kanji data if available,
+                // otherwise from currentLesson settings, or default to 75.
+                let requiredAccuracy = currentLesson?.settings?.requiredStrokeAccuracy || 75;
+                if (requiredAccuracy < 1) {
+                    requiredAccuracy *= 100;
+                }
+
+                console.log(`Accuracy: ${accuracy}% (Required: ${requiredAccuracy}%)`);
+
+                // Enforce strict accuracy threshold using requiredAccuracy
+                if (accuracy >= requiredAccuracy) {
+                    isHandwriteLocked = true;
+                    showFeedback(`Correct! (${accuracy.toFixed(2)}%)`, "correct");
+                    setTimeout(() => {
+                        generateNextQuestion();
+                        resetValidationState();
+                    }, 1500);
+                } else {
+                    const feedbackType = accuracy >= 50 ? "warning" : "incorrect";
+                    const feedbackMessage = accuracy >= 50 
+                        ? `${accuracy.toFixed(2)}% - Close! Adjust and retry` 
+                        : `${accuracy.toFixed(2)}% - Needs improvement`;
+                    
+                    showFeedback(feedbackMessage, feedbackType);
+                    resetValidationState();
+                }
+
+            } catch (error) {
+                console.error('Validation error:', error);
+                showFeedback("Validation error - Please retry", "warning");
+                resetValidationState();
+            }
+        }
+
+        function handleCorrectSubmission() {
+            isHandwriteLocked = true;
+            
+            // Clear existing timeout
+            if (currentTimeout) clearTimeout(currentTimeout);
+            
+            // Proceed after 1.5s
+            currentTimeout = setTimeout(() => {
+                generateNextQuestion();
+                resetValidationState();
+                isHandwriteLocked = false; // Reset lock for new question
+            }, 1500);
+        }
+
+
+        function disableHandwriteControls(disabled) {
+            document.querySelectorAll('.kanji-controls button').forEach(btn => {
+                btn.disabled = disabled;
+                btn.style.opacity = disabled ? 0.5 : 1;
+            });
+        }
+
+        function resetValidationState() {
+            window.isAnswered = false;
+            isHandwriteLocked = false;
+            disableHandwriteControls(false);
+            strokes = [];
+            resetCanvas();
+        }
+
+        function logStrokeDetails(kanjiData) {
+            console.log("Expected Stroke Types:", kanjiData.strokeTypes);
+            console.log("User Stroke Types:", 
+                strokes.map(stroke => calculateStrokeType(stroke)));
+            //console.log("Required Accuracy:", `${requiredStrokeAccuracy}%`);
+        }
+
+        // Stroke type classification system
+        const StrokeTypes = {
+            HORIZONTAL: 'HORIZONTAL',
+            VERTICAL: 'VERTICAL',
+            RIGHT_FALLING: 'RIGHT_FALLING',
+            LEFT_FALLING: 'LEFT_FALLING',
+            RIGHT_HOOK: 'RIGHT_HOOK',
+            LEFT_HOOK: 'LEFT_HOOK',
+            CURVE_RIGHT: 'CURVE_RIGHT',
+            CURVE_LEFT: 'CURVE_LEFT',
+            DOT: 'DOT',
+            THROW: 'THROW',
+            RISE: 'RISE',
+            TICK: 'TICK',
+            UNKNOWN: 'UNKNOWN'
+        };
+
+        const AnalysisConfig = {
+            DOT_MAX_LENGTH: 0.075,  // 7.5% of canvas width
+            HOOK_ANGLE_THRESHOLD: 60, // Degrees
+            KEY_POINTS: 6, // Analyze 4 key points plus start/end
+
+            CURVE_DEVIATION_THRESHOLD: 0.5, // Increased from 0.5
+            MIN_CURVE_LENGTH: 0.2, // Minimum stroke length to qualify as curve
+            CURVE_DIRECTION_ANGLE: 30 // Minimum angle for curve direction determination
+        };
+
+        function calculateAngleChange(prevPoint, currentPoint, nextPoint) {
+            // Create vectors
+            const vector1 = {
+                x: currentPoint.x - prevPoint.x,
+                y: currentPoint.y - prevPoint.y
+            };
+            
+            const vector2 = {
+                x: nextPoint.x - currentPoint.x,
+                y: nextPoint.y - currentPoint.y
+            };
+
+            // Calculate angle between vectors
+            const dotProduct = vector1.x * vector2.x + vector1.y * vector2.y;
+            const magnitude1 = Math.hypot(vector1.x, vector1.y);
+            const magnitude2 = Math.hypot(vector2.x, vector2.y);
+            
+            // Handle division by zero
+            if (magnitude1 === 0 || magnitude2 === 0) return 0;
+            
+            const cosine = dotProduct / (magnitude1 * magnitude2);
+            return Math.acos(Math.min(Math.max(cosine, -1), 1) * (180 / Math.PI));
+        }
+
+        // Enhanced stroke classification functions
+        function classifyBasicStroke(keyPoints) {
+            const dx = keyPoints[keyPoints.length - 1].x - keyPoints[0].x;
+            const dy = keyPoints[keyPoints.length - 1].y - keyPoints[0].y;
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            // Handle near-horizontal or vertical cases first.
+            if (Math.abs(angle) < 15 || Math.abs(angle) > 165) return StrokeTypes.HORIZONTAL;
+            if (Math.abs(angle - 90) < 15 || Math.abs(angle + 90) < 15) return StrokeTypes.VERTICAL;
+
+            // For strokes going downward, decide based on horizontal change.
+            if (dy > 0) {
+                return dx > 0 ? StrokeTypes.RIGHT_FALLING : StrokeTypes.LEFT_FALLING;
+            } else {
+                // If the stroke is upward, you might swap or define separate rising types.
+                return dx > 0 ? StrokeTypes.LEFT_FALLING : StrokeTypes.RIGHT_FALLING;
+            }
+        }
+
+        function determineCurveType(keyPoints) {
+            const start = keyPoints[0];
+            const end = keyPoints[keyPoints.length-1];
+            const mid = keyPoints[Math.floor(keyPoints.length/2)];
+            
+            // Calculate directional angles
+            const mainAngle = Math.atan2(end.y - start.y, end.x - start.x);
+            const deviationAngle = Math.atan2(mid.y - start.y, mid.x - start.x);
+            
+            // Calculate angle difference
+            const angleDiff = deviationAngle - mainAngle;
+            const degDiff = Math.abs(angleDiff * 180/Math.PI);
+
+            if (degDiff < AnalysisConfig.CURVE_DIRECTION_ANGLE) return null;
+            
+            return angleDiff > 0 ? StrokeTypes.CURVE_RIGHT : StrokeTypes.CURVE_LEFT;
+        }
+
+        // Stroke compatibility matrix
+        function directionMatches(expected, detected) {
+            const compatibilityMatrix = {
+                // Horizontal
+                [StrokeTypes.HORIZONTAL]: [StrokeTypes.HORIZONTAL, StrokeTypes.TICK],
+                
+                // Vertical
+                [StrokeTypes.VERTICAL]: [StrokeTypes.VERTICAL, StrokeTypes.RISE],
+                
+                // Right variations
+                [StrokeTypes.RIGHT_FALLING]: [
+                    StrokeTypes.RIGHT_FALLING,
+                    StrokeTypes.CURVE_RIGHT,
+                    StrokeTypes.THROW
+                ],
+                [StrokeTypes.RIGHT_HOOK]: [
+                    StrokeTypes.RIGHT_HOOK,
+                    StrokeTypes.RIGHT_FALLING
+                ],
+                
+                // Left variations
+                [StrokeTypes.LEFT_FALLING]: [
+                    StrokeTypes.LEFT_FALLING,
+                    StrokeTypes.CURVE_LEFT
+                ],
+                [StrokeTypes.LEFT_HOOK]: [
+                    StrokeTypes.LEFT_HOOK,
+                    StrokeTypes.LEFT_FALLING
+                ],
+                
+                // Curves
+                [StrokeTypes.CURVE_RIGHT]: [
+                    StrokeTypes.CURVE_RIGHT,
+                    StrokeTypes.RIGHT_FALLING
+                ],
+                [StrokeTypes.CURVE_LEFT]: [
+                    StrokeTypes.CURVE_LEFT,
+                    StrokeTypes.LEFT_FALLING
+                ],
+                
+                // Special strokes
+                [StrokeTypes.DOT]: [StrokeTypes.DOT],
+                [StrokeTypes.THROW]: [StrokeTypes.THROW],
+                [StrokeTypes.RISE]: [StrokeTypes.RISE]
+            };
+
+            const allowedTypes = compatibilityMatrix[expected] || [expected];
+            return allowedTypes.includes(detected);
+        }
+
+        // Final verification of all dependencies
+        const StrokeAnalysis = {
+            calculateAngleChange,
+            classifyBasicStroke,
+            determineCurveType,
+            getKeyAnalysisPoints,
+            analyzeStroke,
+            directionMatches
+        };
+
+        // 3. Core Stroke Analysis Function
+        function analyzeStroke(points, canvasWidth) {
+            if (!points || points.length < 2) return StrokeTypes.UNKNOWN;
+
+            // Calculate basic metrics
+            const start = points[0];
+            const end = points[points.length-1];
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            
+            // 1. Dot Detection (dynamic size based on canvas)
+            const maxDotLength = canvasWidth * AnalysisConfig.DOT_MAX_LENGTH;
+            if (Math.hypot(dx, dy) < maxDotLength) {
+                return StrokeTypes.DOT;
+            }
+
+            // 2. Identify Key Analysis Points
+            const keyPoints = getKeyAnalysisPoints(points);
+            
+            // 3. Direction Change Analysis
+            const directionChanges = analyzeDirectionChanges(keyPoints);
+            
+            // 4. Curve Analysis
+            if (isCurve(keyPoints)) {
+                const curveType = determineCurveType(keyPoints);
+                if (curveType) return curveType;
+            }
+
+            // 5. Hook Detection
+            const hookType = detectHookType(keyPoints);
+            if (hookType) return hookType;
+
+            // 6. Basic Stroke Classification
+            return classifyBasicStroke(keyPoints);
+
+            if (basicType === StrokeTypes.HORIZONTAL) {
+                if (Math.abs(dy) > canvasWidth * 0.15) {
+                return dy > 0 ? StrokeTypes.RIGHT_FALLING : StrokeTypes.LEFT_FALLING;
+                }
+            }
+
+            if (basicType === StrokeTypes.VERTICAL) {
+                if (Math.abs(dx) > canvasWidth * 0.15) {
+                return dx > 0 ? StrokeTypes.RIGHT_FALLING : StrokeTypes.LEFT_FALLING;
+                }
+            }
+            
+            return basicType;
+        }
+
+        function calculateYVariance(points) {
+            const yValues = points.map(p => p.y);
+            const avgY = yValues.reduce((a,b) => a + b, 0) / yValues.length;
+            return yValues.map(y => y - avgY).reduce((a,b) => a + Math.abs(b), 0);
+        }
+
+        // 4. Key Analysis Point Detection
+        function getKeyAnalysisPoints(points) {
+            const keyPoints = [points[0]]; // Start with initial point
+            
+            // Add intermediate points with largest direction changes
+            const changes = points.slice(1, -1).map((p, i) => ({
+                index: i+1,
+                angleChange: calculateAngleChange(points[i], p, points[i+1])
+            })).sort((a, b) => b.angleChange - a.angleChange);
+
+            // Select top N changes
+            const significantChanges = changes
+                .filter(c => c.angleChange > AnalysisConfig.HOOK_ANGLE_THRESHOLD)
+                .slice(0, AnalysisConfig.KEY_POINTS);
+
+            // Add to key points
+            significantChanges.forEach(c => keyPoints.push(points[c.index]));
+            keyPoints.push(points[points.length-1]); // Add end point
+
+            return keyPoints;
+        }
+
+        // 5. Direction Change Analysis
+        function analyzeDirectionChanges(keyPoints) {
+            const segments = [];
+            for (let i = 1; i < keyPoints.length; i++) {
+                const dx = keyPoints[i].x - keyPoints[i-1].x;
+                const dy = keyPoints[i].y - keyPoints[i-1].y;
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                segments.push(angle);
+            }
+            return segments;
+        }
+
+        // 6. Curve Detection
+        function isCurve(keyPoints) {
+            const idealDX = keyPoints[keyPoints.length-1].x - keyPoints[0].x;
+            const idealDY = keyPoints[keyPoints.length-1].y - keyPoints[0].y;
+            
+            // Only consider strokes longer than minimum curve length
+            const strokeLength = Math.hypot(idealDX, idealDY);
+            if (strokeLength < canvas.width * AnalysisConfig.MIN_CURVE_LENGTH) {
+                return false;
+            }
+
+            let totalDeviation = 0;
+            keyPoints.forEach(p => {
+                const t = (p.x - keyPoints[0].x) / idealDX;
+                const idealY = keyPoints[0].y + idealDY * t;
+                totalDeviation += (p.y - idealY);
+            });
+
+            const normalizedDeviation = Math.abs(totalDeviation / keyPoints.length);
+            return normalizedDeviation > (AnalysisConfig.CURVE_DEVIATION_THRESHOLD * Math.abs(idealDY));
+        }
+
+        // 7. Hook Detection
+        function detectHookType(keyPoints) {
+            if (keyPoints.length < 4) return null;
+            
+            const finalSegment = keyPoints.slice(-2);
+            const finalDX = finalSegment[1].x - finalSegment[0].x;
+            const finalDY = finalSegment[1].y - finalSegment[0].y;
+            const finalAngle = Math.atan2(finalDY, finalDX) * 180 / Math.PI;
+
+            if (Math.abs(finalAngle) > 100) return StrokeTypes.RIGHT_HOOK;
+            if (Math.abs(finalAngle) < 80) return StrokeTypes.LEFT_HOOK;
+
+            if (finalAngle > 45 && finalAngle < 135) {
+                const penultimateSegment = keyPoints.slice(-3, -1);
+                const penAngle = Math.atan2(
+                penultimateSegment[1].y - penultimateSegment[0].y,
+                penultimateSegment[1].x - penultimateSegment[0].x
+                ) * 180/Math.PI;
+                
+                if (Math.abs(penAngle - finalAngle) > 45) {
+                return StrokeTypes.CURVE_RIGHT;
+                }
+            }
+            
+            return null;
+        }
+
+        function validateKanjiStrokes(userStrokes, kanji) {
+            const expectedStrokes = KanjiStrokeMap[kanji];
+            if (!expectedStrokes || userStrokes.length !== expectedStrokes.length) {
+                return 0;
+            }
+
+            let correctCount = 0;
+            userStrokes.forEach((stroke, index) => {
+                const detectedType = analyzeStroke(stroke.points, canvas.width);
+                if (detectedType === expectedStrokes[index]) {
+                    correctCount++;
+                }
+            });
+
+            return (correctCount / expectedStrokes.length) * 100;
+        }
+
+        async function validateStrokeOrder(userStrokes, kanjiData) {
+        try {
+            const canvas = document.getElementById('kanjiCanvas');
+            const allValidPatterns = [
+            kanjiData.strokeTypes,
+            ...(kanjiData.alternativeStrokeTypes || [])
+            ];
+
+            let bestAccuracy = 0;
+            let bestPattern = null;
+            let detectedTypes = [];
+
+            // Validate against all patterns
+            for (const pattern of allValidPatterns) {
+            if (userStrokes.length !== pattern.length) continue;
+            
+            let correctCount = 0;
+            const currentDetected = [];
+            
+            for (let i = 0; i < pattern.length; i++) {
+                const detectedType = analyzeStroke(userStrokes[i], canvas.width);
+                currentDetected.push(detectedType);
+                if (directionMatches(pattern[i], detectedType)) {
+                correctCount++;
+                }
+            }
+            
+            const accuracy = (correctCount / pattern.length) * 100;
+            if (accuracy > bestAccuracy) {
+                bestAccuracy = accuracy;
+                bestPattern = pattern;
+                detectedTypes = currentDetected;
+            }
+            }
+
+            // Console logging
+            console.groupCollapsed(`Stroke Validation for ${kanjiData.kanji}`);
+            if (bestPattern) {
+            console.log('Matching Pattern:', bestPattern === kanjiData.strokeTypes ? 
+                'Official' : 'Alternative');
+            
+            console.table(bestPattern.map((expected, index) => ({
+                'Stroke #': index + 1,
+                'Expected': expected,
+                'Detected': detectedTypes[index],
+                'Match': directionMatches(expected, detectedTypes[index]) ? '✓' : '✗'
+            })));
+            
+            console.log(`Final Accuracy: ${bestAccuracy.toFixed(2)}%`);
+            } else {
+            console.log('No matching stroke patterns found');
+            }
+            console.groupEnd();
+
+            return bestAccuracy;
+
+        } catch (error) {
+            console.error('Validation error:', error);
+            return 0;
+        }
+        }
+
+        // Will open this when OCR adaption development began
+
+        //async function validateWithOCR(imageData, expected) {
+        //    try {
+        //        const response = await fetch('/ocr-validate', {
+        //            method: 'POST',
+        //            headers: {'Content-Type': 'application/json'},
+        //            body: JSON.stringify({
+        //                image: imageData,
+        //                expected: expected,
+        //                lang: 'ja'
+        //            })
+        //        });
+        //        return (await response.json()).result;
+        //    } catch {
+        //        return false;
+        //    }
+        //}
+
+        function resetCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            strokes = [];
         }
 
         // Update progress bar
