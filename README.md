@@ -13,8 +13,8 @@ This is a much smaller update as I have difficulty figuring up new Question Type
 1. License Change as mentioned above.
 2. Introducing Question Type 6, Type 6c to be precise for Japanese Kanji ( it will rename to 6a once I merge it with Hanzi and Hanja ). This is a character-stroke recognition question that only appear in Handwrite Circle (`handwritecirc` in `lesson_progress.json`). Basically what you do is write on a canvas and the code will check whether it is in correct order or not.
    - The process of develop this have throw me out. I originally want to utilize [KanjiVG](https://github.com/KanjiVG/kanjivg) to do some kind of SVG-stroke check, however it ended up a catastrophe with the entire expected stroke inverted, and that the code have no clue how to deal with `startPoint` and `endPoint`.
-   - Even when I change the way the codebase to recognize stroke using 6-points circle measure. It works surprisingly OK, but it might have issue expanding to much more specific stroke. (`CURVE` is stated in the code but I have no idea what is the stroke for the code to recognize `CURVE`)
-   - OCR Validation doesn't worked at the moment.
+   - Even when I change the way the codebase to recognize stroke using 6-points circle measure. It works surprisingly OK, but it might have issue expanding to much more specific stroke. (`CURVE` is stated in the code but I have no idea what is the stroke for the code to recognize `CURVE` without getting `LEFT_FALLING` or `RIGHT_FALLING`)
+   - OCR Validation is not available to make it more local-available.
 3. Remove clutter in `question.html`. Also met the same fate as last update's `mainnightly.html`.
 
 Yup, that's it. Just three. The next step would be Type 5 ( many-subquestion phrase/grammar/vocabulary question ) and Type 1a 1b ( Split `translation` and `word` for either answer or question ).
@@ -120,9 +120,11 @@ After that, go to your web browser and enter `http://localhost:7500/mainnightly.
 
 ## Disclaimer 
 
-Yes I know. Some people hate AI tools with a passion especially when they are using a language-teaching application. The concerns like mispronunciation and low quality teaching content are legitimate and I am NOT going to deny that. Despite massive usage of AI in this project, I open my doors to those who want to help this project voluntarily or pull requests. And also, I did not ask for your opinions on using AI instead of real programmer and your argument of "AI replacing human's jobs".
+Well, if you are here to blame my blatant usage of LLMs or AI, sure go on. I do not *code* my own code.
 
-This topic have been discussed for who-knows-how-many times, and if you just don't like how grey is Deepseek or AI in general, just don't use this and move on to better alternatives.
+This doesn't mean I am illiterate with code syntax and content however. In regards to literacy, there are real vulnerabilities when you entrust LLM on cybersecurity/API stuff, especially when YOU simply *vibe coding* and never ever understand even a slightest of their code. Even though it delivers, you as a developer is putting yourself in a great risk of getting DDoS attack once you put yourself publicly. Not like you should avoid entrust LLM for anything, but remember I hold the responsibility to my Internet accounts, and I do not endorse any idea to allow my code to attack my networking for the slightest.
+
+Hence, this repository will be ENTIRELY local-based and offline-available. Stuffs like Profile and Shop will be set using a default JSON which you can edit whatever you like. ( Although it's decorative with no real purposes offline ). I still planned to launch an online version of the application ( with some alteration of the code ) but backend development is a field that I have never enter before. 
 
 ## License
 
