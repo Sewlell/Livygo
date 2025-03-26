@@ -36,6 +36,7 @@
             height: 100vh;
             overflow-y: auto;
             background-color: #e4e4e4;
+            padding-top: 0;
         }
 
         .right-section {
@@ -48,7 +49,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #e4e4e4;
+            padding: 20px 0;
+            margin-bottom: 0;
+        }
+
+        #pathway-circle {
+            padding: 20px;
         }
 
         .section-container {
@@ -278,6 +288,21 @@
             border: 1px solid #eee;
         }
 
+        .sub-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px 0;
+        }
+
+        .error {
+            color: #721c24;
+            padding: 1rem;
+            background: #f8d7da;
+            border-radius: 8px;
+            margin: 1rem;
+        }
+
         /* Hover effects */
         .flag-button:hover:not(.active-flag) {
             background-color: #f0f0f0;
@@ -399,20 +424,149 @@
             align-items: center;
             min-height: 60px;
         }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 15px;
+        }
+
+        .profile-title {
+            margin: 0;
+            color: #8B0000;
+        }
+
+        .profile-container {
+            position: fixed;
+            top: 0;
+            left: 20%;
+            width: 60%;
+            height: 100vh;
+            background: white;
+            z-index: 2001;
+            padding: 2rem;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            transform: translateX(175%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            bottom: -40px;
+            left: 30px;
+            pointer-events: none;
+        }
+
+        .profile-container.active {
+            transform: translateX(30%);
+            pointer-events: auto;
+        }
+
+        .profile-banner {
+        position: relative;
+        height: 200px;
+        background: #f0f0f0;
+        border-radius: 12px;
+        overflow: visible;
+        }
+
+        #profileBanner {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        }
+
+        .avatar-container {
+        position: absolute;
+        bottom: -40px;
+        left: 20px;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 3px solid white;
+        overflow: hidden;
+        background: #fff;
+        z-index: 3;
+        }
+
+        #profileAvatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        }
+
+        .edit-profile-btn {
+            position: absolute;
+            right: 20px;
+            background: #8B0000;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .username {
+            margin-top: 50px;
+            margin-bottom: 1rem;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f8f8;
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #8B0000;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Achievements Section */
+        .achievements-section {
+            margin-top: 2rem;
+        }
+
+        .achievements-section h3 {
+            color: #8B0000;
+            margin-bottom: 1.5rem;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .achievement-item {
+            text-align: center;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
     <div class="left-section">
         <button class="flag-button">🏪 Shop</button>
-        <button class="flag-button">👤 Profile</button>
+        <button class="flag-button" onclick="showProfile()">👤 Profile</button>
         <button id="pathway-btn" class="flag-button active-flag">
             📚 Pathway
         </button>
-        <div class="sub-options" id="pathway-options">
-            <button name="practice-general" class="flag-option" data-subcourse="General">General</button>
-            <button name="practice-vocabulary" class="flag-option" data-subcourse="Vocabulary">Vocabulary</button>
-            <button name="practice-grammar" class="flag-option" data-subcourse="Grammar">Grammar</button>
-        </div>
+        <div class="sub-options" id="pathway-options"></div>
         <button id="practice-btn">Practice</button>
         <div class="sub-options" id="practice-options">
             <button>General</button>
@@ -450,6 +604,48 @@
 
     <div id="global-dropdown-container" class="global-dropdown-container"></div>
 
+    <div class="profile-container">
+        <div class="profile-header">
+          <button class="back-btn" onclick="hideProfile()">← Back</button>
+          <h2 class="profile-title">Profile</h2>
+          <button class="edit-profile-btn">✎ Edit</button>
+        </div>
+        <div class="profile-content">
+          <div class="profile-banner">
+            <img src="" alt="Profile banner" id="profileBanner">
+            <div class="avatar-container">
+              <img src="" alt="Avatar" id="profileAvatar">
+            </div>
+          </div>
+          <div class="profile-info">
+            <h1 id="profileUsername" class="username"></h1>
+            <p id="profileBio" class="bio"></p>
+            
+            <!-- Stats Section -->
+            <div class="stats-section">
+              <div class="stat-item">
+                <div class="stat-value" id="streakCount">0</div>
+                <div class="stat-label">Day Streak</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="xpCount">0</div>
+                <div class="stat-label">Total XP</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="coursesCount">0</div>
+                <div class="stat-label">Courses</div>
+              </div>
+            </div>
+      
+            <!-- Achievements Section -->
+            <div class="achievements-section">
+              <h3>Achievements</h3>
+              <div id="achievementsList" class="achievements-grid"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
@@ -470,6 +666,7 @@
 
         // Initialize with both parameters
         function init() {
+            loadSubCourses(currentLang);
             updatePathway();
         }
         init();
@@ -482,15 +679,21 @@
         });
     
         document.querySelectorAll('#coursesDropdown div').forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', async function() {
                 if (this.classList.contains('add-course')) return;
                 
                 currentLang = this.dataset.lang;
-                currentSubCourse = 'General';
-                // Extract text after flag emoji
                 const langName = this.textContent.split(' ').slice(1).join(' ');
                 document.getElementById('currentCourse').textContent = langName;
                 document.getElementById('coursesDropdown').style.display = 'none';
+                
+                // Load new subcourses and validate selection
+                await loadSubCourses(currentLang);
+                const validSubCourse = document.querySelector(`#pathway-options [data-subcourse="${currentSubCourse}"]`);
+                if (!validSubCourse) {
+                    currentSubCourse = document.querySelector('#pathway-options button')?.dataset.subcourse || '';
+                }
+                
                 localStorage.setItem('selectedLang', currentLang);
                 localStorage.setItem('selectedSubCourse', currentSubCourse);
                 updatePathway();
@@ -682,27 +885,38 @@
         }
 
         async function loadSubCourses(lang) {
-            const subCourses = await fetch(`/courses/${lang}/sub_courses.json`)
-                .then(r => r.json())
-                .catch(() => []);
-
             const pathwayOptions = document.getElementById('pathway-options');
-            pathwayOptions.innerHTML = subCourses.map(sc => `
-                <button class="flag-option" 
-                    data-subcourse="${sc.id}"
-                    onclick="selectSubCourse('${sc.id}')">
-                    ${sc.icon} ${sc.title}
-                </button>
-            `).join('');
+            pathwayOptions.innerHTML = ''; // Clear existing buttons
+
+            try {
+                const response = await fetch(`courses/${lang}/sub_courses.json`);
+                const { sub_courses } = await response.json();
+
+                sub_courses.forEach(sc => {
+                    const button = document.createElement('button');
+                    button.className = 'flag-option';
+                    button.dataset.subcourse = sc.id.toLowerCase(); 
+                    button.innerHTML = `${sc.icon} ${sc.title}`;
+                    button.addEventListener('click', () => selectSubCourse(sc.id));
+                    pathwayOptions.appendChild(button);
+                });
+
+                if (sub_courses.length > 0) {
+                        const isValid = sub_courses.some(sc => sc.id === currentSubCourse);
+                        if (!isValid) currentSubCourse = sub_courses[0].id;
+                        localStorage.setItem('selectedSubCourse', currentSubCourse);
+                    }
+            } catch (error) {
+                console.error('Failed to load subcourses:', error);
+                pathwayOptions.innerHTML = '<div class="error">No subcourses available</div>';
+            }
         }
 
-        document.querySelectorAll('#pathway-options button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                currentSubCourse = this.dataset.subcourse;
-                localStorage.setItem('selectedSubCourse', currentSubCourse);
-                updatePathway();
-            });
-        });
+        function selectSubCourse(subCourseId) {
+            currentSubCourse = subCourseId;
+            localStorage.setItem('selectedSubCourse', currentSubCourse);
+            updatePathway();
+        }
 
         function createGuidebookContainer() {
             if (!guidebookContainer) {
@@ -1075,6 +1289,84 @@
     
         // Initialize pathway
         updatePathway(currentLang);
+
+
+
+
+
+
+
+
+
+
+        // Profile Stuff
+
+        let profileData = null;
+
+        async function loadProfile() {
+        try {
+            const response = await fetch('profile.json');
+            profileData = await response.json();
+            updateProfileDisplay();
+        } catch (error) {
+            console.error('Error loading profile:', error);
+        }
+        }
+
+        function updateProfileDisplay() {
+        document.getElementById('profileUsername').textContent = profileData.profile.username;
+        document.getElementById('profileBio').textContent = profileData.profile.bio;
+        document.getElementById('profileBanner').src = profileData.profile.banner;
+        document.getElementById('profileAvatar').src = profileData.profile.avatar;
+        }
+
+        function showProfile() {
+        const container = document.querySelector('.profile-container');
+        container.classList.add('active');
+        loadProfile();
+        }
+
+        function hideProfile() {
+        document.querySelector('.profile-container').classList.remove('active');
+        }
+
+        // Add event listener to profile button
+        document.querySelector('.flag-button:nth-of-type(2)').addEventListener('click', showProfile);
+
+        // Edit functionality
+        document.querySelector('.edit-profile-btn').addEventListener('click', () => {
+        // Implement edit modal
+        const newBio = prompt('Enter new bio:', profileData.profile.bio);
+        if(newBio) {
+            profileData.profile.bio = newBio;
+            updateProfileDisplay();
+            // Here you would typically send to backend
+        }
+        });
+
+        function updateProfileDisplay() {
+        // Basic Info
+        document.getElementById('profileUsername').textContent = profileData.profile.username;
+        document.getElementById('profileBio').textContent = profileData.profile.bio;
+        document.getElementById('profileBanner').src = profileData.profile.banner;
+        document.getElementById('profileAvatar').src = profileData.profile.avatar;
+
+        // Stats
+        document.getElementById('streakCount').textContent = profileData.profile.stats.streak;
+        document.getElementById('xpCount').textContent = profileData.profile.stats.xp;
+        document.getElementById('coursesCount').textContent = profileData.profile.stats.courses_completed;
+
+        // Achievements
+        const achievementsList = document.getElementById('achievementsList');
+        achievementsList.innerHTML = profileData.profile.achievements
+            .map(achievement => `
+            <div class="achievement-item">
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-title">${achievement.title}</div>
+                <small class="achievement-date">${achievement.date}</small>
+            </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
             "guidcode": "GRAMMAR-001",
             "title": "Grammar Guides",
             "chapters": ["GB-001001", "GB-001002"],
+            "relatedCircles": ["001001", "001002","001003"],
             "icon": "grammar.svg"
         }
     ],

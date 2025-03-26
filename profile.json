@@ -1,0 +1,25 @@
+{
+  "profile": {
+    "username": "LivyLivy123",
+    "bio": "cheesy rice jesus",
+    "avatar": "images/default.png",
+    "banner": "images/banner.jpg",
+    "stats": {
+      "streak": 5,
+      "xp": 450,
+      "courses_completed": 2
+    },
+    "achievements": [
+      {
+        "title": "First Lesson",
+        "icon": "🥇",
+        "date": "2023-08-20"
+      },
+      {
+        "title": "Week Streak",
+        "icon": "🔥",
+        "date": "2023-08-25"
+      }
+    ]
+  }
+}

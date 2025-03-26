@@ -242,6 +242,7 @@
             margin-top: 1rem;
             border-radius: 8px;
             border: 2px dashed #ccc;
+            margin-bottom: 1.2rem !important;
         }
 
         .blocks-tray, .sentence-builder {
@@ -365,6 +366,116 @@
             transform: none !important;
             pointer-events: none !important;
         }
+
+        /* Type 5 Specific Styling */
+        .type5-blank {
+            width: 120px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid #8B0000;
+            padding-bottom: 8px;
+        }
+
+        .type5-answer-slot {
+            background: #f0f0f0;
+            min-height: 36px;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        .blank-container {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+            flex-direction: column;
+            margin: 0 8px;
+            min-height: 60px;
+        }
+
+        .blank-number {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .text-input-group {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-number {
+            font-weight: bold;
+            color: #8B0000;
+            min-width: 30px;
+        }
+
+        .draggable {
+            background-color: #8B0000;
+            cursor: grab;
+            transition: transform 0.2s;
+        }
+
+        .dropped-block {
+            background-color: #666 !important;
+            cursor: pointer !important;
+            opacity: 0.9;
+            transform: scale(0.95);
+            top: -6px;
+            margin: 8px 0;
+        }
+
+        .type5-instruction {
+            color: #444;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem !important;
+        }
+
+        /* Translation text spacing */
+        .type5-question p {
+            margin: 1.5rem 0 !important;
+            padding: 0.5rem 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .input-mode-selector {
+            margin: 1.2rem 0;
+        }
+
+        .question-origin {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            color: white;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .question-origin.visible {
+            opacity: 0.9;
+            transform: translateY(0);
+        }
+        .question-origin.relearn {
+            background: #FFA500;
+            box-shadow: 0 2px 4px rgba(255,165,0,0.3);
+        }
+        .question-origin.new {
+            background: #4CAF50;
+            box-shadow: 0 2px 4px rgba(76,175,80,0.3);
+        }
     </style>
 </head>
 <body>
@@ -379,13 +490,15 @@
 
     <div class="activity" id="activity"></div>
 
+    <div class="question-origin" id="questionOrigin"></div>
+
     <script src="https://unpkg.com/wanakana@5.3.1/wanakana.min.js"></script>
     <script>
         // Configuration
         const urlParams = new URLSearchParams(window.location.search);
         const currentCode = urlParams.get('code') || '001001';
         const basePath = urlParams.get('basePath') || '/courses/ES-en/General/001/';
-        const lang = urlParams.get('lang') || 'ES-en';
+        const lang = urlParams.get('lang') || 'JP-en';
         const subcourse = urlParams.get('subcourse') || 'General';
 
         // New path construction
@@ -404,6 +517,7 @@
         let type2Data = [];
         let type3Data = [];
         let type4Data = [];
+        let type5Data = [];
         let type6Data = [];
         let enableOCR = true;
         let enabledQuestionTypes = ['type1', 'type2', 'type3', 'type4'];
@@ -411,6 +525,8 @@
         let relearnType2 = JSON.parse(localStorage.getItem(`relearnType2_${lang}`)) || [];
         let lessonProgress = {};
         let currentLesson = null;
+        let pathwayStructure = [];
+        let newQuestionRatio = 0.8;
 
         // Type 6 stuff
         let strokes = [];
@@ -428,7 +544,8 @@
             // Load pathway structure first
             fetch(`/courses/${lang}/${subcourse}/pathway_structure.json`)
             .then(response => response.json())
-            .then(pathwayStructure => {
+            .then(fetchedPathway => {
+                pathwayStructure = fetchedPathway;
                 // Find the current section
                 const numericCode = parseInt(currentCode);
                 const section = pathwayStructure.find(s => 
@@ -437,13 +554,11 @@
                         numericCode <= range.rangeEnd
                     )
                 );
-
-                const currentCircle = pathwayStructure.find(s => 
-                    s.addressMap.some(range => 
-                        numericCode >= range.rangeStart && 
-                        numericCode <= range.rangeEnd
-                    )
+                const matchedRange = section.addressMap.find(range => 
+                    numericCode >= range.rangeStart && 
+                    numericCode <= range.rangeEnd
                 );
+                const dynamicBasePath = matchedRange.path; // Use the actual path from addressMap
 
 
                 
@@ -468,6 +583,9 @@
                     enabledQuestionTypes.includes('type4') ? 
                         fetch(`${dynamicBasePath}type4_sentence.json`).then(res => res.json()) : 
                         Promise.resolve([]),
+                    enabledQuestionTypes.includes('type5') ? 
+                        fetch(`${dynamicBasePath}type5_context.json`).then(res => res.json()) : 
+                        Promise.resolve([]),
                     enabledQuestionTypes.includes('type6') ? 
                         fetch(`${dynamicBasePath}type6_characters.json`)
                             .then(res => res.json())
@@ -482,7 +600,9 @@
                         Promise.resolve([])
                 ]);
             })
-            .then(([progressData, cutsceneData, vocab, grammar, listening, sentence, type6]) => {
+            .then(([progressData, cutsceneData, vocab, grammar, listening, sentence, type5, type6]) => {
+                
+                type5Data = type5 || [];
                 type6Data = type6 || [];
                 // Ensure progressData is array
                 if (!Array.isArray(progressData)) {
@@ -501,9 +621,11 @@
                                 practicecirc: false,
                                 relearnpool: true
                             };
+    
+                console.log('Lesson initialized:', currentLesson); // Debug log
 
                 // Update questionsPerLesson
-                questionsPerLesson = currentLesson.questionsPerLesson || 10;
+                questionsPerLesson = currentLesson.questionsPerLesson;
                 
                 // Store updated progress
                 if (!storedProgress.some(lp => lp.code === currentCode)) {
@@ -538,6 +660,23 @@
                         CodeParser.compare(item.code, currentLesson.praclimit || '',
                         q => q.blocks && Array.isArray(q.blocks))
                     ) : [];
+
+                type5Data = enabledQuestionTypes.includes('type5') ? 
+                    type5.filter(item => 
+                        item.code.startsWith(baseCode) && 
+                        CodeParser.compare(item.code, currentLesson.praclimit || '') 
+                    ) : [];
+
+
+                    console.log('Fetched data:', { 
+                    vocab: vocab.length, 
+                    grammar: grammar.length 
+                });
+                
+                console.log('Filtered questions:', { 
+                    type1: type1Data.length, 
+                    type2: type2Data.length 
+                });
 
                 // Handle cutscenes
                 const currentCutscene = cutsceneData.find(c => c.code === currentCode);
@@ -660,6 +799,8 @@
 
         // Modified generateNextQuestion
         function generateNextQuestion() {
+            console.log("=== GENERATE NEXT QUESTION START ===");
+            performance.mark("questionStart");
             window.isAnswered = false;
             disableButtons(true);
             
@@ -669,47 +810,145 @@
                     return;
                 }
 
-                // Validate pools
-                const validatePool = (pool) => {
-                    if (!Array.isArray(pool)) throw new Error('Invalid pool');
-                    return pool.filter(q => q && (q.word || q.blank || q.audio || q.kanji));
-                };
+                // 1. Get configuration values with fallbacks
+                const usingQuestionRatio = currentLesson.questionRatio && 
+                                        currentLesson.questionRatio.length > 0 &&
+                                        !currentLesson.practicecirc &&
+                                        !currentLesson.handwritecirc;
 
+                const newQuestionRatio = pathwayStructure.settings?.newQuestionRatio ?? 0.8;
+                const totalNew = currentLesson.practicecirc ? 0 : 
+                    Math.floor(questionsPerLesson * newQuestionRatio);
+                const totalRelearn = questionsPerLesson - totalNew;
+
+                // 2. Prepare question pools
                 let questionPool = [];
-                    if(currentLesson.practicecirc) {
-                        questionPool = [
-                            ...validatePool(relearnType1),
-                            ...validatePool(relearnType2)
-                        ];
+                
+                // New questions (either ratio-based or random)
+                if (totalNew > 0) {
+                    if (usingQuestionRatio) {
+                        // Ratio-based selection
+                        const normalizedRatio = [...currentLesson.questionRatio, 0, 0, 0].slice(0, 6);
+                        questionPool.push(...getQuestionsByRatio(
+                            [type1Data, type2Data, type3Data, type4Data, type5Data, type6Data],
+                            normalizedRatio,
+                            totalNew
+                        ));
                     } else {
-                        questionPool = [
-                            ...(enabledQuestionTypes.includes('type1') ? validatePool(type1Data) : []),
-                            ...(enabledQuestionTypes.includes('type2') ? validatePool(type2Data) : []),
-                            ...(enabledQuestionTypes.includes('type3') ? validatePool(type3Data) : []),
-                            ...(enabledQuestionTypes.includes('type4') ? validatePool(type4Data) : []),
-                            ...(enabledQuestionTypes.includes('type6') ? validatePool(type6Data) : [])
-                        ];
-                        
-                        if(currentLesson.relearnpool) {
-                            const relearnPool = [
-                                ...validatePool(relearnType1),
-                                ...validatePool(relearnType2)
-                            ];
-                            questionPool = getQuestionMix(relearnPool, questionPool, 0.2);
-                        }
+                        // Fallback: Random selection from enabled types
+                        questionPool.push(...getRandomQuestionsFromEnabledTypes(totalNew));
                     }
+                }
 
+                // Relearn questions
+                if (totalRelearn > 0) {
+                    const relearnQuestions = getRelearnQuestions(
+                        [relearnType1, relearnType2, [], [], [], []],
+                        totalRelearn
+                    );
+                    questionPool.push(...relearnQuestions);
+                }
+
+                // 3. Handle specialized circles
+                if (currentLesson.handwritecirc) {
+                    questionPool = questionPool.filter(q => q.kanji);
+                    enabledQuestionTypes = ['type6'];
+                }
+
+                // 4. Select and display question
                 currentQuestion = getRandomQuestion(questionPool);
                 if (!currentQuestion) throw new Error('No valid questions found');
-
+                
                 displayQuestion(currentQuestion);
                 questionsCompleted++;
                 updateProgress();
                 disableButtons(false);
+
+                performance.mark("questionEnd");
+                performance.measure("questionDuration", "questionStart", "questionEnd");
+                console.log("Question generation took:", 
+                performance.getEntriesByName("questionDuration")[0].duration.toFixed(2), "ms");
+
             } catch (error) {
                 console.error('Question generation error:', error);
                 showError("Question loading failed. Redirecting...");
                 setTimeout(() => window.location.href = 'mainnightly.html', 2000);
+            }
+        }
+
+        // Helper: Get questions distributed by ratio
+        function getQuestionsByRatio(typePools, ratio, count) {
+            const totalWeight = ratio.reduce((sum, w) => sum + w, 0);
+            if (totalWeight === 0) return [];
+            
+            const questions = [];
+            const typeCounts = ratio.map(w => Math.round((w / totalWeight) * count));
+
+            typePools.forEach((pool, index) => {
+                const available = pool.filter(q => 
+                    enabledQuestionTypes.includes(`type${index+1}`) &&
+                    CodeParser.compare(q.code, currentLesson.praclimit || '')
+                );
+                questions.push(...shuffleArray(available).slice(0, typeCounts[index]));
+            });
+
+            return shuffleArray(questions).slice(0, count);
+        }
+
+        function getRandomQuestionsFromEnabledTypes(count) {
+            const MAX_ATTEMPTS = count * 2; // Prevent infinite loops
+            let attempts = 0;
+            const availableTypes = enabledQuestionTypes
+                .map(t => parseInt(t.replace('type', '')) - 1);
+            
+                const questions = [];
+                while (questions.length < count && attempts < MAX_ATTEMPTS) {
+                    const typeIndex = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+                    const pool = [type1Data, type2Data, /*...*/][typeIndex];
+                    
+                    if (pool.length > 0) {
+                    const question = pool[Math.floor(Math.random() * pool.length)];
+                    if (!questions.includes(question)) {
+                        questions.push(question);
+                    }
+                    }
+                    attempts++;
+                }
+                
+                console.log(`[Debug] getRandomQuestionsFromEnabledTypes found ${questions.length}/${count} after ${attempts} tries`);
+                return questions.slice(0, count); // Return whatever was found
+        }
+
+        // Helper: Get relearn questions balanced between types
+        function getRelearnQuestions(relearnPools, count) {
+            const questions = [];
+            const typeWeights = [50, 50, 0, 0, 0, 0]; // Force 50/50 split for type1/type2
+            
+            while (questions.length < count) {
+                const typeIndex = weightedRandom(relearnPools.map((p, i) => ({
+                    weight: typeWeights[i],
+                    value: i
+                })));
+                
+                const pool = relearnPools[typeIndex];
+                if (pool.length > 0) {
+                    const qIndex = Math.floor(Math.random() * pool.length);
+                    questions.push(pool[qIndex]);
+                }
+            }
+            
+            return questions.slice(0, count);
+        }
+
+        // Helper: Weighted random selection
+        function weightedRandom(options) {
+            const total = options.reduce((sum, {weight}) => sum + weight, 0);
+            const random = Math.random() * total;
+            let current = 0;
+            
+            for (const {weight, value} of options) {
+                current += weight;
+                if (random <= current) return value;
             }
         }
 
@@ -753,11 +992,38 @@
         function displayQuestion(question) {
             const activity = document.getElementById('activity');
             activity.innerHTML = ''; // Clear previous content
+            const originIndicator = document.getElementById('questionOrigin');
 
             try {
+                // Reset indicator
+                originIndicator.classList.remove('visible', 'relearn', 'new');
+
+                // Check origin
+                let isRelearn = false;
+                if (question.word) {
+                    isRelearn = relearnType1.some(q => q.word === question.word);
+                } else if (question.blank) {
+                    isRelearn = relearnType2.some(q => q.blank === question.blank);
+                }
+
+                // Update indicator
+                if (question.word || question.blank) {
+                    originIndicator.textContent = isRelearn ? 'Relearn Pool' : 'New Words';
+                    originIndicator.className = `question-origin ${isRelearn ? 'relearn' : 'new'}`;
+                    
+                    // Animate in after short delay
+                    setTimeout(() => {
+                        originIndicator.classList.add('visible');
+                    }, 300);
+                }
+
                 if (question.kanji) {
                     activity.innerHTML = generateType6Question(question);
                     setTimeout(initCanvas, 50);
+                } else if (question.blanks) {
+                activity.innerHTML = generateType5Question(question);
+                initType5DragDrop(); // Initialize drag-drop
+                return;
                 } else if (question.audio) {
                     // Append audio player container if it doesn't exist
                     if (!document.getElementById('audioPlayer')) {
@@ -793,6 +1059,74 @@
                     throw error;
                 }
             }
+        }
+
+        // Type 4 Specific Distractor Selector
+        function getType4Distractors(currentCode, currentBlocks) {
+            const baseSection = currentCode.substring(0, 3);
+            const currentCircle = currentCode;
+
+            // Get all Type4 questions in the same section
+            const pool = type4Data.filter(q => 
+                q.code.startsWith(baseSection) && 
+                q.code !== currentCircle
+            );
+
+            let distractors = [];
+
+            if (pool.length > 0) {
+                // Case 1: Other circles exist in the section
+                distractors = shuffleArray(pool)
+                .flatMap(q => q.blocks)
+                .filter(block => !currentBlocks.includes(block));
+            } else {
+                // Case 2: No other circles - use artificial distractors
+                const allType4Blocks = type4Data.flatMap(q => q.blocks);
+                distractors = allType4Blocks
+                .filter(block => !currentBlocks.includes(block))
+                .filter((v,i,a) => a.indexOf(v) === i);
+            }
+
+            // Modified distractor selection
+            const availableDistractors = distractors.filter(block => !currentBlocks.includes(block));
+            const maxPossible = Math.min(availableDistractors.length, 5);
+            const numDistractors = maxPossible > 0 ? 
+                Math.floor(Math.random() * maxPossible) + 1 : // Random between 1-maxPossible
+                0;
+
+            return shuffleArray(availableDistractors).slice(0, numDistractors);
+        }
+
+        function getType5Distractors(currentCode, currentQuestion) {
+            const baseSection = currentCode.substring(0, 3);
+            const currentCircle = currentCode;
+
+            // 1. Get all forbidden correct answers
+            const forbiddenCorrect = currentQuestion.blanks.flatMap(b => b.correct);
+
+            // 2. Get limited alternatives (0-1 per blank)
+            const limitedAlternatives = currentQuestion.blanks
+                .flatMap(b => shuffleArray(b.alternatives).slice(0, Math.floor(Math.random() * 2)))
+                .filter(alt => !forbiddenCorrect.includes(alt));
+
+            // 3. Get external distractors from other questions
+            const externalDistractors = type5Data
+                .filter(q => 
+                q.code.startsWith(baseSection) &&
+                q.code !== currentCircle &&
+                !q.code.includes('-')
+                )
+                .flatMap(q => q.blocks)
+                .filter(block => 
+                !forbiddenCorrect.includes(block) &&
+                !limitedAlternatives.includes(block)
+                );
+
+            // 4. Combine and randomize
+            return shuffleArray([
+                ...limitedAlternatives,
+                ...shuffleArray(externalDistractors).slice(0, 5)
+            ]).slice(0, Math.floor(Math.random() * 5) + 1);
         }
 
         // Audio Player Initialization
@@ -914,35 +1248,88 @@
 
         // Type 4 Question Generation
         function generateType4Question(question) {
-            // Shuffle blocks before rendering
-            const shuffledBlocks = shuffleArray([...question.blocks]);
+            // Get 1-5 incorrect blocks from other circles
+            const distractors = getType4Distractors(question.code, question.blocks);
+            const maxDistractors = Math.min(distractors.length, 5);
+            
+            // Combine with original blocks
+            const allBlocks = shuffleArray([...question.blocks, ...distractors]);
             
             return `
                 <div class="question">Build the sentence you heard:</div>
                 <div class="input-mode-selector">
-                    <select id="inputMode" onchange="toggleType4InputMode()">
-                        <option value="blocks">Word Blocks</option>
-                        <option value="text">Type Answer</option>
-                    </select>
+                <select id="inputMode" onchange="toggleType4InputMode()">
+                    <option value="blocks">Word Blocks</option>
+                    <option value="text">Type Answer</option>
+                </select>
                 </div>
                 <!-- Blocks Mode -->
                 <div id="blocksMode">
-                    <div class="blocks-tray" id="initialTray">
-                        ${shuffledBlocks.map(block => `
-                            <div class="word-block" onclick="moveBlock(this)">${block}</div>
-                        `).join('')}
-                    </div>
-                    <div class="sentence-builder" id="answerTray"></div>
+                <div class="blocks-tray" id="initialTray">
+                    ${allBlocks.map(block => `
+                    <div class="word-block" onclick="moveBlock(this)">${block}</div>
+                    `).join('')}
+                </div>
+                <div class="sentence-builder" id="answerTray"></div>
                 </div>
                 <!-- Text Mode -->
                 <div id="textMode" style="display: none;">
-                    <input type="text" id="type4TextInput" placeholder="Type your answer here" autocomplete="off">
+                <input type="text" id="type4TextInput" placeholder="Type your answer here" autocomplete="off">
                 </div>
                 <button onclick="checkType4Answer()">Submit</button>
             `;
         }
 
-        // Type 5 in the future....
+        // Type 5 Question Generation
+        function generateType5Question(question) {
+            // Get core components
+            const correctAnswers = question.blanks.flatMap(b => b.correct);
+            const distractors = getType5Distractors(question.code, question);
+            
+            // Build final block set
+            const allBlocks = shuffleArray([...correctAnswers, ...distractors]);
+
+            return `
+                <div class="question">
+                <div class="type5-instruction">Drag and Drop the correct answer</div>
+                ${insertNumberedBlanks(question.sentence)}
+                </div>
+                <p>${question.translation}</p>
+                <div class="input-mode-selector">
+                <select id="type5InputMode" onchange="toggleType5InputMode()">
+                    <option value="blocks">Word Blocks</option>
+                    <option value="text">Type Answer</option>
+                </select>
+                </div>
+                
+                <!-- Blocks Mode -->
+                <div id="type5BlocksMode">
+                <div class="blocks-tray" id="type5InitialTray">
+                    ${allBlocks.map(block => `
+                    <div class="word-block draggable" draggable="true">${block}</div>
+                    `).join('')}
+                </div>
+                </div>
+                
+                <!-- Text Mode -->
+                <div id="type5TextMode" style="display: none;">
+                ${generateNumberedTextInputs(question)}
+                </div>
+                
+                <button onclick="validateType5Answer()">Submit</button>
+            `;
+        }
+
+        function insertBlankMarkers(sentence) {
+        return sentence.split('[__]').map((part, index) => `
+            ${part}
+            ${index < sentence.split('[__]').length-1 ? `
+            <div class="type5-blank" id="blank${index}" 
+                ondrop="drop(event, ${index})" 
+                ondragover="allowDrop(event)"></div>
+            ` : ''}
+        `).join('');
+        }
 
 
         // Type 6 Question Generation
@@ -1087,9 +1474,14 @@
         function selectAnswer(selected, correct) {
             if (window.isAnswered) return; // Prevent double-submission
             window.isAnswered = true;
+            disableButtons(true);
             
             const isCorrect = selected === correct;
             showFeedback(isCorrect ? "Correct!" : "Incorrect!", isCorrect ? "correct" : "incorrect");
+
+            // Animate out indicator
+            const originIndicator = document.getElementById('questionOrigin');
+            originIndicator.classList.remove('visible');
 
             // Use currentQuestion directly
             if (currentQuestion && currentQuestion.word) {
@@ -1100,7 +1492,9 @@
                 }
             }
 
-            setTimeout(() => generateNextQuestion(), 1500);
+            setTimeout(() => {
+                generateNextQuestion();
+            }, 1500);
         }
 
         function checkType4Answer() {
@@ -1212,6 +1606,150 @@
             `;
 
             return container;
+        }
+
+
+
+
+
+
+
+        
+        // Type 5
+
+        function initType5DragDrop() {
+            document.querySelectorAll('.draggable').forEach(block => {
+                block.addEventListener('dragstart', dragStart);
+                block.addEventListener('dragend', dragEnd);
+            });
+        }
+
+
+        function generateTextInputs(question) {
+            return question.blanks.map((_, index) => `
+                <input type="text" 
+                    class="type5-text-input" 
+                    data-blank-index="${index}"
+                    placeholder="Blank ${index + 1}"
+                    autocomplete="off">
+            `).join('');
+        }
+
+        function validateType5Answer() {
+            const mode = document.getElementById('type5InputMode').value;
+            let allCorrect = true;
+
+            currentQuestion.blanks.forEach((blank, index) => {
+                const correctAnswers = [...blank.correct, ...blank.alternatives];
+                let userAnswer;
+
+                if (mode === 'blocks') {
+                const blankEl = document.getElementById(`blank${index}`);
+                userAnswer = blankEl.textContent.trim();
+                } else {
+                userAnswer = document.querySelectorAll('.type5-text-input')[index].value.trim();
+                }
+
+                const normalized = normalizeJapanese(userAnswer);
+                const normalizedCorrect = correctAnswers.map(normalizeJapanese);
+                
+                if (!normalizedCorrect.includes(normalized)) {
+                allCorrect = false;
+                }
+            });
+
+            showFeedback(allCorrect ? "Correct!" : "Incorrect!", allCorrect ? "correct" : "incorrect");
+            setTimeout(generateNextQuestion, 1500);
+        }
+
+        function insertNumberedBlanks(sentence) {
+            let blankCount = 0;
+            return sentence.split('[__]').map((part, index) => {
+                if (index === sentence.split('[__]').length - 1) return part;
+                blankCount++;
+                return `${part}<div class="blank-container">
+                <span class="blank-number">[${blankCount}]</span>
+                <div class="type5-blank" id="blank${index}" 
+                    ondrop="drop(event, ${index})" 
+                    ondragover="allowDrop(event)"></div>
+                </div>`;
+            }).join('');
+        }
+
+        function generateNumberedTextInputs(question) {
+            return question.blanks.map((_, index) => `
+                <div class="text-input-group">
+                <span class="input-number">[${index + 1}]</span>
+                <input type="text" 
+                        class="type5-text-input" 
+                        data-blank-index="${index}"
+                        placeholder="Answer for blank ${index + 1}"
+                        autocomplete="off">
+                </div>
+            `).join('');
+        }
+
+        let draggedElement = null;
+
+        function allowDrop(ev) {
+        ev.preventDefault();
+        }
+
+        function dragStart(ev) {
+            ev.target.classList.add('dragging');
+            draggedElement = ev.target;
+        }
+
+        function dragEnd(ev) {
+        ev.target.classList.remove('dragging');
+        }
+
+        function drop(ev, blankIndex) {
+            ev.preventDefault();
+            const targetBlank = document.getElementById(`blank${blankIndex}`);
+            
+            if (targetBlank.children.length === 0 && draggedElement) {
+                // Create clone for answer tray
+                const answerBlock = draggedElement.cloneNode(true);
+                answerBlock.classList.remove('draggable');
+                answerBlock.classList.add('dropped-block');
+                answerBlock.draggable = false;
+                
+                // Add removal handler
+                answerBlock.addEventListener('click', () => {
+                answerBlock.remove();
+                // Restore original block to initial tray
+                const restoredBlock = draggedElement.cloneNode(true);
+                restoredBlock.classList.add('draggable');
+                restoredBlock.draggable = true;
+                document.getElementById('type5InitialTray').appendChild(restoredBlock);
+                initType5DragDrop();
+                });
+
+                // Remove original block from initial tray
+                draggedElement.remove();
+                
+                targetBlank.appendChild(answerBlock);
+            }
+        }
+
+
+        function toggleType5InputMode() {
+            const mode = document.getElementById('type5InputMode').value;
+            
+            if (mode === 'blocks') {
+                // Re-shuffle blocks on mode change
+                const tray = document.getElementById('type5InitialTray');
+                const blocks = Array.from(tray.children);
+                tray.innerHTML = '';
+                shuffleArray(blocks).forEach(block => tray.appendChild(block));
+                initType5DragDrop();
+            }
+            
+            document.getElementById('type5BlocksMode').style.display = 
+                mode === 'blocks' ? 'block' : 'none';
+            document.getElementById('type5TextMode').style.display = 
+                mode === 'text' ? 'block' : 'none';
         }
 
 

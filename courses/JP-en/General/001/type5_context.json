@@ -1,0 +1,34 @@
+[
+    {
+      "code": "001002",
+      "sentence": "テレビを[__]けど、映画は映画館で[__]。",
+      "blanks": [
+        {
+          "correct": ["見る"],
+          "alternatives": ["観る", "見たい"]
+        },
+        {
+          "correct": ["観たい"],
+          "alternatives": ["見る", "聞く"]
+        }
+      ],
+      "blocks": ["見る", "観たい", "聞い"],
+      "translation": "I watch TV, but movies I want to see at the theater."
+    },
+    {
+      "code": "001002",
+      "sentence": "この問題は[__]考える必要が[__]。",
+      "blanks": [
+        {
+          "correct": ["しっかり"],
+          "alternatives": ["ゆっくり", "かなり"]
+        },
+        {
+          "correct": ["ある"],
+          "alternatives": ["いる", "なる"]
+        }
+      ],
+      "blocks": ["しっかり", "ゆっくり", "ある", "なる"],
+      "translation": "This problem needs to be considered carefully."
+    }
+  ]
