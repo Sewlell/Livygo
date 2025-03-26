@@ -1,8 +1,22 @@
-![LivygoLogo2](https://github.com/user-attachments/assets/41ab90ca-ad91-43f6-968c-accd3fef7047)
+
+![LivygoLogo3Transpa](https://github.com/user-attachments/assets/86fe7b58-60ed-4a0e-9f40-aa7af14e3edc)
 
 # Livygo Project
 
 Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its gate wide open to those who want to create their own courses ( Community Courses ) or improve the codebase. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/).
+
+# Development Log : March 26 2025
+
+1. Introducing Question Type 5, a drag-and-drop one-to-many-subquestions question. Basically you got Word Blocks and you drag it to the respective blanks space. You can also type your answer in Type Answer mode.
+2. Add Relearn Pool/New Words indicator. This is for future further development of question shuffle algorithm. It will show up either Green or Yellow on top left corner of your browser. For the time being, it's limiting to only Type 1 and Type 2.
+3. Revamp the question shuffle algorithm completely from being randomized to randomize according to Question Types Ratio and New Question Ratio.
+4. Adding default profile. This is just a decoration for Offline Mode and you could change whatever profile you want in `profile.json` and `/images/`. Obviously this will be different once it is online.
+
+There are still minor issue within this update. As I suspect that the `relearnpool` and `practicecirc` in `lesson_progress.json` toggle simply do not work. Setting `relearnpool` off doesn't turn off the utilization of Relearn Pool and setting the `practicecirc` to `true` doesn't actually forcefully disable New Words Pool from being utilized. Also multiple settings that are unused ( Allowed Variants in that OCR settings for example ) should have remove from this update but I forgot. Eh, I will fix this after couple of more updates.
+
+Next update would be focusing on course questions. This gonna be a hell of a workload to work with so wish me luck.
+
+![Screenshot (42)](https://github.com/user-attachments/assets/25e90b01-8622-4a91-a979-18512069e635)
 
 # Development Log : March 15 2025
 
@@ -50,26 +64,6 @@ Demonstration Video
 https://github.com/user-attachments/assets/95e2d2ab-074d-4bc5-8bfa-874a84cb56eb
 
 
-# Development Log : March 10 2025
-
-This is a very huge update this time. As I able to make a breakthrough in addition of features. Due to how big this update is, I will only cover major feature update here.
-
-1. Add Type 3 and Type 4 questions, Type 3 is listening words questions and Type 4 is listening sentence questions. Both types can be answer either by Selection/Word Blocks or Type Answers input.
-2. Add JP-en course. Of course it's just a small course for now.
-3. Optimize how Relearn Pools works in Focused Circle or Practice Circle.
-4. Add the file `pathway_structure.json`. This file allows user to split Circles into sections and putting all those Question Type files in respective sections. This will allow easier management on creating files compared to former bracket.
-5. Due to updates above, the folder hierachy is also changed with the addition of `courses` folder. All Question Type and `lesson_progress.json` are moved to the `courses/[lang]/...` folder.
-6. Types now can be *optional* with the `enabledQuestionTypes` at `pathway_structure.json`. That mean for future courses like ASL and Chemistry Principles, Type 3 and Type 4 can be opt out completely while using other types.
-
-There are still flaws within this update. For example in Type 3 Questions, you can click numerous answer and jump several questions. I also forgot to set the textbox at Type 3 and Type 4 `autocomplete="off"` before pushing, which caused the textbox to have answer you typed before. I want to make a reversed version of Type 1 ( with a Toggleables or somewhat ) where you got hinted with a foreign words and choose correct translation. Well in overall, I kinda happy with how it have turned out.
-
-Here's the demo video to demonstrate this update.
-
-
-https://github.com/user-attachments/assets/84fabad4-d8a5-4c9e-a515-3420df7950bf
-
-
-
 Former changelog have been archived in Pastebin. [Take a look](https://pastebin.com/XfFGw8cw) if you are interested in development progress.
 
 ## Running Locally
@@ -101,7 +95,7 @@ After that, go to your web browser and enter `http://localhost:7500/mainnightly.
 - [ ] Write a more completed Guidebooks
 - [ ] Hookup AI TTS Voices on Courses
 - [ ] Adaptability of Community Courses
-- [ ] Polish the Logo
+- [x] Polish the Logo
 - [ ] Possible Flashcard Mode and Anki Import (Erm, I guess?)
 - [ ] Livy on Main Page
 - [ ] Alpha Web Launch (not so soon)
