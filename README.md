@@ -5,6 +5,22 @@
 
 Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its gate wide open to those who want to create their own courses ( Community Courses ) or improve the codebase. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/).
 
+# Development Log : June 14 2025
+
+Alright I am back. During this 3 months, I have been laying off this project to focus on something else in my personal life, and will probably return to focus after a couple weeks. I am actually *kinda* failed to reach the goal I have set in March partially due to me procrastinating this project. But welp, this supposed to just be a fun project so it is fine, I can add stuff when I have some brilliant idea or something anytime. And no, I didn't wish to abandon this project anytime soon even though it might be in a hiatus.
+
+Anyway off from this personal update, in this Livygo update :
+
+1. Fix the unresponsive state when try to enter a lesson. I have aware of this and then forgot to give this repo an update when I fix it.
+2. Add New Course page is added, although for now it is just a decoration, but in that page it show courses that I planned to create in the future.
+3. Revamp Japanese for English speakers course into much complete sample course. This is not supposed to be a "from-scratch-to-fluency" course.
+4. You can now access to the `editor` folder to open up a GUI to edit course (Circles, Pathway Structure, Lessons). There will be some settings missing like the inability to toggle `allowUnlimitedPracticePool` and the inability to create Type 6 questions through it,
+5. Spanish for English speakers course's Guidebooks have edited although it is incomplete.
+6. Fix Distractors only focusing on current Circle issue.
+
+![Screenshot (143)](https://github.com/user-attachments/assets/e23602d9-9d90-43ae-88e8-03807f17690a)
+
+
 # Development Log : March 26 2025
 
 1. Introducing Question Type 5, a drag-and-drop one-to-many-subquestions question. Basically you got Word Blocks and you drag it to the respective blanks space. You can also type your answer in Type Answer mode.
@@ -43,27 +59,6 @@ https://github.com/user-attachments/assets/3e419fbb-7b9d-463b-be33-f36dffa3eb5c
 
 
 
-
-# Development Log : March 12 2025
-
-Kinda rush update for this one. Anyway here's the list of feature updates.
-
-1. Changing Circle and Lesson `code` from 4-number (1001,2345,1203-3) to 3-3 combination (0001001,002345,001203-3). This will allows you guy to expand even more Sections for lessons.
-2. Introducing Guidebooks system where you can write your own guide on specific Circle or around the range of Circles using `guide_structure.json`
-   - To differentiate each individual Guidebooks or Guidebooks Categories, I introduce `guidcode` that work similar to normal `code` except no naming limitations, just syntax.
-   - Guidebooks text content use Markdown textfile with most basic syntax supported (Headings, Blockquotes, Code).
-3. Subcourses are now working properly. Basically in this update you will see Spanish (ES-en) split into two parts, General and Vocabulary.
-   - I mean, technically it is just a many-in-one solution for those who like to categorise stuff.
-   - As for current it is limited to 3 Subcourses, General, Vocabulary and Grammar. The title and UI are still fixed, I will add a function where it could dynamically reacts to user's title and number of Subcourses.
-5. Main Page UI Touchup. I got :skull: when I'm working with transition animation on that slide-in slide-out Guidebooks Page and Back Navigation.
-6. Useless functions removed for `mainnightly.html`. Still, there are 1000 lines worth of code in 1 file compared to March 10 thank to that Guidebooks system.
-
-Demonstration Video
-
-
-https://github.com/user-attachments/assets/95e2d2ab-074d-4bc5-8bfa-874a84cb56eb
-
-
 Former changelog have been archived in Pastebin. [Take a look](https://pastebin.com/XfFGw8cw) if you are interested in development progress.
 
 ## Running Locally
@@ -76,6 +71,12 @@ python -m http.server 7500
 
 After that, go to your web browser and enter `http://localhost:7500/mainnightly.html`.
 
+If you wish to open the Editor GUI, enter this command in Terminal/Command Prompt (which you open it in the `editor` folder)
+
+```
+python courseeditor.py
+```
+
 ## Todo Lists and Features (Planned)
 
 - [ ] **Create a Official Course Pathway**
@@ -83,9 +84,8 @@ After that, go to your web browser and enter `http://localhost:7500/mainnightly.
   - [ ]  Spanish (EN)
     - [ ] VOCABULARY
     - [ ] GRAMMAR
-  - [ ]  Japanese (EN)
-    - [ ] VOCABULARY
-    - [ ] GRAMMAR 
+  - [x]  Japanese (EN)
+    - [x] GENERAL
   - [ ]  English (CN)
   - [ ]  Malay (CN)
   - [ ]  American Sign Language
@@ -94,7 +94,7 @@ After that, go to your web browser and enter `http://localhost:7500/mainnightly.
 - [ ] Finish UI Decorations
 - [ ] Write a more completed Guidebooks
 - [ ] Hookup AI TTS Voices on Courses
-- [ ] Adaptability of Community Courses
+- [x] Adaptability of Community Courses
 - [x] Polish the Logo
 - [ ] Possible Flashcard Mode and Anki Import (Erm, I guess?)
 - [ ] Livy on Main Page
@@ -104,8 +104,11 @@ After that, go to your web browser and enter `http://localhost:7500/mainnightly.
 ## Current AI Tools Used
 
 - [DeepSeek R1](https://www.deepseek.com/) by DeepSeek
+- [Gemini 2.5 Pro](https://aistudio.google.com) by Google
 - [GPT o3-mini and 4o](https://chatgpt.com/) by OpenAI (Served as Alternative for DeepSeek)
+
 - [GPT SoVITS](https://github.com/RVC-Boss/GPT-SoVITS) by RVC-Boss
+- [Fish Speech S1 and S1 mini](https://github.com/fishaudio/fish-speech) by Fish Audio
 - [RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) by RVC Project Team
 
 ## Code Credits
