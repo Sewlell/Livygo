@@ -660,6 +660,7 @@
         let type4Data = [];
         let allType4Data = []; 
         let type5Data = [];
+        let allType5Data = [];
         let type6Data = [];
         let enableOCR = true;
         let enabledQuestionTypes = ['type1', 'type2', 'type3', 'type4']; // Default, will be overridden
@@ -838,6 +839,7 @@
 
                 allType1Data = [...vocab];
                 allType4Data = [...sentence];
+                allType5Data = [...type5];
 
                 // --- Filter Questions Based on Lesson Config ---
                 const baseCode = currentCode.split('-')[0]; // Usually the section code like '001'
@@ -1801,7 +1803,7 @@
             }
 
             // 2b. Add External Distractors to Pool
-            const otherQuestions = type5Data.filter(q =>
+            const otherQuestions = allType5Data.filter(q =>
                 q && q !== currentQuestion &&
                 Array.isArray(q.validCombinations) && q.validCombinations.length > 0
             );
