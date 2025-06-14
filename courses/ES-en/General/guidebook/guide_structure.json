@@ -18,12 +18,12 @@
     "guidebooks": [
         {
             "guidcode": "GB-001001",
-            "title": "Sentence Structure",
+            "title": "[Basic] Sentence Structure",
             "parentCategory": "CAT-GRAMMAR-001"
         },
         {
             "guidcode": "GB-001002",
-            "title": "Verb Conjugation",
+            "title": "[A1] Verb Conjugation",
             "parentCategory": "CAT-GRAMMAR-001"
         },
         {
