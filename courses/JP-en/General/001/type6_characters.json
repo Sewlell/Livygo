@@ -1,55 +1,59 @@
 [
-    {
-        "guidcode": "KAN-001004",
-        "kanji": "日",
-        "strokes": 4,
-        "strokeTypes": ["VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"],
-        "variants": ["⽇"]
+    { "code": "001005", "kanji": "一", "strokes": 1,
+        "strokeTypes": ["HORIZONTAL"]
     },
-    {
-        "guidcode": "KAN-001004",
-        "kanji": "月",
-        "strokes": 4,
-        "strokeTypes": ["LEFT_FALLING", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"],
-        "commonErrors": ["⽉"]
+    { "code": "001005", "kanji": "二", "strokes": 2, 
+        "strokeTypes": ["HORIZONTAL","HORIZONTAL"]
     },
-    {
-        "guidcode": "KAN-001004",
-        "kanji": "心",
-        "strokes": 4,
-        "strokeTypes": [
-            "LEFT_FALLING",
-            "DOT",       
-            "RIGHT_FALLING",
-            "RIGHT_FALLING"
-        ],
-        "commonErrors": ["⺗"]
+    { "code": "001005", "kanji": "三", "strokes": 3,
+        "strokeTypes": ["HORIZONTAL","HORIZONTAL","HORIZONTAL"]
     },
-    {
-        "guidcode": "KAN-001004",
-        "kanji": "間",
-        "strokes": 12,
-        "strokeTypes": [
-            "VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL",
-            "VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL",
-            "VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"
-        ]
+    { "code": "001005", "kanji": "人", "strokes": 2, "variants": ["亻"],
+        "strokeTypes": ["CURVE_LEFT","RIGHT_FALLING"]
     },
-    {
-        "guidcode": "KAN-001004",
-        "kanji": "朝",
-        "strokes": 12,
-        "strokeTypes": [
-            "HORIZONTAL", "VERTICAL", "VERTICAL", "RIGHT_FALLING",
-            "HORIZONTALL", "HORIZONTAL", "HORIZONTAL", "VERTICAL",
-            "LEFT_FALLING", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"
-        ],
-        "alternativeStrokeTypes": [
-        [
-            "VERTICAL", "HORIZONTAL", "VERTICAL", "RIGHT_FALLING",
-            "HORIZONTAL", "HORIZONTAL", "VERTICAL", "HORIZONTAL",
-            "LEFT_FALLING", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"
-        ]
-        ]
+    { "code": "001005", "kanji": "日", "strokes": 4, "variants": ["⽇"],
+        "strokeTypes": ["VERTICAL", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"]
+    },
+    { "code": "001005", "kanji": "月", "strokes": 4, "commonErrors": ["⽉"],
+        "strokeTypes": ["CURVE_LEFT", "RIGHT_FALLING", "HORIZONTAL", "HORIZONTAL"]
+    },
+    { "code": "001010", "kanji": "食", "strokes": 9, 
+        "strokeTypes": ["CURVE_LEFT", "CURVE_RIGHT", "DOT", "RIGHT_FALLING","HORIZONTAL","HORIZONTAL","RIGHT_FALLING","DOT","RIGHT_FALLING"],
+        "alternativeStrokeTypes": [["CURVE_LEFT", "CURVE_RIGHT", "DOT", "RIGHT_FALLING","HORIZONTAL","HORIZONTAL","RIGHT_FALLING","RIGHT_FALLING","DOT"]]
+    },
+    { "code": "001010", "kanji": "飲", "strokes": 12,
+        "strokeTypes": ["CURVE_LEFT", "CURVE_RIGHT", "DOT", "RIGHT_FALLING","HORIZONTAL","HORIZONTAL","RIGHT_FALLING","DOT","CURVE_LEFT","RIGHT_FALLING","CURVE_LEFT","RIGHT_FALLING"]
+    },
+    { "code": "001010", "kanji": "見", "strokes": 7,
+        "strokeTypes": ["VERTICAL","RIGHT_FALLING","HORIZONTAL","HORIZONTAL","HORIZONTAL","CURVE_LEFT","CURVE_LEFT"]
+    },
+    { "code": "001010", "kanji": "行", "strokes": 6,
+        "strokeTypes": ["CURVE_LEFT","CURVE_LEFT","VERTICAL","HORIZONTAL","HORIZONTAL","LEFT_FALLING"]
+    },
+    { "code": "001010", "kanji": "来", "strokes": 7,
+        "strokeTypes": ["HORIZONTAL","DOT","DOT","HORIZONTAL","VERTICAL","CURVE_LEFT","CURVE_RIGHT"],
+        "alternativeStrokeTypes": [["VERTICAL","HORIZONTAL","DOT","DOT","HORIZONTAL","CURVE_LEFT","CURVE_RIGHT"],
+                                    ["VERTICAL","HORIZONTAL","LEFT_FALLING","RIGHT_FALLING","HORIZONTAL","CURVE_LEFT","CURVE_RIGHT"],
+                                    ["HORIZONTAL","RIGHT_FALLING","LEFT_FALLING","HORIZONTAL","VERTICAL","CURVE_LEFT","CURVE_RIGHT"]]
+    },
+    { "code": "001014", "kanji": "私", "strokes": 7,
+        "strokeTypes": ["CURVE_LEFT","HORIZONTAL","VERTICAL","CURVE_LEFT","RIGHT_FALLING","LEFT_FALLING","RIGHT_FALLING"],
+        "alternativeStrokeTypes": [["CURVE_LEFT","VERTICAL","HORIZONTAL","CURVE_LEFT","RIGHT_FALLING","LEFT_FALLING","RIGHT_FALLING"]]
+    },
+    { "code": "001014", "kanji": "学", "strokes": 8,
+        "strokeTypes": ["DOT","DOT","DOT","CURVE_LEFT","RIGHT_FALLING","RIGHT_FALLING","LEFT_FALLING","HORIZONTAL"],
+        "alternativeStrokeTypes": [["RIGHT_FALLING","RIGHT_FALLING","LEFT_FALLING","CURVE_LEFT","RIGHT_FALLING","RIGHT_FALLING","LEFT_FALLING","HORIZONTAL"]]
+    },
+    { "code": "001014", "kanji": "生", "strokes": 5,
+        "strokeTypes": ["CURVE_LEFT","HORIZONTAL","VERTICAL","HORIZONTAL","HORIZONTAL"]
+    },
+    { "code": "001014", "kanji": "先", "strokes": 6,
+        "strokeTypes": ["CURVE_LEFT","HORIZONTAL","VERTICAL","HORIZONTAL","CURVE_LEFT","CURVE_LEFT"]
+    },
+    { "code": "001014", "kanji": "何", "strokes": 7,
+        "strokeTypes": ["CURVE_LEFT","VERTICAL","HORIZONTAL","LEFT_FALLING","VERTICAL","RIGHT_FALLING","HORIZONTAL"]
+    },
+    { "code": "001014", "kanji": "語", "strokes": 14,
+        "strokeTypes": ["DOT","HORIZONTAL","HORIZONTAL","HORIZONTAL","VERTICAL","RIGHT_FALLING","HORIZONTAL","HORIZONTAL","VERTICAL","RIGHT_FALLING","HORIZONTAL","VERTICAL","RIGHT_FALLING","HORIZONTAL"]
     }
 ]

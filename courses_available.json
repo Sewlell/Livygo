@@ -1,0 +1,95 @@
+[
+  {
+    "id": "ES-en",
+    "title": "Spanish for English Speakers",
+    "description": "Learn Spanish from scratch, covering grammar, vocabulary, and essential phrases for beginners.",
+    "bannerImageUrl": "images/banners/spanish_banner.jpg",
+    "type": "Official",
+    "categoryTags": ["Romance", "Beginner", "Popular"],
+    "status": "Available"
+  },
+  {
+    "id": "JP-en",
+    "title": "Japanese for English Speakers",
+    "description": "Embark on your Japanese journey! Learn Hiragana, Katakana, basic Kanji, and intermediate grammar.",
+    "bannerImageUrl": "images/banners/japanese_banner.jpg",
+    "type": "Official",
+    "categoryTags": ["East Asian", "Beginner", "Intermediate", "Popular"],
+    "status": "Available"
+  },
+  {
+    "id": "EN-cn",
+    "title": "English for Chinese Speakers",
+    "description": "学学一下英文吧，方便你去 Discord diss人家 :chiikawa:",
+    "bannerImageUrl": "images/banners/chiikawa.jpeg",
+    "type": "Official",
+    "categoryTags": ["East Asian", "Beginner", "Intermediate"],
+    "status": "Available"
+  },
+  {
+    "id": "MY-cn",
+    "title": "Malaysian Malay for Chinese Speakers",
+    "description": "试试跟着马来西亚教育局的大纲 做个专门针对中级高原（Intermediate Plateau）的人的Course。",
+    "bannerImageUrl": "images/banners/duitraya.jpeg",
+    "type": "Official",
+    "categoryTags": ["Intermediate"],
+    "status": "Available"
+  },
+  {
+    "id": "ASL-en",
+    "title": "American Sign Language for English Speakers",
+    "description": "A course for those who want to blend in the deaf community or study for fun.",
+    "bannerImageUrl": "images/banners/asl.jpg",
+    "type": "Official",
+    "categoryTags": ["Beginner", "Intermediate"],
+    "status": "Available"
+  },
+  {
+    "id": "CHE-en",
+    "title": "Chemistry Principles for English Speakers",
+    "description": "So... this is a Chemistry course for those who doesn't know what is moles or what is Avogadro's Constant.",
+    "bannerImageUrl": "images/banners/walterwhite.jpeg",
+    "type": "Official",
+    "categoryTags": ["Beginner", "Non-Language"],
+    "status": "Available"
+  },
+
+
+
+  {
+    "id": "FR-en",
+    "title": "French for English Speakers",
+    "description": "Bonjour! Master the basics of French, from pronunciation and greetings to common verbs.",
+    "bannerImageUrl": "images/banners/french_banner.png",
+    "type": "Official",
+    "categoryTags": ["Romance", "Beginner"],
+    "status": "Planned"
+  },
+  {
+    "id": "DE-en",
+    "title": "German for English Speakers",
+    "description": "Hallo! Learn the fundamentals of German grammar and vocabulary. Learn to casual communicating in German.",
+    "bannerImageUrl": "images/banners/doner.jpg",
+    "type": "Official",
+    "categoryTags": ["Germanic", "Beginner"],
+    "status": "Planned"
+  },
+  {
+    "id": "KO-en",
+    "title": "Korean for English Speakers",
+    "description": "Annyeonghaseyo! Start learning Hangul and basic Korean conversation.",
+    "bannerImageUrl": "images/banners/korean_banner.jpg",
+    "type": "Community",
+    "categoryTags": ["East Asian", "Beginner"],
+    "status": "Planned"
+  },
+  {
+    "id": "MTX-en",
+    "title": "Advanced Mathematics for English Speakers",
+    "description": "A much higher level of Mathematics for those who think 6x9 question is easy. No joke, this course included Trigonometry, Probability, Calculus and more.",
+    "bannerImageUrl": "images/banners/mtx-en.png",
+    "type": "Official",
+    "categoryTags": ["Intermediate", "Advanced", "Non-Language"],
+    "status": "Planned"
+  }
+]

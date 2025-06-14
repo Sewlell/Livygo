@@ -1,42 +1,58 @@
 [
     {
-        "code": "001001",
-        "audio": "words/ohayou.wav",
-        "answers": {
-            "selection": ["おはよう", "こんにちは", "こんばんは"],
-            "text": ["おはよう", "おはようございます"]
-        }
+        "code": "001001", "audio": "words/konnichiwa.wav",
+        "answers": { "selection": ["おはよう", "こんにちは", "こんばんは"], "text": ["こんにちは"] }
     },
     {
-        "code": "001001",
-        "audio": "words/konnichiwa.wav",
-        "answers": {
-            "selection": ["おはよう", "こんにちは", "こんばんは"],
-            "text": ["こんにちは"]
-        }
+        "code": "001001", "audio": "words/sayounara.wav",
+        "answers": { "selection": ["さようなら", "ありがとう", "すみません"], "text": ["さようなら", "さよなら"] }
     },
     {
-        "code": "001001",
-        "audio": "words/namae.wav",
-        "answers": {
-            "selection": ["名前", "友達", "家族"],
-            "text": ["名前", "なまえ"]
-        }
+        "code": "001002", "audio": "words/gohan.wav",
+        "answers": { "selection": ["ごはん", "パン", "みず"], "text": ["ご飯", "ごはん"] }
     },
     {
-        "code": "001001",
-        "audio": "words/tomodachi.wav",
-        "answers": {
-            "selection": ["友達", "家族", "先生"],
-            "text": ["友達", "ともだち"]
-        }
+        "code": "001003", "audio": "words/atarashii.wav",
+        "answers": { "selection": ["あたらしい", "ふるい", "おおきい"], "text": ["新しい", "あたらしい"] }
     },
     {
-        "code": "001001",
-        "audio": "words/taberu.wav",
-        "answers": {
-            "selection": ["食べる", "飲む", "書く"],
-            "text": ["食べる", "たべる"]
-        }
+        "code": "001004", "audio": "words/sensei.wav",
+        "answers": { "selection": ["がくせい", "せんせい", "がっこう"], "text": ["先生", "せんせい"] }
+    },
+    {
+        "code": "001004", "audio": "words/chiisai.wav",
+        "answers": { "selection": ["おおきい", "ちいさい", "きれい"], "text": ["小さい", "ちいさい"] }
+    },
+    {
+        "code": "001006", "audio": "words/gozen.wav",
+        "answers": { "selection": ["ごぜん", "ごご", "よる"], "text": ["午前", "ごぜん"] }
+    },
+    {
+        "code": "001007", "audio": "words/ramen.wav",
+        "answers": { "selection": ["すし", "てんぷら", "ラーメン"], "text": ["ラーメン", "らーめん"] }
+    },
+    {
+        "code": "001008", "audio": "words/kore.wav",
+        "answers": { "selection": ["これ", "それ", "あれ"], "text": ["これ"] }
+    },
+    {
+        "code": "001008", "audio": "words/yoji.wav",
+        "answers": { "selection": ["さんじ", "よじ", "ごじ"], "text": ["四時", "よじ"] }
+    },
+    {
+        "code": "001009", "audio": "words/kudasai.wav",
+        "answers": { "selection": ["ください", "ちょうだい", "おねがい"], "text": ["ください"] }
+    },
+    {
+        "code": "001013", "audio": "words/tomodachi.wav",
+        "answers": { "selection": ["かぞく", "せんせい", "ともだち"], "text": ["友達", "ともだち"] }
+    },
+    {
+        "code": "001015", "audio": "words/kirei.wav",
+        "answers": { "selection": ["げんき", "きれい", "ちいさい"], "text": ["きれい"] }
+    },
+    {
+        "code": "001015", "audio": "words/genki.wav",
+        "answers": { "selection": ["げんき", "きれい", "びょうき"], "text": ["元気", "げんき"] }
     }
 ]

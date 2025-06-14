@@ -1,34 +1,50 @@
 [
     {
-      "code": "001002",
-      "sentence": "テレビを[__]けど、映画は映画館で[__]。",
-      "blanks": [
-        {
-          "correct": ["見る"],
-          "alternatives": ["観る", "見たい"]
-        },
-        {
-          "correct": ["観たい"],
-          "alternatives": ["見る", "聞く"]
-        }
-      ],
-      "blocks": ["見る", "観たい", "聞い"],
-      "translation": "I watch TV, but movies I want to see at the theater."
+        "code": "001009",
+        "sentence": "すみません、この漢字の読み方を[__]ください。",
+        "validCombinations": [["教えて"]],
+        "blocks": ["教えて", "待って", "書いて"],
+        "translation": "Excuse me, please teach me how to read this kanji."
     },
     {
-      "code": "001002",
-      "sentence": "この問題は[__]考える必要が[__]。",
-      "blanks": [
-        {
-          "correct": ["しっかり"],
-          "alternatives": ["ゆっくり", "かなり"]
-        },
-        {
-          "correct": ["ある"],
-          "alternatives": ["いる", "なる"]
-        }
-      ],
-      "blocks": ["しっかり", "ゆっくり", "ある", "なる"],
-      "translation": "This problem needs to be considered carefully."
+        "code": "001009",
+        "sentence": "ドアを[__]もいいですか。はい、どうぞ。",
+        "validCombinations": [["開けて"]],
+        "blocks": ["開けて", "閉めて", "見て"],
+        "translation": "May I open the door? Yes, please go ahead."
+    },
+    {
+        "code": "001011",
+        "sentence": "私は田中に本を[__]。田中は喜んだ。",
+        "validCombinations": [["あげた"]],
+        "blocks": ["あげた", "くれた", "もらった"],
+        "translation": "I gave Tanaka a book. Tanaka was happy."
+    },
+    {
+        "code": "001011",
+        "sentence": "母が私にセーターを[__]。",
+        "validCombinations": [["くれた"]],
+        "blocks": ["あげた", "くれた", "もらった"],
+        "translation": "My mother gave me a sweater."
+    },
+    {
+        "code": "001011",
+        "sentence": "私は山田さんに花を[__]。",
+        "validCombinations": [["もらった"]],
+        "blocks": ["あげた", "くれた", "もらった"],
+        "translation": "I received flowers from Yamada."
+    },
+    {
+        "code": "001015",
+        "sentence": "レストランで[__]を[__]、それから映画を[__]。",
+        "validCombinations": [["ごはん", "食べて", "見ます"]],
+        "translation": "At the restaurant, I will eat a meal, and then watch a movie."
+    },
+    {
+        "code": "001015",
+        "sentence": "これは[__]の[__]です。とても[__]です。",
+        "validCombinations": [["日本", "車", "きれい"]],
+        "blocks": ["日本", "車", "きれい", "アメリカ", "本", "元気"],
+        "translation": "This is a Japanese car. It is very beautiful."
     }
-  ]
+]

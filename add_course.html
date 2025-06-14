@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livygo - Add New Course</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align top */
+            min-height: 100vh;
+            background-color: #e4e4e4; /* Match pathway background */
+            padding-top: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background-color: #f8f8f8;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            color: #333;
+        }
+
+        .back-button {
+            padding: 8px 16px;
+            background-color: #8B0000;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: #6a0000;
+        }
+
+        #course-grid {
+            display: grid;
+            /* Adjust minmax for desired card size, auto-fill creates columns */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            justify-content: center; /* Center grid items if space allows */
+        }
+
+        .course-card {
+            background-color: #ffffff; /* Default white tone */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.3s ease, opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .course-banner img {
+            width: 100%;
+            height: 150px; /* Fixed height for banners */
+            object-fit: cover; /* Crop images nicely */
+            display: block;
+        }
+
+        .course-type-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: grey; /* Default */
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            z-index: 2; /* Above banner */
+        }
+        .course-type-label.official {
+            background-color: #4CAF50; /* Green */
+        }
+        .course-type-label.community {
+            background-color: #2196F3; /* Blue */
+        }
+
+        .course-info {
+            padding: 20px;
+            flex-grow: 1; /* Allow info section to grow */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .course-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1; /* Push button to bottom */
+        }
+
+        .course-action button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        /* Default Add Button Style */
+        .add-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+        .add-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Selected State */
+        .course-card.selected {
+            background-color: #e8f5e9; /* Light green shade */
+            border-color: #a5d6a7; /* Slightly darker green border */
+        }
+
+        .course-card.selected .course-action button {
+            background-color: #66bb6a; /* Medium green */
+            color: white;
+            cursor: not-allowed;
+        }
+         .course-card.selected .course-action button:hover {
+             background-color: #66bb6a; /* Keep same color on hover */
+         }
+
+        .error-message {
+             text-align: center;
+             color: #d32f2f;
+             padding: 20px;
+        }
+
+        .filter-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap; /* Allow filters to wrap on smaller screens */
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .filter-button {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #333;
+            border-radius: 20px; /* Pill shape */
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .filter-button:hover {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+
+        .filter-button.active {
+            background-color: #8B0000; /* Dark red */
+            color: white;
+            border-color: #8B0000;
+        }
+
+        /* Planned State */
+        .course-card.planned {
+            filter: grayscale(80%); /* Make it grey */
+            opacity: 0.7; /* Make it slightly transparent */
+            pointer-events: none; /* Disable interactions */
+            position: relative; /* Needed for overlay */
+        }
+        .course-card.planned::after { /* Add text overlay */
+            content: 'Future Planned';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            background-color: rgba(50, 50, 50, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 3;
+            text-align: center;
+            pointer-events: none; /* Ensure text doesn't block */
+        }
+        /* Override button style for planned courses */
+        .course-card.planned .course-action button {
+            background-color: #bdbdbd; /* Grey */
+            cursor: not-allowed;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Add a New Course</h1>
+            <button class="back-button" onclick="window.location.href='mainnightly.html'">← Back to Pathway</button>
+            <!-- Or use window.history.back() if preferred -->
+        </div>
+
+        <!-- Category Filters -->
+        <div class="filter-section" id="filter-buttons">
+            <span class="filter-label">Filter:</span>
+            <!-- Filter buttons will be injected here -->
+        </div>
+
+        <div id="course-grid">
+            <!-- Course cards will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadCoursesAndFilters);
+
+        const DEFAULT_SELECTED = ['ES-en', 'JP-en'];
+        let allCoursesData = []; // Store all fetched courses globally
+        let currentFilter = 'All'; // Track the active filter
+
+        /**
+         * Fetches available courses, populates filter buttons,
+         * and renders the initial course grid.
+         */
+        async function loadCoursesAndFilters() {
+            const grid = document.getElementById('course-grid');
+            const filterContainer = document.getElementById('filter-buttons');
+
+            // --- Add Robust Element Checks ---
+            if (!grid) {
+                console.error("Fatal Error: Element with ID 'course-grid' not found in the DOM.");
+                // Optionally display an error message somewhere safe, like the body:
+                // document.body.insertAdjacentHTML('afterbegin', '<p class="error-message">Critical page error: Course grid container missing.</p>');
+                return; // Stop execution if the grid container is missing
+            }
+            if (!filterContainer) {
+                console.error("Fatal Error: Element with ID 'filter-buttons' not found in the DOM.");
+                 // Optionally display an error message somewhere safe:
+                 grid.innerHTML = '<p class="error-message">Critical page error: Filter container missing.</p>'; // Use grid if it exists
+                return; // Stop execution if the filter container is missing
+            }
+            // --- End Checks ---
+
+
+            // Now it's safe to set innerHTML
+            grid.innerHTML = '<p>Loading courses...</p>'; // Loading indicator
+            filterContainer.innerHTML = '<span class="filter-label">Filter:</span>'; // Reset filters
+
+            try {
+                // --- 1. Fetch Available Courses ---
+                const response = await fetch('courses_available.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - Could not fetch courses_available.json`);
+                }
+                allCoursesData = await response.json();
+
+                // Validate fetched data structure
+                if (!Array.isArray(allCoursesData)) {
+                    throw new Error("Fetched courses data is not an array.");
+                }
+                console.log("Successfully fetched allCoursesData:", allCoursesData);
+
+                // --- 2. Populate Filter Buttons ---
+                const categories = new Set(['All', 'Official', 'Community']);
+                allCoursesData.forEach(course => {
+                    if (Array.isArray(course.categoryTags)) {
+                        course.categoryTags.forEach(tag => {
+                             if(typeof tag === 'string' && tag.trim() !== '') {
+                                 categories.add(tag.trim());
+                             }
+                        });
+                    }
+                });
+
+                // Clear previous buttons before adding new ones
+                // Keep the label span, remove only buttons
+                const existingButtons = filterContainer.querySelectorAll('.filter-button');
+                existingButtons.forEach(btn => btn.remove());
+
+                categories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-button';
+                    button.textContent = category;
+                    button.dataset.filter = category;
+                    if (category === currentFilter) { // Use currentFilter for active state consistency
+                        button.classList.add('active');
+                    }
+                    button.addEventListener('click', () => filterCourses(category));
+                    filterContainer.appendChild(button);
+                });
+                console.log("Filter buttons generated for categories:", Array.from(categories));
+
+
+                // --- 3. Initial Render ---
+                renderCourseGrid(allCoursesData); // Render all initially based on default filter
+
+                // --- 4. Add Event Listener for Add Buttons ---
+                grid.addEventListener('click', handleGridClick);
+
+            } catch (error) {
+                // --- Error Handling ---
+                console.error('Failed to load courses or filters:', error);
+                // Check elements again before setting error HTML
+                if(grid) grid.innerHTML = `<p class="error-message">Could not load available courses. Please check the console for details.</p>`;
+                if(filterContainer) filterContainer.innerHTML = '<span class="filter-label">Filter:</span> <span style="color: red;">Error loading filters</span>';
+            }
+        }
+
+        /**
+         * Filters the globally stored course data based on the selected filter
+         * and re-renders the course grid.
+         * @param {string} filter - The category or type to filter by ('All', 'Official', 'Community', or a tag).
+         */
+        function filterCourses(filter) {
+            // Prevent re-filtering if the same filter is clicked
+            if (currentFilter === filter) return;
+
+            currentFilter = filter;
+            console.log(`Filtering by: ${filter}`);
+
+            // Update active button style
+            document.querySelectorAll('#filter-buttons .filter-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+
+            // Filter the globally stored data based on the current filter
+            const filteredData = allCoursesData.filter(course => {
+                if (filter === 'All') return true; // Show all courses
+                if (filter === 'Official') return course.type === 'Official'; // Show only official
+                if (filter === 'Community') return course.type === 'Community'; // Show only community
+                // Otherwise, check if the course's categoryTags array includes the filter tag
+                return Array.isArray(course.categoryTags) && course.categoryTags.includes(filter);
+            });
+
+            // Re-render the grid with the filtered data
+            renderCourseGrid(filteredData);
+        }
+
+
+        /**
+         * Renders the course cards into the grid container based on the provided data.
+         * @param {Array} coursesToRender - An array of course objects to display.
+         */
+        function renderCourseGrid(coursesToRender) {
+            const grid = document.getElementById('course-grid');
+            grid.innerHTML = ''; // Clear previous content (important!)
+
+            // Get the currently selected course IDs from localStorage
+            let selectedCourseIds = DEFAULT_SELECTED; // Start with defaults
+            try {
+                const storedSelection = localStorage.getItem('selectedCourseIds');
+                if (storedSelection) {
+                    const parsed = JSON.parse(storedSelection);
+                    // Ensure the parsed value is actually an array
+                    if (Array.isArray(parsed)) {
+                        selectedCourseIds = parsed;
+                    } else {
+                        console.warn("Stored 'selectedCourseIds' was not an array. Resetting to default.");
+                        localStorage.setItem('selectedCourseIds', JSON.stringify(DEFAULT_SELECTED)); // Correct the stored value
+                    }
+                } else {
+                    // If nothing is stored, save the defaults
+                    localStorage.setItem('selectedCourseIds', JSON.stringify(DEFAULT_SELECTED));
+                }
+            } catch (e) {
+                console.error("Error parsing selected courses from localStorage:", e);
+                // If parsing fails, reset to defaults and save
+                localStorage.setItem('selectedCourseIds', JSON.stringify(DEFAULT_SELECTED));
+            }
+
+            // Handle case where no courses match the filter
+            if (!coursesToRender || coursesToRender.length === 0) {
+                grid.innerHTML = `<p>No courses match the current filter "${currentFilter}".</p>`;
+                return;
+            }
+
+            // Create and append a card for each course in the provided list
+            coursesToRender.forEach(course => {
+                // Validate essential course properties
+                if (!course || !course.id || !course.title) {
+                    console.warn("Skipping rendering invalid course data:", course);
+                    return; // Skip this iteration if data is invalid
+                }
+
+                const isSelected = selectedCourseIds.includes(course.id);
+                const isPlanned = course.status === 'Planned';
+
+                // Create the main card element
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                if (isSelected) card.classList.add('selected');
+                if (isPlanned) card.classList.add('planned'); // Add planned class
+
+                // Create and append the type label (Official/Community)
+                const typeLabel = document.createElement('div');
+                typeLabel.className = 'course-type-label';
+                if (course.type === 'Official') {
+                    typeLabel.classList.add('official');
+                    typeLabel.title = 'Official Course'; // Tooltip for accessibility
+                } else if (course.type === 'Community') {
+                    typeLabel.classList.add('community');
+                    typeLabel.title = 'Community Course'; // Tooltip
+                } else {
+                    typeLabel.style.display = 'none'; // Hide if no valid type
+                }
+                card.appendChild(typeLabel); // Append label
+
+
+                // Create and append the rest of the card content using innerHTML
+                const contentDiv = document.createElement('div'); // Create temporary div for innerHTML
+                contentDiv.innerHTML = `
+                    <div class="course-banner">
+                        <img src="${course.bannerImageUrl || 'images/banners/default_banner.jpg'}" alt="${course.title} Banner" onerror="this.onerror=null; this.src='images/banners/default_banner.jpg';"> <!-- Added onerror fallback -->
+                    </div>
+                    <div class="course-info">
+                        <h2 class="course-title">${course.title}</h2>
+                        <p class="course-description">${course.description || 'No description available.'}</p>
+                        <div class="course-action">
+                            <button
+                                class="${!isSelected && !isPlanned ? 'add-button' : ''}"
+                                data-course-id="${course.id}"
+                                ${isSelected || isPlanned ? 'disabled' : ''}
+                            >
+                                ${isPlanned ? 'Planned' : (isSelected ? '✓ Selected' : '➕ Add Course')}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                // Append children of contentDiv to card (avoids overwriting label)
+                while (contentDiv.firstChild) {
+                    card.appendChild(contentDiv.firstChild);
+                }
+
+                // Append the completed card to the grid
+                grid.appendChild(card);
+            });
+        }
+
+
+        /**
+         * Handles clicks within the course grid, specifically on add buttons.
+         * @param {Event} event - The click event object.
+         */
+        function handleGridClick(event) {
+            // Use closest to find the button, even if the click was on text inside it
+            const button = event.target.closest('button[data-course-id]');
+
+            // Check if a button was found, if it has the 'add-button' class (meaning it's not selected/planned),
+            // and ensure it's not disabled (double check)
+            if (button && button.classList.contains('add-button') && !button.disabled) {
+                // Also check if the parent card is planned - button *should* be disabled, but extra safety
+                const parentCard = button.closest('.course-card');
+                if (parentCard && !parentCard.classList.contains('planned')) {
+                    const courseId = button.dataset.courseId;
+                    if (courseId) {
+                        addCourse(courseId, button);
+                    }
+                } else if (parentCard && parentCard.classList.contains('planned')){
+                    console.log("Clicked add button on a planned course (should be disabled).");
+                }
+            }
+        }
+
+        /**
+         * Adds a course to the selected list in localStorage and updates the UI.
+         * @param {string} courseId - The ID of the course to add.
+         * @param {HTMLButtonElement} buttonElement - The button element that was clicked.
+         */
+        function addCourse(courseId, buttonElement) {
+            console.log(`Attempting to add course: ${courseId}`);
+
+            try {
+                // Get current selection (defaulting if needed)
+                let selectedCourseIds = [];
+                try {
+                    // Default to DEFAULT_SELECTED if localStorage is empty or invalid
+                    selectedCourseIds = JSON.parse(localStorage.getItem('selectedCourseIds') || JSON.stringify(DEFAULT_SELECTED));
+                    if (!Array.isArray(selectedCourseIds)) selectedCourseIds = DEFAULT_SELECTED;
+                } catch {
+                    selectedCourseIds = DEFAULT_SELECTED;
+                }
+
+                // Add the course ID if it's not already included
+                if (!selectedCourseIds.includes(courseId)) {
+                    selectedCourseIds.push(courseId);
+                    localStorage.setItem('selectedCourseIds', JSON.stringify(selectedCourseIds));
+                    console.log("Updated selected courses:", selectedCourseIds);
+
+                    // --- Update UI for the specific card ---
+                    // Change button text and state
+                    buttonElement.textContent = '✓ Selected';
+                    buttonElement.disabled = true;
+                    buttonElement.classList.remove('add-button'); // Remove the action class
+
+                    // Update parent card style
+                    const card = buttonElement.closest('.course-card');
+                    if (card) {
+                        card.classList.add('selected');
+                    }
+
+                    // Optional: Add feedback to the user
+                    // alert(`Course "${courseId}" added!`); // Simple alert
+                    // You could implement a more subtle feedback message
+
+                } else {
+                    console.log(`Course ${courseId} is already selected.`);
+                }
+            } catch (error) {
+                console.error("Error adding course:", error);
+                alert("An error occurred while adding the course. Please try again."); // User feedback
+            }
+        }
+    </script>
+</body>
+</html>

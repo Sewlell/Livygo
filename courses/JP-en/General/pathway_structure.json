@@ -1,37 +1,28 @@
 [
     {
-      "code": "001",
-      "title": "Foundations 基礎",
-      "numCircles": 54,
-      "defaultAddress": "/courses/JP-en/General/001/",
-      "addressMap": [
-        {
-          "rangeStart": "001001",
-          "rangeEnd": "001049",
-          "path": "/courses/JP-en/General/001/"
-        },
-        {
-          "rangeStart": "001050",
-          "rangeEnd": "001054",
-          "path": "/courses/JP-en/General/001/001050/"
+        "code": "001",
+        "title": "Beginner 初心",
+        "numCircles": 15,
+        "defaultAddress": "/courses/JP-en/General/001/",
+        "addressMap": [
+            {
+                "rangeStart": "001001",
+                "rangeEnd": "001015",
+                "path": "/courses/JP-en/General/001/"
+            }
+        ],
+        "settings": {
+            "practicecirc": false,
+            "relearnpool": true,
+            "newQuestionRatio": 0.8,
+            "enabledQuestionTypes": [
+                "type1",
+                "type2",
+                "type3",
+                "type4",
+                "type5",
+                "type6"
+            ]
         }
-      ],
-      "settings": {
-        "newQuestionRatio": 0.8,
-        "enabledQuestionTypes": ["type1", "type2", "type3", "type4", "type5", "type6"]
-      }
-    },
-    {
-      "code": "002",
-      "title": "Test Bench テストベンチ",
-      "numCircles": 10,
-      "defaultAddress": "/courses/JP-en/General/002/",
-      "addressMap": [
-        {
-          "rangeStart": "002001",
-          "rangeEnd": "002010",
-          "path": "/courses/JP-en/General/002/"
-        }
-      ]
     }
-  ]
+]

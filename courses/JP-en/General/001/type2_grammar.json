@@ -1,42 +1,82 @@
 [
-  {
-    "code": "001001",
-    "sentence": "彼は大きなこえで____しました",
-    "translation": "He spoke in a loud voice.",
-    "blank": ["話し", "はなし"],
-    "possibleAnswers": ["話"]
-  },
-  {
-    "code": "001001",
-    "sentence": "もし、時間があったら、映画をみに____ましょう",
-    "translation": "If we have time, let’s go watch a movie.",
-    "blank": ["行き", "いき"],
-    "possibleAnswers": []
-  },
-  {
-    "code": "001001",
-    "sentence": "人生は一度きりだから、やりたいことをする____た",
-    "translation": "Life only happens once, so you should do what you want to do.",
-    "blank": "べき",
-    "possibleAnswers": []
-  },
-
-
-
-
-
-  {
-    "code": "001002",
-    "sentence": "自然のうつくしさに感動して、しばらく_____なかった",
-    "translation": "I was so moved by the beauty of nature that I couldn't move for a while.",
-    "blank": ["動け", "うごけ"],
-    "possibleAnswers": []
-  },
-  {
-    "code": "001002",
-    "sentence": "Nosotros ____ español.",
-    "translation": "We speak Spanish.",
-    "blank": "hablamos",
-    "possibleAnswers": ["hablamos", "habláis", "hablan"]
-  }
+    {
+        "code": "001001", "sentence": "わたしはマイク____。", "translation": "I am Mike.",
+        "blank": "です", "possibleAnswers": ["です", "か", "は"]
+    },
+    {
+        "code": "001001", "sentence": "あなたはがくせいですか。はい、____です。", "translation": "Are you a student? Yes, I am.",
+        "blank": "がくせい", "possibleAnswers": []
+    },
+    {
+        "code": "001002", "sentence": "わたしはごはんを____。", "translation": "I eat a meal.",
+        "blank": ["食べます", "たべます"], "possibleAnswers": ["食べます", "飲みます", "見ます"]
+    },
+    {
+        "code": "001002", "sentence": "かれは____のせんせいです。", "translation": "He is a teacher of Japanese.",
+        "blank": ["日本語", "にほんご"], "possibleAnswers": []
+    },
+    {
+        "code": "001003", "sentence": "このかばんは____です。", "translation": "This bag is big.",
+        "blank": ["大きい", "おおきい"], "possibleAnswers": []
+    },
+    {
+        "code": "001003", "sentence": "そのへやはとても____です。", "translation": "That room is very clean.",
+        "blank": "きれい", "possibleAnswers": ["きれい", "大きい", "小さい"]
+    },
+    {
+        "code": "001004", "sentence": "わたし____なまえはたなかです。", "translation": "My name is Tanaka.",
+        "blank": "の", "possibleAnswers": ["の", "は", "を"]
+    },
+    {
+        "code": "001004", "sentence": "これはわたしのかさ____。", "translation": "This is my umbrella.",
+        "blank": "です", "possibleAnswers": []
+    },
+    {
+        "code": "001004", "sentence": "がっこう____いきます。", "translation": "I go to school.",
+        "blank": "へ", "possibleAnswers": ["へ", "を", "で"]
+    },
+    {
+        "code": "001006", "sentence": "いま、なんじですか。____じです。", "translation": "What time is it now? It is 3 o'clock.",
+        "blank": ["三", "さん"], "possibleAnswers": ["一", "二", "三"]
+    },
+    {
+        "code": "001007", "sentence": "すみません、これは____ですか。", "translation": "Excuse me, how much is this?",
+        "blank": "いくら", "possibleAnswers": ["いくら", "どちら", "だれ"]
+    },
+    {
+        "code": "001008", "sentence": "いま、くじ____ふんです。", "translation": "It is now 9:05.",
+        "blank": ["ご", "五"], "possibleAnswers": ["いち", "ご", "じゅう"]
+    },
+    {
+        "code": "001009", "sentence": "ちょっと、ペンを____ください。", "translation": "Please lend me a pen for a moment.",
+        "blank": ["貸して", "かして"], "possibleAnswers": []
+    },
+    {
+        "code": "001009", "sentence": "ここに名前を____ください。", "translation": "Please write your name here.",
+        "blank": ["書いて", "かいて"], "possibleAnswers": ["書いて", "読んで", "見て"]
+    },
+    {
+        "code": "001009", "sentence": "ここで写真を____もいいですか。", "translation": "May I take a picture here?",
+        "blank": ["撮って", "とって"], "possibleAnswers": []
+    },
+    {
+        "code": "001012", "sentence": "わたしはなっとうが____。", "translation": "I can't eat natto.",
+        "blank": ["食べられません", "たべられません"], "possibleAnswers": ["食べません", "食べられません"]
+    },
+    {
+        "code": "001012", "sentence": "日本語が____か。", "translation": "Can you speak Japanese?",
+        "blank": ["話せます", "はなせます"], "possibleAnswers": ["話します", "話せます"]
+    },
+    {
+        "code": "001013", "sentence": "このほんを____ください。", "translation": "Please read this book.",
+        "blank": ["読んで", "よんで"], "possibleAnswers": []
+    },
+    {
+        "code": "001013", "sentence": "きのう、ともだちがプレゼントを____。", "translation": "My friend gave me a present yesterday.",
+        "blank": ["くれました", "呉れました"], "possibleAnswers": ["あげました", "もらいました", "くれました"]
+    },
+    {
+        "code": "001015", "sentence": "これはにほん____くるまです。", "translation": "This is a Japanese car.",
+        "blank": "の", "possibleAnswers": ["の", "で", "を"]
+    }
 ]

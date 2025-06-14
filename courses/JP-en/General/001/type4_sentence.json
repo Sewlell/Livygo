@@ -1,37 +1,80 @@
 [
     {
-        "code": "001001",
-        "audio": "sentence/good_morning.wav",
-        "sentence": "おはようございます",
-        "blocks": ["おはよう", "ございます"],
-        "translation": "Good morning",
-        "possibleAnswers": [
-            "おはようございます",
-            "おはよう　ございます",
-            "おはよう ございます"
-        ]
+        "code": "001001", "audio": "sentence/hajimemashite.wav",
+        "sentence": "はじめまして", "blocks": ["はじめまして"],
+        "translation": "Nice to meet you.",
+        "possibleAnswers": ["はじめまして"]
     },
     {
-        "code": "001001",
-        "audio": "sentence/my_name_is_taro.wav",
-        "sentence": "私の名前は太郎です",
-        "blocks": ["私の", "名前は", "太郎", "です"],
-        "translation": "My name is Taro",
-        "possibleAnswers": [
-            "私の名前は太郎です",
-            "私の　名前は　太郎　です",
-            "わたしのなまえはたろうです"
-        ]
+        "code": "001002", "audio": "sentence/i_am_a_student.wav",
+        "sentence": "私は学生です", "blocks": ["私","は", "学生","です"],
+        "translation": "I am a student.",
+        "possibleAnswers": ["私は学生です", "わたしはがくせいです", "私 は 学生 です"]
     },
     {
-        "code": "001001",
-        "audio": "sentence/where_are_you_from.wav",
-        "sentence": "あなたはどこから来ましたか",
-        "blocks": ["あなたは", "どこから", "来ましたか"],
-        "translation": "Where are you from?",
-        "possibleAnswers": [
-            "あなたはどこから来ましたか",
-            "あなたはどこからきましたか"
-        ]
+        "code": "001003", "audio": "sentence/this_is_a_big_apple.wav",
+        "sentence": "これは大きなりんごです", "blocks": ["これ","は", "大きな", "りんご","です"],
+        "translation": "This is a big apple.",
+        "possibleAnswers": ["これは大きなりんごです", "これはおおきなりんごです"]
+    },
+    {
+        "code": "001004", "audio": "sentence/i_am_not_a_teacher.wav",
+        "sentence": "私は先生じゃありません", "blocks": ["私","は", "先生","じゃ","ありません"],
+        "translation": "I am not a teacher.",
+        "possibleAnswers": ["私は先生じゃありません", "わたしはせんせいじゃありません"]
+    },
+    {
+        "code": "001007", "audio": "sentence/this_please.wav",
+        "sentence": "これをください", "blocks": ["これ","を", "ください"],
+        "translation": "This one, please.",
+        "possibleAnswers": ["これをください"]
+    },
+    {
+        "code": "001008", "audio": "sentence/what_time_is_it.wav",
+        "sentence": "今何時ですか", "blocks": ["今", "何時","です","か"],
+        "translation": "What time is it now?",
+        "possibleAnswers": ["今何時ですか", "いまなんじですか"]
+    },
+    {
+        "code": "001008", "audio": "sentence/that_one_please.wav",
+        "sentence": "それをください", "blocks": ["それ","を", "ください"],
+        "translation": "That one, please.",
+        "possibleAnswers": ["それをください"]
+    },
+    {
+        "code": "001009", "audio": "sentence/please_wait_a_moment.wav",
+        "sentence": "ちょっと待ってください", "blocks": ["ちょっと", "待って", "ください"],
+        "translation": "Please wait a moment.",
+        "possibleAnswers": ["ちょっと待ってください", "ちょっとまってください"]
+    },
+    {
+        "code": "001012", "audio": "sentence/i_can_speak_japanese.wav",
+        "sentence": "私は日本語が話せます", "blocks": ["私","は", "日本語","が", "話せます"],
+        "translation": "I can speak Japanese.",
+        "possibleAnswers": ["私は日本語が話せます", "わたしはにほんごがはなせます"]
+    },
+    {
+        "code": "001012", "audio": "sentence/this_picture_was_painted_by_friend.wav",
+        "sentence": "この絵は友達によって描かれました", "blocks": ["この","絵は", "友達に","よって", "描かれました"],
+        "translation": "This picture was painted by a friend.",
+        "possibleAnswers": ["この絵は友達によって描かれました", "このえはともだちによってかかれました"]
+    },
+    {
+        "code": "001013", "audio": "sentence/please_give_me_water.wav",
+        "sentence": "水をください", "blocks": ["水","を", "ください"],
+        "translation": "Please give me water.",
+        "possibleAnswers": ["水をください", "みずをください"]
+    },
+    {
+        "code": "001013", "audio": "sentence/please_open_the_window.wav",
+        "sentence": "窓を開けてください", "blocks": ["窓","を", "開けて", "ください"],
+        "translation": "Please open the window.",
+        "possibleAnswers": ["窓を開けてください", "まどをあけてください"]
+    },
+    {
+        "code": "001015", "audio": "sentence/my_friend_is_a_student.wav",
+        "sentence": "私の友達は学生です", "blocks": ["私の", "友達は", "学生です"],
+        "translation": "My friend is a student.",
+        "possibleAnswers": ["私の友達は学生です", "わたしのともだちはがくせいです"]
     }
 ]

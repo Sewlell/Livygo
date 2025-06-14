@@ -1,58 +1,47 @@
 [
-  {
-    "code": "001001", 
-    "word": "お祭り　おまつり",
-    "translation": "festival"
-  },
-  {
-    "code": "001001",
-    "word": "運動会　うんどうかい",
-    "translation": "sports day"
-  },
-  {
-    "code": "001001",
-    "word": "大学院生　だいがくいんせい",
-    "translation": "graduate student"
-  },
-  {
-    "code": "001001",
-    "word": "探る　さぐる",
-    "translation": [ 
-    "to feel around for, to fumble for,",
-    "to investigate, to spy on,",
-    "to explore (parts unknown), to enjoy (natural beauty)"
-    ]
-  },
-  {
-    "code": "001001",
-    "word": "貴族　きぞく",
-    "translation": "noble"
-  },
-  {
-    "code": "001001",
-    "word": "保護　ほご",
-    "translation": "care, protection, shelter"
-  },
+    { "code": "001001", "word": "私　わたし", "translation": "I, me" },
+    { "code": "001001", "word": "あなた", "translation": "you" },
+    { "code": "001001", "word": "はい", "translation": "yes" },
+    { "code": "001001", "word": "いいえ", "translation": "no" },
 
+    { "code": "001002", "word": "日本　にほん", "translation": "Japan" },
+    { "code": "001002", "word": "学生　がくせい", "translation": "student" },
+    { "code": "001002", "word": "先生　せんせい", "translation": "teacher" },
+    { "code": "001002", "word": "学校　がっこう", "translation": "school" },
 
+    { "code": "001003", "word": "大きい　おおきい", "translation": "big, large" },
+    { "code": "001003", "word": "小さい　ちいさい", "translation": "small" },
+    { "code": "001003", "word": "元気（な）　げんき", "translation": "well, healthy, energetic" },
+    { "code": "001003", "word": "きれい（な）", "translation": "beautiful, clean" },
 
+    { "code": "001004", "word": "私　わたし", "translation": "I, me" },
+    { "code": "001004", "word": "学生　がくせい", "translation": "student" },
 
+    { "code": "001006", "word": "一　いち", "translation": "one" },
+    { "code": "001006", "word": "二　に", "translation": "two" },
+    { "code": "001006", "word": "時　じ", "translation": "o'clock, time" },
+    { "code": "001006", "word": "分　ふん・ぷん", "translation": "minute" },
 
+    { "code": "001007", "word": "これ", "translation": "this" },
+    { "code": "001007", "word": "いくら", "translation": "how much (price)" },
+    { "code": "001007", "word": "寿司　すし", "translation": "sushi" },
+    { "code": "001007", "word": "店　みせ", "translation": "shop, store" },
 
+    { "code": "001008", "word": "時　じ", "translation": "o'clock, time" },
+    { "code": "001008", "word": "店　みせ", "translation": "shop, store" },
+    
+    { "code": "001011", "word": "あげる", "translation": "to give (to others)" },
+    { "code": "001011", "word": "くれる", "translation": "to give (to me or my in-group)" },
+    { "code": "001011", "word": "もらう", "translation": "to receive" },
+    { "code": "001011", "word": "友達　ともだち", "translation": "friend" },
 
-  {
-    "code": "001002",
-    "word": "gato",
-    "translation": "cat"
-  },
-  {
-    "code": "001002",
-    "word": "libro",
-    "translation": "book"
-  },
-  {
-    "code": "001002",
-    "word": "manzana",
-    "translation": "apple"
-  }
+    { "code": "001012", "word": "食べられる　たべられる", "translation": "can eat, to be able to eat" },
+    { "code": "001012", "word": "見られる　みられる", "translation": "can see, to be able to see" },
+    { "code": "001012", "word": "話せる　はなせる", "translation": "can speak, to be able to speak" },
+
+    { "code": "001013", "word": "もらう", "translation": "to receive" },
+    { "code": "001013", "word": "話せる　はなせる", "translation": "can speak, to be able to speak" },
+
+    { "code": "001015", "word": "学校　がっこう", "translation": "school" },
+    { "code": "001015", "word": "友達　ともだち", "translation": "friend" }
 ]
