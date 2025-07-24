@@ -636,22 +636,6 @@
     <script src="https://unpkg.com/wanakana@5.3.1/wanakana.min.js"></script>
     <script>
 
-        function getBasePath() {
-            const hostname = window.location.hostname;
-            // Check if it's a GitHub Pages URL or a similar deployment
-            if (hostname.includes('github.io') || hostname.includes('vercel.app')) {
-                // For a URL like "https://user.github.io/repo/", the pathname is "/repo/".
-                const pathname = window.location.pathname;
-                // The base path is the repository name, which is the first segment of the path.
-                // We split by "/" which gives ["", "repoName", "page.html"], so we take index 1.
-                const repoName = pathname.split('/')[1];
-                return `/${repoName}/`;
-            } else {
-                // For local development (e.g., http://localhost:8000), the base path is just the root.
-                return '/';
-            }
-        }
-
         // Set a global constant to be used by all other functions.
         const LIVYGO_BASE_PATH = getBasePath();
         
@@ -701,10 +685,24 @@
         let requiredStrokeAccuracy = 75;
 
         document.addEventListener('DOMContentLoaded', () => {
+            function getBasePath() {
+                const hostname = window.location.hostname;
+                if (hostname.includes('github.io') || hostname.includes('vercel.app')) {
+                    const pathname = window.location.pathname;
+                    const repoName = pathname.split('/')[1];
+                    return `/${repoName}/`;
+                } else {
+                    return '/';
+                }
+            }
+            const LIVYGO_BASE_PATH = getBasePath();
+            // --- END: DYNAMIC BASE PATH SOLUTION ---
+
             const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${lang}`)) || [];
             lessonProgress = storedProgress; // Keep the full array accessible if needed
 
             // Load pathway structure first
+            // CORRECTED PATH #1: Using LIVYGO_BASE_PATH
             fetch(`${LIVYGO_BASE_PATH}courses/${lang}/${subcourse}/pathway_structure.json`)
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -713,11 +711,10 @@
             .then(fetchedPathway => {
                 pathwayStructure = fetchedPathway;
 
-                // Find the current section and its settings/path
                 const numericCode = parseInt(currentCode);
                 const section = pathwayStructure.find(s =>
                     s.addressMap && s.addressMap.some(range =>
-                        numericCode >= parseInt(range.rangeStart) && // Ensure comparison is numeric
+                        numericCode >= parseInt(range.rangeStart) &&
                         numericCode <= parseInt(range.rangeEnd)
                     )
                 );
@@ -730,31 +727,27 @@
                     numericCode >= parseInt(range.rangeStart) &&
                     numericCode <= parseInt(range.rangeEnd)
                 );
-
+                
+                // CORRECTED PATH #2: Building dynamicBasePath correctly
                 if (!matchedRange || !matchedRange.path) {
-                    // Fallback to defaultAddress if specific range or path is missing.
-                    // Construct a relative path using the lowercase subcourse variable.
-                    const relativePath = `courses/${lang}/${subcourse}/${section.code}/`;
+                    let relativePath = (section.defaultAddress || `courses/${lang}/${subcourse}/${section.code}/`).replace(/^\//, '');
                     dynamicBasePath = LIVYGO_BASE_PATH + relativePath;
-                    console.warn(`No specific path found for ${currentCode} in section ${section.code}, using default path: ${dynamicBasePath}`);
+                    console.warn(`No specific path found for ${currentCode} in section ${section.code}, using: ${dynamicBasePath}`);
                 } else {
-                    // A specific path was found in pathway_structure.json.
-                    // Prepend our global base path and ensure no leading slashes.
-                    let relativePath = matchedRange.path.replace(/^\//, ''); // Remove leading slash if it exists
+                    let relativePath = matchedRange.path.replace(/^\//, '');
                     dynamicBasePath = LIVYGO_BASE_PATH + relativePath;
                 }
 
-                const pathwaySettings = section.settings || {}; // Get pathway settings or empty object
-
-                // Set enabled question types (prioritize section settings)
-                enabledQuestionTypes = pathwaySettings.enabledQuestionTypes || enabledQuestionTypes; // Use pathway's or keep default
+                const pathwaySettings = section.settings || {}; 
+                enabledQuestionTypes = pathwaySettings.enabledQuestionTypes || enabledQuestionTypes;
 
                 // Load lesson progress JSON AFTER finding the path
+                // This will now use the CORRECTLY constructed dynamicBasePath
                 return fetch(`${dynamicBasePath}lesson_progress.json`)
                     .then(res => {
                          if (!res.ok) {
                             if (!initialConfigLogged) console.warn(`lesson_progress.json not found at ${dynamicBasePath}. Using defaults.`);
-                            return []; // Return empty array if not found
+                            return [];
                         }
                         return res.json();
                      })
