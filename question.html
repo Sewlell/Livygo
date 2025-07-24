@@ -635,6 +635,26 @@
 
     <script src="https://unpkg.com/wanakana@5.3.1/wanakana.min.js"></script>
     <script>
+
+        function getBasePath() {
+            const hostname = window.location.hostname;
+            // Check if it's a GitHub Pages URL or a similar deployment
+            if (hostname.includes('github.io') || hostname.includes('vercel.app')) {
+                // For a URL like "https://user.github.io/repo/", the pathname is "/repo/".
+                const pathname = window.location.pathname;
+                // The base path is the repository name, which is the first segment of the path.
+                // We split by "/" which gives ["", "repoName", "page.html"], so we take index 1.
+                const repoName = pathname.split('/')[1];
+                return `/${repoName}/`;
+            } else {
+                // For local development (e.g., http://localhost:8000), the base path is just the root.
+                return '/';
+            }
+        }
+
+        // Set a global constant to be used by all other functions.
+        const LIVYGO_BASE_PATH = getBasePath();'
+        
         // Configuration
         const urlParams = new URLSearchParams(window.location.search);
         const currentCode = urlParams.get('code') || '001001';
@@ -685,7 +705,7 @@
             lessonProgress = storedProgress; // Keep the full array accessible if needed
 
             // Load pathway structure first
-            fetch(`/courses/${lang}/${subcourse}/pathway_structure.json`)
+            fetch(`${LIVYGO_BASE_PATH}courses/${lang}/${subcourse}/pathway_structure.json`)
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.json();
@@ -713,10 +733,15 @@
 
                 if (!matchedRange || !matchedRange.path) {
                      // Fallback to defaultAddress if specific range or path missing
-                    dynamicBasePath = section.defaultAddress || `/courses/${lang}/${subcourse}/${section.code}/`; // Use default or construct
+                    // Fallback to defaultAddress if specific range or path missing
+                    // Remove leading slashes from paths and prepend our global base path
+                    let relativePath = (section.defaultAddress || `/courses/${lang}/${subcourse}/${section.code}/`).substring(1);
+                    dynamicBasePath = LIVYGO_BASE_PATH + relativePath; 
                     console.warn(`No specific path found for ${currentCode} in section ${section.code}, using: ${dynamicBasePath}`);
                  } else {
-                    dynamicBasePath = matchedRange.path;
+                    // Remove leading slash from the JSON path and prepend our global base path
+                    let relativePath = matchedRange.path.substring(1);
+                    dynamicBasePath = LIVYGO_BASE_PATH + relativePath;
                  }
 
                 const pathwaySettings = section.settings || {}; // Get pathway settings or empty object
@@ -909,7 +934,7 @@
             .catch(error => {
                 console.error("Loading or Initialization error:", error);
                 showError(`Data load failed: ${error.message}. Redirecting...`);
-                setTimeout(() => window.location.href = 'mainnightly.html', 3000);
+                setTimeout(() => window.location.href = `${LIVYGO_BASE_PATH}mainnightly.html`, 3000);
             });
         });
 
@@ -3114,7 +3139,7 @@
             document.body.style.transition = 'opacity 0.5s ease-out';
             document.body.style.opacity = '0';
             setTimeout(() => {
-                 window.location.href = 'mainnightly.html'; // Redirect after fade
+                 window.location.href = `${LIVYGO_BASE_PATH}mainnightly.html`; // Redirect after fade
             }, 500);
         }
         // --- End General Lesson Flow ---
