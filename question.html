@@ -732,17 +732,17 @@
                 );
 
                 if (!matchedRange || !matchedRange.path) {
-                     // Fallback to defaultAddress if specific range or path missing
-                    // Fallback to defaultAddress if specific range or path missing
-                    // Remove leading slashes from paths and prepend our global base path
-                    let relativePath = (section.defaultAddress || `/courses/${lang}/${subcourse}/${section.code}/`).substring(1);
-                    dynamicBasePath = LIVYGO_BASE_PATH + relativePath; 
-                    console.warn(`No specific path found for ${currentCode} in section ${section.code}, using: ${dynamicBasePath}`);
-                 } else {
-                    // Remove leading slash from the JSON path and prepend our global base path
-                    let relativePath = matchedRange.path.substring(1);
+                    // Fallback to defaultAddress if specific range or path is missing.
+                    // Construct a relative path using the lowercase subcourse variable.
+                    const relativePath = `courses/${lang}/${subcourse}/${section.code}/`;
                     dynamicBasePath = LIVYGO_BASE_PATH + relativePath;
-                 }
+                    console.warn(`No specific path found for ${currentCode} in section ${section.code}, using default path: ${dynamicBasePath}`);
+                } else {
+                    // A specific path was found in pathway_structure.json.
+                    // Prepend our global base path and ensure no leading slashes.
+                    let relativePath = matchedRange.path.replace(/^\//, ''); // Remove leading slash if it exists
+                    dynamicBasePath = LIVYGO_BASE_PATH + relativePath;
+                }
 
                 const pathwaySettings = section.settings || {}; // Get pathway settings or empty object
 
