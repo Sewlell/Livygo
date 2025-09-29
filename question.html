@@ -642,9 +642,6 @@
         const lang = urlParams.get('lang') || 'JP-en';
         const subcourse = urlParams.get('subcourse') || 'General';
 
-        // Will be determined dynamically
-        let dynamicBasePath = '';
-
         let questionsPerLesson = 5;
         let questionsCompleted = 0;
         let currentCutsceneIndex = 0;
@@ -658,9 +655,7 @@
         let type2Data = [];
         let type3Data = [];
         let type4Data = [];
-        let allType4Data = []; 
         let type5Data = [];
-        let allType5Data = [];
         let type6Data = [];
         let enableOCR = true;
         let enabledQuestionTypes = ['type1', 'type2', 'type3', 'type4']; // Default, will be overridden
@@ -680,12 +675,24 @@
         let currentTimeout = null;
         let requiredStrokeAccuracy = 75;
 
+        function getBasePath() {
+            const repoName = 'Livygo'; // Your repository name
+            const isGitHubPages = window.location.hostname.includes('github.io');
+            return isGitHubPages ? `/${repoName}/` : '/';
+        }
+        // --- END: New function ---
+
+        // Will be determined dynamically
+        let dynamicBasePath = '';
+
         document.addEventListener('DOMContentLoaded', () => {
             const storedProgress = JSON.parse(localStorage.getItem(`lessonProgress_${lang}`)) || [];
             lessonProgress = storedProgress; // Keep the full array accessible if needed
 
+            const basePath = getBasePath();
+
             // Load pathway structure first
-            fetch(`/courses/${lang}/${subcourse}/pathway_structure.json`)
+            fetch(`${basePath}courses/${lang}/${subcourse}/pathway_structure.json`)
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.json();
@@ -838,8 +845,6 @@
             .then(([cutsceneData, vocab, grammar, listening, sentence, type5, type6]) => {
 
                 allType1Data = [...vocab];
-                allType4Data = [...sentence];
-                allType5Data = [...type5];
 
                 // --- Filter Questions Based on Lesson Config ---
                 const baseCode = currentCode.split('-')[0]; // Usually the section code like '001'
@@ -1689,9 +1694,9 @@
             console.log("Correct Blocks to Exclude:", currentBlocks);
 
             // --- Get ALL blocks from ALL Type 4 questions ---
-            const allAvailableBlocks = allType4Data.flatMap(q => {
+            const allAvailableBlocks = type4Data.flatMap(q => {
                 // Ensure question has blocks and it's an array
-                if (q && Array.isArray(q.blocks)) {
+                if (q && Array.isArray(q.blocks))  {
                     return q.blocks;
                 }
                 return []; // Return empty array if blocks are missing/invalid
@@ -1725,7 +1730,7 @@
             console.log("Correct Blocks for Question:", question.blocks);
 
             // Get a variable number (0-4) of incorrect blocks
-            const distractors = getType4Distractors(question.code, question.blocks);
+            const distractors = getType4Distractors(question.blocks);
             console.log("Distractors received from getType4Distractors:", distractors); // Log received distractors
 
             // Combine with original blocks and shuffle
@@ -1803,7 +1808,7 @@
             }
 
             // 2b. Add External Distractors to Pool
-            const otherQuestions = allType5Data.filter(q =>
+            const otherQuestions = type5Data.filter(q =>
                 q && q !== currentQuestion &&
                 Array.isArray(q.validCombinations) && q.validCombinations.length > 0
             );
