@@ -640,7 +640,7 @@
         const currentCode = urlParams.get('code') || '001001';
         // const basePath = urlParams.get('basePath') || '/courses/ES-en/General/001/'; // Replaced by dynamic path finding
         const lang = urlParams.get('lang') || 'JP-en';
-        const subcourse = urlParams.get('subcourse') || 'General';
+        const subcourse = (urlParams.get('subcourse') || 'general').toLowerCase();
 
         let questionsPerLesson = 5;
         let questionsCompleted = 0;
