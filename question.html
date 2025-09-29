@@ -720,10 +720,11 @@
 
                 if (!matchedRange || !matchedRange.path) {
                      // Fallback to defaultAddress if specific range or path missing
-                    dynamicBasePath = section.defaultAddress || `/courses/${lang}/${subcourse}/${section.code}/`; // Use default or construct
-                    console.warn(`No specific path found for ${currentCode} in section ${section.code}, using: ${dynamicBasePath}`);
+                    const fallbackDir = section.defaultAddress || `courses/${lang}/${subcourse}/${section.code}/`;
+                    dynamicBasePath = (basePath + fallbackDir.replace(/^\//, ''));
+                    console.warn(`No specific path found for ${currentCode}, using: ${dynamicBasePath}`);
                  } else {
-                    dynamicBasePath = matchedRange.path;
+                    dynamicBasePath = basePath + matchedRange.path.substring(1);
                  }
 
                 const pathwaySettings = section.settings || {}; // Get pathway settings or empty object
