@@ -1731,7 +1731,7 @@
             console.log("Correct Blocks for Question:", question.blocks);
 
             // Get a variable number (0-4) of incorrect blocks
-            const distractors = getType4Distractors(question.blocks);
+            const distractors = getType4Distractors(question.code, question.blocks);
             console.log("Distractors received from getType4Distractors:", distractors); // Log received distractors
 
             // Combine with original blocks and shuffle
