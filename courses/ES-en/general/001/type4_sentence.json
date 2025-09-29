@@ -1,0 +1,32 @@
+[
+    {
+        "code": "001001",
+        "audio": "sentence/the_dog_run_in_the_park.wav",
+        "sentence": "El perro corre en el parque.",
+        "blocks": ["El", "perro", "corre", "en", "el", "parque"],
+        "translation": "The dog runs in the park.",
+        "possibleAnswers": [
+            "El perro corre en el parque"
+        ]
+    },
+    {
+        "code": "001001",
+        "audio": "sentence/my_house_is_very_big.wav",
+        "sentence": "Mi casa es muy grande.",
+        "blocks": ["Mi", "casa", "es", "muy", "grande"],
+        "translation": "My house is very big.",
+        "possibleAnswers": [
+            "Mi casa es muy grande"
+        ]
+    },
+    {
+        "code": "001001",
+        "audio": "sentence/i_have_a_small_cat.wav",
+        "sentence": "Tengo un gato pequeño.",
+        "blocks": ["Tengo", "un", "gato", "pequeño"],
+        "translation": "I have a small cat.",
+        "possibleAnswers": [
+            "Tengo un gato pequeno"
+        ]
+    }
+]

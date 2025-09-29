@@ -1,0 +1,18 @@
+[
+    {
+        "code": "001001",
+        "audio": "words/pequeno.wav",
+        "answers": {
+            "selection": ["pequeño", "comida", "amigo"],
+            "text": ["pequeno", "pequeño"]
+        }
+    },
+    {
+        "code": "001001",
+        "audio": "words/libro.wav",
+        "answers": {
+            "selection": ["libro", "bonito", "casa"],
+            "text": ["libro"]
+        }
+    }
+]

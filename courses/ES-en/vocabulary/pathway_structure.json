@@ -3,12 +3,12 @@
         "code": "003000",
         "title": "Core Vocabulary",
         "numCircles": 200,
-        "defaultAddress": "/courses/ES-en/Vocabulary/003/",
+        "defaultAddress": "/courses/ES-en/vocabulary/003/",
         "addressMap": [
             {
                 "rangeStart": "003001",
                 "rangeEnd": "003200",
-                "path": "/courses/ES-en/Vocabulary/003/001/"
+                "path": "/courses/ES-en/vocabulary/003/001/"
             }
         ],
         "settings": {

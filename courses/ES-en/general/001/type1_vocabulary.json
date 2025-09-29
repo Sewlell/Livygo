@@ -10,6 +10,24 @@
     "translation": "dog"
   },
   {
+    "code": "001001",
+    "word": "grande",
+    "translation": "big"
+  },
+  {
+    "code": "001001",
+    "word": "pequeño",
+    "translation": "small"
+  },
+  {
+    "code": "001001",
+    "word": "agua",
+    "translation": "water"
+  },
+
+
+
+  {
     "code": "001002",
     "word": "gato",
     "translation": "cat"
