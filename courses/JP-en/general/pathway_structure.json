@@ -3,12 +3,12 @@
         "code": "001",
         "title": "Beginner 初心",
         "numCircles": 15,
-        "defaultAddress": "/courses/JP-en/General/001/",
+        "defaultAddress": "/courses/JP-en/general/001/",
         "addressMap": [
             {
                 "rangeStart": "001001",
                 "rangeEnd": "001015",
-                "path": "/courses/JP-en/General/001/"
+                "path": "/courses/JP-en/general/001/"
             }
         ],
         "settings": {
