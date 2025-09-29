@@ -3,17 +3,17 @@
       "code": "001",
         "title": "Foundations Fundamentos",
         "numCircles": 54,
-        "defaultAddress": "/courses/ES-en/General/001/",
+        "defaultAddress": "/courses/ES-en/general/001/",
         "addressMap": [
             {
                 "rangeStart": "001001",
                 "rangeEnd": "001049",
-                "path": "/courses/ES-en/General/001/"
+                "path": "/courses/ES-en/general/001/"
             },
             {
                 "rangeStart": "001050",
                 "rangeEnd": "001054",
-                "path": "/courses/ES-en/General/001/001050/"
+                "path": "/courses/ES-en/general/001/001050/"
             }
       ],
       "settings": {
@@ -27,12 +27,12 @@
       "code": "002",
       "title": "Intermediate",
       "numCircles": 120,
-      "defaultAddress": "/courses/ES-en/General/002000/",
+      "defaultAddress": "/courses/ES-en/general/002000/",
       "addressMap": [
         {
           "rangeStart": "002001",
           "rangeEnd": "002100",
-          "path": "/courses/ES-en/General/002000/"
+          "path": "/courses/ES-en/general/002000/"
         }
       ]
     }
