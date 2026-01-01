@@ -651,18 +651,6 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
-        function getBasePath() {
-            const hostname = window.location.hostname;
-            if (hostname.includes('github.io') || hostname.includes('vercel.app')) {
-                const pathname = window.location.pathname;
-                const repoName = pathname.split('/')[1];
-                return `/${repoName}/`;
-            } else {
-                return '/';
-            }
-        }
-        const LIVYGO_BASE_PATH = getBasePath();
-        
         let currentLang = localStorage.getItem('selectedLang') || 'ES-en';
         let currentDropdown = null;
         let hoverTimeout = null;
@@ -729,8 +717,8 @@
     
         async function updatePathway() {
             try {
-                // Fetch pathway structure (Corrected Path)
-                const pathwayStructure = await fetch(`${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/pathway_structure.json`)
+                // Fetch pathway structure
+                const pathwayStructure = await fetch(`courses/${currentLang}/${currentSubCourse}/pathway_structure.json`)
                     .then(r => r.json());
 
                 const pathwayCircle = document.getElementById('pathway-circle');
@@ -740,6 +728,7 @@
                     const sectionContainer = document.createElement('div');
                     sectionContainer.className = 'section-container';
 
+                    // Section Header
                     const header = document.createElement('div');
                     header.className = 'section-header';
                     header.innerHTML = `
@@ -747,32 +736,39 @@
                         <small>Circles ${section.addressMap[0].rangeStart} - ${section.addressMap.slice(-1)[0].rangeEnd}</small>
                     `;
 
+                    // Circle Grid
                     const grid = document.createElement('div');
                     grid.className = 'circle-grid';
 
                     section.addressMap.forEach(range => {
+                        // Convert to numbers and ensure 6-digit format
                         const start = parseInt(range.rangeStart);
                         const end = parseInt(range.rangeEnd);
 
                         for (let codeNum = start; codeNum <= end; codeNum++) {
+                            // Convert to 6-digit string
                             const paddedCode = codeNum.toString().padStart(6, '0');
                             const sectionCode = paddedCode.substring(0, 3);
                             
                             const circle = document.createElement('div');
                             circle.className = 'lesson';
+                            
+                            // Display last 2 digits of 6-digit code
                             circle.textContent = paddedCode.slice(-2);
+                            
+                            // Store full code in dataset
                             circle.dataset.code = paddedCode;
                             
-                            // Build dynamic base path (Corrected Path)
-                            const circleBasePath = `${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/${sectionCode}/`;
-                            circle.dataset.basePath = circleBasePath;
+                            // Build dynamic base path
+                            circle.dataset.basePath = `/courses/${currentLang}/${currentSubCourse}/${sectionCode}/`;
 
+                            // Add hover/click handlers
                             addCircleEventListeners(circle);
 
-                            // Click handler with all parameters (Corrected Path)
+                            // Click handler with all parameters
                             circle.addEventListener('click', () => {
-                                const questionUrl = `${LIVYGO_BASE_PATH}question.html?lang=${currentLang}&subcourse=${currentSubCourse}&code=${paddedCode}`;
-                                window.location.href = questionUrl;
+                                const sectionCode = paddedCode.substring(0, 3);
+                                window.location.href = `question.html?lang=${currentLang}&subcourse=${currentSubCourse}&code=${paddedCode}&basePath=${encodeURIComponent(`/courses/${currentLang}/${currentSubCourse}/${sectionCode}/`)}`;
                             });
 
                             grid.appendChild(circle);
@@ -832,15 +828,14 @@
 
             try {
                 const basePath = circleElement.dataset.basePath;
-                // The fetch for lesson_progress.json uses basePath, which is already corrected.
                 const progressData = await fetch(`${basePath}lesson_progress.json`).then(r => r.json());
-                // The fetch for guide_structure.json needs to be corrected.
-                const guideStructure = await fetch(`${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
                     .then(r => r.json())
                     .catch(() => ({ categories: [], guidebooks: [] }));
 
                 const circleCode = circleElement.dataset.code;
                 
+                // Update filtering: if relatedCircles is missing or empty, treat as applicable to all circles.
                 const relatedCategories = (guideStructure.categories || []).filter(c => {
                     if (!c.relatedCircles || c.relatedCircles.length === 0) return true;
                     return c.relatedCircles.includes(circleCode);
@@ -896,7 +891,7 @@
             pathwayOptions.innerHTML = ''; // Clear existing buttons
 
             try {
-                const response = await fetch(`${LIVYGO_BASE_PATH}courses/${lang}/sub_courses.json`);
+                const response = await fetch(`courses/${lang}/sub_courses.json`);
                 const { sub_courses } = await response.json();
 
                 sub_courses.forEach(sc => {
@@ -954,7 +949,7 @@
         async function fetchGuidebookContent(guidcode) {
             try {
                 const isCategory = guidcode.startsWith('CAT-');
-                const guideStructure = await fetch(`${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
                     .then(res => res.json());
                 if (isCategory) {
                     const category = guideStructure.categories.find(c => c.guidcode === guidcode);
@@ -977,17 +972,17 @@
                 } else {
                     const guideMeta = guideStructure.guidebooks.find(g => g.guidcode === guidcode);
                     if (!guideMeta) throw new Error('Guidebook chapter not found');
-                    const metaResponse = await fetch(`${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
+                    const metaResponse = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
                     if (!metaResponse.ok) throw new Error('Meta.json not found');
                     const meta = await metaResponse.json();
                     const sectionsHtml = await Promise.all(meta.sections.map(async section => {
                         if (section.type === 'text') {
-                            const text = await fetch(`${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
+                            const text = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
                                 .then(r => r.text());
                             return `<div class="text-section">${marked.parse(text)}</div>`;
                         }
                         if (section.type === 'media') {
-                            const mediaPath = `${LIVYGO_BASE_PATH}courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                            const mediaPath = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
                             return `<img src="${mediaPath}" class="guide-media" alt="Learning visual">`;
                         }
                         return '';
@@ -1312,7 +1307,7 @@
 
         async function loadProfile() {
         try {
-            const response = await fetch(`${LIVYGO_BASE_PATH}profile.json`);
+            const response = await fetch('profile.json');
             profileData = await response.json();
             updateProfileDisplay();
         } catch (error) {
@@ -1374,6 +1369,36 @@
             </div>
             `).join('');
         }
+
+        // Find the button by its ID
+        const debugButton = document.getElementById('debug-test');
+
+        // Add a click event listener to the button
+        debugButton.addEventListener('click', function() {
+            // 1. Ask for confirmation from the user. This is a safety measure.
+            const isConfirmed = confirm(
+                'Are you sure you want to reset all progress?\n\n' +
+                'This will clear your Relearn Pool and all lesson data. ' +
+                'This action cannot be undone.'
+            );
+
+            // 2. If the user clicks "OK", proceed with the reset.
+            if (isConfirmed) {
+                try {
+                    // Clear all data stored in localStorage for this site
+                    localStorage.clear();
+
+                    // 3. Inform the user and reload the page to see the changes.
+                    alert('All progress has been reset. The page will now reload.');
+                    location.reload();
+
+                } catch (error) {
+                    console.error('Failed to clear localStorage:', error);
+                    alert('An error occurred while trying to reset progress.');
+                }
+            }
+            // If the user clicks "Cancel", do nothing.
+        });
     </script>
 </body>
 </html>

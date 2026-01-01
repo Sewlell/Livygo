@@ -3,7 +3,27 @@
 
 # Livygo Project
 
-Livygo is an application to let you customize... literally everything while keeping Duolingo gamification factors. This Project also being coded *completely* using DeepSeek R1 and voiced using AI TTS, while keeping its gate wide open to those who want to create their own courses ( Community Courses ) or improve the codebase. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/).
+Livygo is a Duolingo-ish like application where you can learn things by gamifying things. Yep, pretty straightforward. **Also This project is made completely using AI tools.** 'though you can fork this up and make some human adjustment if you wanted. *Livy* don't care. All I cared about is to ctrl+c and ctrl+v codes.
+
+... Just joking. This is nothing much really when you have [Anki](https://apps.ankiweb.net/) and [Lingonaut Project](https://www.reddit.com/r/Lingonaut/) in your pocket.
+
+## Disclaimer 
+
+Well, if you are here to blame my blatant usage of LLMs or AI, sure go on. Livy do not *code* Livy's code in this repository.
+
+This doesn't mean I am illiterate with the code content however. In regards to code literacy, there are real vulnerabilities when you entrust LLM on cybersecurity/API stuff too much, especially when YOU simply *vibe coding* and never take a second to understand even a slightest of their code. Even though it may delivers, as a developer you are putting yourself in a great risk of getting DDoS attack. I did not mean you should avoid using LLM for this exact purpose, you SHOULD take a whole table of salt with it. Remember, I hold the responsibility to all my accounts on the Internet, and I will NOT endorse any idea to allow my code to attack my networking for the slightest.
+
+Seriously, Livy also don't want to recommend those who have zero coding knowledge to do what Livy exactly be doing. You will ended up spending more time just trying to find a typo somewhere in the code. Also it will be a catastrophe to add new features if you DON'T plan things properly in prior. You should let AI help you and not you help AI.
+
+# Development Log : January 1 2026
+
+Happy new year! It's been a little while since the last update of this project. I have been working on other things IRL these few months and haven't really take my focus on this project. Anyway here's the update :
+
+1. You can now experience Livygo through this Github Pages website ( https://sewlell.github.io/Livygo/mainnightly.html ). To implement this, minor adjustment have made in the code so that it can run either on Github Pages host or locally.
+2. Updated lessons for both JP-en and ES-en. For some reason I haven't updated it in the past few months so I do it now. You can try Type 1 to Type 6 questions in JP-en and Type 1 to Type 4 in ES-en.
+3. A debug button where you click it, it will reset your Relearn Pools question to none. It will be more specific in the future like resetting the course chosen by user. 
+
+Yep, that's it. It is a small update, but I promise next update will be the large one that involved UI updates and massive source code organization. Please look forward to the next update.
 
 # Development Log : June 14 2025
 
@@ -33,29 +53,6 @@ There are still minor issue within this update. As I suspect that the `relearnpo
 Next update would be focusing on course questions. This gonna be a hell of a workload to work with so wish me luck.
 
 ![Screenshot (42)](https://github.com/user-attachments/assets/25e90b01-8622-4a91-a979-18512069e635)
-
-# Development Log : March 15 2025
-
-##  The repository license have now changed from `CC-BY-NC-SA 4.0` to `GPL v3.0` to better approaching open source community. This also means now you can use this code for commercial purpose prior credited.
-
-This is a much smaller update as I have difficulty figuring up new Question Type. In spite of that, it have arrive and working OK now.
-
-1. License Change as mentioned above.
-2. Introducing Question Type 6, Type 6c to be precise for Japanese Kanji ( it will rename to 6a once I merge it with Hanzi and Hanja ). This is a character-stroke recognition question that only appear in Handwrite Circle (`handwritecirc` in `lesson_progress.json`). Basically what you do is write on a canvas and the code will check whether it is in correct order or not.
-   - The process of develop this have throw me out. I originally want to utilize [KanjiVG](https://github.com/KanjiVG/kanjivg) to do some kind of SVG-stroke check, however it ended up a catastrophe with the entire expected stroke inverted, and that the code have no clue how to deal with `startPoint` and `endPoint`.
-   - Even when I change the way the codebase to recognize stroke using 6-points circle measure. It works surprisingly OK, but it might have issue expanding to much more specific stroke. (`CURVE` is stated in the code but I have no idea what is the stroke for the code to recognize `CURVE` without getting `LEFT_FALLING` or `RIGHT_FALLING`)
-   - OCR Validation is not available to make it more local-available.
-3. Remove clutter in `question.html`. Also met the same fate as last update's `mainnightly.html`.
-
-Yup, that's it. Just three. The next step would be Type 5 ( many-subquestion phrase/grammar/vocabulary question ) and Type 1a 1b ( Split `translation` and `word` for either answer or question ).
-
-Go to the 4th Circle in JP-en General course if you want to try Type 6 questions.
-
-Demonstration Video
-
-
-
-https://github.com/user-attachments/assets/3e419fbb-7b9d-463b-be33-f36dffa3eb5c
 
 
 
@@ -106,22 +103,16 @@ python courseeditor.py
 - [DeepSeek R1](https://www.deepseek.com/) by DeepSeek
 - [Gemini 2.5 Pro](https://aistudio.google.com) by Google
 - [GPT o3-mini and 4o](https://chatgpt.com/) by OpenAI (Served as Alternative for DeepSeek)
+- GPT 5 and 5.2
 
 - [GPT SoVITS](https://github.com/RVC-Boss/GPT-SoVITS) by RVC-Boss
 - [Fish Speech S1 and S1 mini](https://github.com/fishaudio/fish-speech) by Fish Audio
 - [RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) by RVC Project Team
+- ... and a lot of open-source TTS like [XTTS v2](https://huggingface.co/coqui/XTTS-v2) and [Chatterbox](https://github.com/resemble-ai/chatterbox).
 
 ## Code Credits
 
 - [WanaKana](https://github.com/WaniKani/WanaKana) by WaniKani
-
-## Disclaimer 
-
-Well, if you are here to blame my blatant usage of LLMs or AI, sure go on. I do not *code* my own code.
-
-This doesn't mean I am illiterate with code syntax and content however. In regards to literacy, there are real vulnerabilities when you entrust LLM on cybersecurity/API stuff, especially when YOU simply *vibe coding* and never ever understand even a slightest of their code. Even though it delivers, you as a developer is putting yourself in a great risk of getting DDoS attack once you put yourself publicly. Not like you should avoid entrust LLM for anything, but remember I hold the responsibility to my Internet accounts, and I do not endorse any idea to allow my code to attack my networking for the slightest.
-
-Hence, this repository will be ENTIRELY local-based and offline-available. Stuffs like Profile and Shop will be set using a default JSON which you can edit whatever you like. ( Although it's decorative with no real purposes offline ). I still planned to launch an online version of the application ( with some alteration of the code ) but backend development is a field that I have never enter before. 
 
 ## License
 
