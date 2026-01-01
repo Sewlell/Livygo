@@ -663,8 +663,10 @@
         let activeGuidebook = null;
         let previousGuidebooks = [];
 
+        const BASE_URL = location.hostname.includes('github.io')
+            ? '/Livygo'
+            : '';
 
-        
 
         // Initialize with both parameters
         function init() {
@@ -760,7 +762,7 @@
                             circle.dataset.code = paddedCode;
                             
                             // Build dynamic base path
-                            circle.dataset.basePath = `/courses/${currentLang}/${currentSubCourse}/${sectionCode}/`;
+                            circle.dataset.basePath = `${BASE_URL}/courses/${currentLang}/${currentSubCourse}/${sectionCode}/`;
 
                             // Add hover/click handlers
                             addCircleEventListeners(circle);
@@ -829,7 +831,7 @@
             try {
                 const basePath = circleElement.dataset.basePath;
                 const progressData = await fetch(`${basePath}lesson_progress.json`).then(r => r.json());
-                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                const guideStructure = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
                     .then(r => r.json())
                     .catch(() => ({ categories: [], guidebooks: [] }));
 
@@ -949,7 +951,7 @@
         async function fetchGuidebookContent(guidcode) {
             try {
                 const isCategory = guidcode.startsWith('CAT-');
-                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                const guideStructure = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
                     .then(res => res.json());
                 if (isCategory) {
                     const category = guideStructure.categories.find(c => c.guidcode === guidcode);
@@ -972,17 +974,17 @@
                 } else {
                     const guideMeta = guideStructure.guidebooks.find(g => g.guidcode === guidcode);
                     if (!guideMeta) throw new Error('Guidebook chapter not found');
-                    const metaResponse = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
+                    const metaResponse = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
                     if (!metaResponse.ok) throw new Error('Meta.json not found');
                     const meta = await metaResponse.json();
                     const sectionsHtml = await Promise.all(meta.sections.map(async section => {
                         if (section.type === 'text') {
-                            const text = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
+                            const text = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
                                 .then(r => r.text());
                             return `<div class="text-section">${marked.parse(text)}</div>`;
                         }
                         if (section.type === 'media') {
-                            const mediaPath = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                            const mediaPath = `${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
                             return `<img src="${mediaPath}" class="guide-media" alt="Learning visual">`;
                         }
                         return '';
@@ -1014,18 +1016,18 @@
         }
 
         async function fetchCategory(categoryId) {
-            const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+            const guideStructure = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
                 .then(res => res.json());
             return guideStructure.categories.find(c => c.guidcode === categoryId);
         }
 
         async function fetchChapterContent(guidcode) {
             try {
-                const guideStructure = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`).then(res => res.json());
+                const guideStructure = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`).then(res => res.json());
                 const guideMeta = guideStructure.guidebooks.find(g => g.guidcode === guidcode);
                 
                 // New: Validate meta.json exists
-                const metaResponse = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
+                const metaResponse = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/meta.json`);
                 if (!metaResponse.ok) throw new Error('Meta.json not found');
                 
                 const meta = await metaResponse.json();
@@ -1033,7 +1035,7 @@
                 // New: Process content files
                 const processedSections = await Promise.all(meta.sections.map(async section => {
                     if (section.type === 'text') {
-                        const content = await fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`).then(r => r.text());
+                        const content = await fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`).then(r => r.text());
                         return { ...section, content };
                     }
                     return section;
@@ -1072,7 +1074,7 @@
                     return `<div class="text-section">${marked.parse(section.content)}</div>`;
                 }
                 if (section.type === 'media') {
-                    const mediaPath = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                    const mediaPath = `${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
                     return `<img src="${mediaPath}" class="guide-media" alt="Learning visual">`;
                 }
                 if (section.type === 'error') {
@@ -1114,7 +1116,7 @@
         
 
             function createNewContainer() {
-                fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
+                fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/guide_structure.json`)
                 .then(res => res.json())
                 .then(guideStructure => {
                     // Check if it's a category first
@@ -1200,7 +1202,7 @@
                 <div class="guidebook-content"></div>
             `;
             
-            fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guideMeta.guidcode}/meta.json`)
+            fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guideMeta.guidcode}/meta.json`)
                 .then(res => res.json())
                 .then(contentMeta => {
                     renderGuideContent(container.querySelector('.guidebook-content'), 
@@ -1237,7 +1239,7 @@
                 
                 switch(section.type) {
                     case 'text':
-                        fetch(`/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
+                        fetch(`${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/${section.content}`)
                             .then(res => res.text())
                             .then(text => {
                                 sectionDiv.innerHTML = marked.parse(text);
@@ -1246,7 +1248,7 @@
                         
                     case 'media':
                         const img = document.createElement('img');
-                        img.src = `/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
+                        img.src = `${BASE_URL}/courses/${currentLang}/${currentSubCourse}/guidebook/${guidcode}/media/${section.content}`;
                         img.style.maxWidth = '100%';
                         sectionDiv.appendChild(img);
                         break;
